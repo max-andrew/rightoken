@@ -7,9 +7,9 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { TrendingUpIcon, GlobeAltIcon, LightBulbIcon, ScaleIcon } from '@heroicons/react/outline'
 
 const navigation = [
-	{ name: 'How it works', href: '#' },
+	{ name: 'About', href: '#' },
 	{ name: 'Marketplace', href: '#' },
-	{ name: 'Company', href: '#' },
+	{ name: 'Community', href: '#' },
 ]
 
 const features = [
@@ -167,7 +167,15 @@ export default function Home() {
 															href="#"
 															className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10"
 														>
-															Join beta test waitlist
+															For investors
+														</a>
+													</div>
+													<div className="mt-3 sm:mt-0 sm:ml-3">
+														<a
+															href="#"
+															className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-purple-700 bg-purple-100 hover:bg-purple-200 md:py-4 md:text-lg md:px-10"
+														>
+															For artists
 														</a>
 													</div>
 												</div>
@@ -212,6 +220,16 @@ export default function Home() {
 										</div>
 									))}
 								</dl>
+							</div>
+							<div className="mt-5 sm:mt-12 sm:flex sm:justify-center lg:justify-center">
+								<div className="rounded-md shadow">
+									<a
+										href="#"
+										className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10"
+									>
+										See how it works
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>
