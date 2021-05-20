@@ -9,9 +9,9 @@ import { TrendingUpIcon, GlobeAltIcon, LightBulbIcon, ScaleIcon } from '@heroico
 import Footer from '../components/Footer'
 
 const navigation = [
-	{ name: 'Artists', href: '/artists' },
+	{ name: 'Artists', href: '#' },
 	{ name: 'Investors', href: '#' },
-	{ name: 'Community', href: '/community' },
+	{ name: 'Community', href: '#' },
 	{ name: 'Marketplace', href: '#' },
 ]
 
@@ -75,7 +75,7 @@ export default function Home() {
 											>
 												<div className="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
 													<div className="flex items-center justify-between w-full md:w-auto">
-														<a href="/">
+														<a href="#">
 															<span className="sr-only">Workflow</span>
 															<img
 																className="h-8 w-auto sm:h-10"
@@ -121,13 +121,11 @@ export default function Home() {
 												<div className="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
 													<div className="px-5 pt-4 flex items-center justify-between">
 														<div>
-															<a href="/">
-																<img
-																	className="h-8 w-auto"
-																	src="/rightoken-logo.png"
-																	alt=""
-																/>
-															</a>
+															<img
+																className="h-8 w-auto"
+																src="/rightoken-logo.png"
+																alt=""
+															/>
 														</div>
 														<div className="-mr-2">
 															<Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500">

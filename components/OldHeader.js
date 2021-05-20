@@ -17,70 +17,71 @@ import {
 } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 
+import Image from 'next/image'
 
-export default function Header(props) {
-	const solutions = [
-		{
-			name: 'Analytics',
-			description: 'Get a better understanding of where your traffic is coming from.',
-			href: '#',
-			icon: ChartBarIcon,
-		},
-		{
-			name: 'Engagement',
-			description: 'Speak directly to your customers in a more meaningful way.',
-			href: '#',
-			icon: CursorClickIcon,
-		},
-		{ name: 'Security', description: "Your customers' data will be safe and secure.", href: '#', icon: ShieldCheckIcon },
-		{
-			name: 'Integrations',
-			description: "Connect with third-party tools that you're already using.",
-			href: '#',
-			icon: ViewGridIcon,
-		},
-		{
-			name: 'Automations',
-			description: 'Build strategic funnels that will drive your customers to convert',
-			href: '#',
-			icon: RefreshIcon,
-		},
-	]
-	const callsToAction = [
-		{ name: 'Watch Demo', href: '#', icon: PlayIcon },
-		{ name: 'Contact Sales', href: '#', icon: PhoneIcon },
-	]
-	const resources = [
-		{
-			name: 'Help Center',
-			description: 'Get all of your questions answered in our forums or contact support.',
-			href: '#',
-			icon: SupportIcon,
-		},
-		{
-			name: 'Guides',
-			description: 'Learn how to maximize our platform to get the most out of it.',
-			href: '#',
-			icon: BookmarkAltIcon,
-		},
-		{
-			name: 'Events',
-			description: 'See what meet-ups and other events we might be planning near you.',
-			href: '#',
-			icon: CalendarIcon,
-		},
-		{ name: 'Security', description: 'Understand how we take your privacy seriously.', href: '#', icon: ShieldCheckIcon },
-	]
-	const recentPosts = [
-		{ id: 1, name: 'Boost your conversion rate', href: '#' },
-		{ id: 2, name: 'How to use search engine optimization to drive traffic to your site', href: '#' },
-		{ id: 3, name: 'Improve your customer experience', href: '#' },
-	]
+const solutions = [
+	{
+		name: 'Analytics',
+		description: 'Get a better understanding of where your traffic is coming from.',
+		href: '#',
+		icon: ChartBarIcon,
+	},
+	{
+		name: 'Engagement',
+		description: 'Speak directly to your customers in a more meaningful way.',
+		href: '#',
+		icon: CursorClickIcon,
+	},
+	{ name: 'Security', description: "Your customers' data will be safe and secure.", href: '#', icon: ShieldCheckIcon },
+	{
+		name: 'Integrations',
+		description: "Connect with third-party tools that you're already using.",
+		href: '#',
+		icon: ViewGridIcon,
+	},
+	{
+		name: 'Automations',
+		description: 'Build strategic funnels that will drive your customers to convert',
+		href: '#',
+		icon: RefreshIcon,
+	},
+]
+const callsToAction = [
+	{ name: 'Watch Demo', href: '#', icon: PlayIcon },
+	{ name: 'Contact Sales', href: '#', icon: PhoneIcon },
+]
+const resources = [
+	{
+		name: 'Help Center',
+		description: 'Get all of your questions answered in our forums or contact support.',
+		href: '#',
+		icon: SupportIcon,
+	},
+	{
+		name: 'Guides',
+		description: 'Learn how to maximize our platform to get the most out of it.',
+		href: '#',
+		icon: BookmarkAltIcon,
+	},
+	{
+		name: 'Events',
+		description: 'See what meet-ups and other events we might be planning near you.',
+		href: '#',
+		icon: CalendarIcon,
+	},
+	{ name: 'Security', description: 'Understand how we take your privacy seriously.', href: '#', icon: ShieldCheckIcon },
+]
+const recentPosts = [
+	{ id: 1, name: 'Boost your conversion rate', href: '#' },
+	{ id: 2, name: 'How to use search engine optimization to drive traffic to your site', href: '#' },
+	{ id: 3, name: 'Improve your customer experience', href: '#' },
+]
 
-	function classNames(...classes) {
-		return classes.filter(Boolean).join(' ')
-	}
+function classNames(...classes) {
+	return classes.filter(Boolean).join(' ')
+}
 
+export default function Example() {
 	return (
 		<Popover className="relative bg-white">
 			{({ open }) => (
@@ -90,15 +91,17 @@ export default function Header(props) {
 							<div className="flex justify-start lg:w-0 lg:flex-1">
 								<a href="#">
 									<span className="sr-only">Workflow</span>
-									<img
+									<Image 
 										className="h-8 w-auto sm:h-10"
-										src="rightoken-logo.png"
-										alt=""
+										src="/rightoken-logo.png" 
+										alt="logo"
+										width="64"
+										height="64"
 									/>
 								</a>
 							</div>
 							<div className="-mr-2 -my-2 md:hidden">
-								<Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500">
+								<Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
 									<span className="sr-only">Open menu</span>
 									<MenuIcon className="h-6 w-6" aria-hidden="true" />
 								</Popover.Button>
@@ -110,7 +113,7 @@ export default function Header(props) {
 											<Popover.Button
 												className={classNames(
 													open ? 'text-gray-900' : 'text-gray-500',
-													'group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500'
+													'group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 												)}
 											>
 												<span>Solutions</span>
@@ -145,7 +148,7 @@ export default function Header(props) {
 																	href={item.href}
 																	className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
 																>
-																	<item.icon className="flex-shrink-0 h-6 w-6 text-purple-600" aria-hidden="true" />
+																	<item.icon className="flex-shrink-0 h-6 w-6 text-indigo-600" aria-hidden="true" />
 																	<div className="ml-4">
 																		<p className="text-base font-medium text-gray-900">{item.name}</p>
 																		<p className="mt-1 text-sm text-gray-500">{item.description}</p>
@@ -177,7 +180,7 @@ export default function Header(props) {
 									Pricing
 								</a>
 								<a href="#" className="text-base font-medium text-gray-500 hover:text-gray-900">
-									Docs
+									Technology
 								</a>
 
 								<Popover className="relative">
@@ -186,7 +189,7 @@ export default function Header(props) {
 											<Popover.Button
 												className={classNames(
 													open ? 'text-gray-900' : 'text-gray-500',
-													'group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500'
+													'group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 												)}
 											>
 												<span>More</span>
@@ -221,7 +224,7 @@ export default function Header(props) {
 																	href={item.href}
 																	className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
 																>
-																	<item.icon className="flex-shrink-0 h-6 w-6 text-purple-600" aria-hidden="true" />
+																	<item.icon className="flex-shrink-0 h-6 w-6 text-indigo-600" aria-hidden="true" />
 																	<div className="ml-4">
 																		<p className="text-base font-medium text-gray-900">{item.name}</p>
 																		<p className="mt-1 text-sm text-gray-500">{item.description}</p>
@@ -245,7 +248,7 @@ export default function Header(props) {
 																</ul>
 															</div>
 															<div className="mt-5 text-sm">
-																<a href="#" className="font-medium text-purple-600 hover:text-purple-500">
+																<a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
 																	{' '}
 																	View all posts <span aria-hidden="true">&rarr;</span>
 																</a>
@@ -264,7 +267,7 @@ export default function Header(props) {
 								</a>
 								<a
 									href="#"
-									className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700"
+									className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700"
 								>
 									Sign up
 								</a>
@@ -291,14 +294,16 @@ export default function Header(props) {
 								<div className="pt-5 pb-6 px-5">
 									<div className="flex items-center justify-between">
 										<div>
-											<img
-												className="h-8 w-auto"
-												src="rightoken-logo.png"
-												alt="Workflow"
+											<Image 
+												className="h-8 w-auto sm:h-10"
+												src="/rightoken-logo.png" 
+												alt="logo"
+												width="64"
+												height="64"
 											/>
 										</div>
 										<div className="-mr-2">
-											<Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500">
+											<Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
 												<span className="sr-only">Close menu</span>
 												<XIcon className="h-6 w-6" aria-hidden="true" />
 											</Popover.Button>
@@ -312,7 +317,7 @@ export default function Header(props) {
 													href={item.href}
 													className="-m-3 p-3 flex items-center rounded-md hover:bg-gray-50"
 												>
-													<item.icon className="flex-shrink-0 h-6 w-6 text-purple-600" aria-hidden="true" />
+													<item.icon className="flex-shrink-0 h-6 w-6 text-indigo-600" aria-hidden="true" />
 													<span className="ml-3 text-base font-medium text-gray-900">{item.name}</span>
 												</a>
 											))}
@@ -341,13 +346,13 @@ export default function Header(props) {
 									<div>
 										<a
 											href="#"
-											className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700"
+											className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
 										>
 											Sign up
 										</a>
 										<p className="mt-6 text-center text-base font-medium text-gray-500">
 											Existing customer?{' '}
-											<a href="#" className="text-purple-600 hover:text-purple-500">
+											<a href="#" className="text-indigo-600 hover:text-indigo-500">
 												Sign in
 											</a>
 										</p>
