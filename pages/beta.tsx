@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -10,9 +10,35 @@ import SongCard from '../components/SongCard'
 import RoundedButton from '../components/RoundedButton'
 import Footer from '../components/Footer'
 
-export default function Song(props) {
+import { disconnect } from "../functions/walletConnect.js"
+
+import WalletConnectProvider from "@walletconnect/web3-provider"
+import QRCodeModal from "@walletconnect/qrcode-modal"
+
+import { providers } from "ethers"
+
+export default function Beta(props) {
 	const router = useRouter()
 	const { name } = router.query
+
+	const provider = new WalletConnectProvider({
+		infuraId: "a821166085054d0891f13e00e9a0767e",
+	})
+
+	const enable = async () => { console.log(provider) }
+
+	const openQR = () => {
+		console.log("hello")
+		enable().then(() => { 
+			console.log("hello")
+			provider.connector.on("display_uri", (err, payload) => {
+				const uri = payload.params[0];
+				CustomQRCodeModal.display(uri);
+			})
+			// console.log(provider)
+		})
+		console.log("hello")
+	}
 
 	return (
 		<div>
@@ -43,13 +69,15 @@ export default function Song(props) {
 									Connect your wallet to store your Rightokens independently
 								</p>
 							</div>
-							<RoundedButton link="/beta" text="Connect your wallet" className="place-self-center" />
+							<button onClick={() => enable()} className="place-self-center">Connect your wallet</button>
+							<button onClick={() => disconnect()} className="place-self-center">Disconnect your wallet</button>
+
 						</div>
 					</div>
 
 				</main>
 
-				<Footer />
+				{/*<Footer />*/}
 			</div>
 		</div>
 	)

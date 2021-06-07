@@ -11,7 +11,6 @@ export default function Home() {
 	return (
 		<div>
 			<div>
-
 				<Head>
 					<title>Rightoken</title>
 					<link rel="icon" href="/favicon.ico" />
