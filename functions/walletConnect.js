@@ -1,49 +1,23 @@
-import WalletConnect from "@walletconnect/client"
+import WalletConnectProvider from "@walletconnect/web3-provider"
 import QRCodeModal from "@walletconnect/qrcode-modal"
+import { providers } from "ethers"
 
-// Create a connector
-const connector = new WalletConnect({
-	bridge: "https://bridge.walletconnect.org", // Required
-	qrcodeModal: QRCodeModal,
+const provider = new WalletConnectProvider({
+	infuraId: "a821166085054d0891f13e00e9a0767e",
 })
 
-export const uri = connector.uri
-
-// Check if connection is already established
-if (!connector.connected) {
-	// create new session
-	connector.createSession()
-}
-
-export const openQR = () => {
-	QRCodeModal.open(uri)
-}
-
-// Subscribe to connection events
-connector.on("connect", (error, payload) => {
-	if (error) {
-	 throw error
-	}
-
-	// Get provided accounts and chainId
-	const { accounts, chainId } = payload.params[0]
-})
-
-connector.on("session_update", (error, payload) => {
-	if (error) {
-	 throw error
-	}
-
-	// Get updated accounts and chainId
-	const { accounts, chainId } = payload.params[0]
-})
+export const enable = async () => { await provider.enable().catch(e => console.log(e)) }
 
 export const disconnect = () => {
-	connector.on("disconnect", (error, payload) => {
-		if (error) {
-		 throw error
-		}
+  QRCodeModal.close()
+  provider.disconnect()
+}
 
-		// Delete connector
-	})
+export const providerinfo = () => { console.log(provider) }
+
+//  Wrap with Web3Provider from ethers.js
+const web3Provider = new providers.Web3Provider(provider)
+
+export const openQR = () => {
+	enable().then(() => { QRCodeModal.open("wc:c56bc944-b4d9-4f7d-a435-472457ef7402@1?bridge=https%3A%2F%2Fbridge.walletconnect.org&key=4017f12ae2dd7f4b00f31bce80003ba785ba1a9382f7f4219fe8aad4479e0c23") })
 }

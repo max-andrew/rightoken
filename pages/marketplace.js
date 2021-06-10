@@ -6,7 +6,7 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
 import Header from '../components/Header'
 import SongCard from '../components/SongCard'
-import RoundedButton from '../components/RoundedButton'
+import RoundedLinkButton from '../components/RoundedLinkButton'
 import Footer from '../components/Footer'
 
 export default function Home() {
@@ -55,7 +55,7 @@ export default function Home() {
 							</div>
 
 							<div className="mt-5 sm:mt-12 sm:flex sm:justify-center lg:justify-center">
-								<RoundedButton link="/beta" text="Link your wallet to invest" />
+								<RoundedLinkButton link="/beta" text="Link your wallet to invest" />
 							</div>
 						</div>
 					</div>
