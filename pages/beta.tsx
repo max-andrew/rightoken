@@ -57,18 +57,17 @@ export default function Beta(props) {
 			let stale = false
 
 			console.log('fetching block number!!')
-			library
-				.getBlockNumber()
-				.then(blockNumber => {
-					if (!stale) {
-						setBlockNumber(blockNumber)
-					}
-				})
-				.catch(() => {
-					if (!stale) {
-						setBlockNumber(null)
-					}
-				})
+			library.getBlockNumber()
+			.then(blockNumber => {
+				if (!stale) {
+					setBlockNumber(blockNumber)
+				}
+			})
+			.catch(() => {
+				if (!stale) {
+					setBlockNumber(null)
+				}
+			})
 
 			const updateBlockNumber = blockNumber => {
 				setBlockNumber(blockNumber)
@@ -122,13 +121,13 @@ export default function Beta(props) {
 		}
 	})
 
-	// check if wallet is already connected
+	// link wallet if it is already connected
 	useEffect(() => {
 		if (!account) {
 			setActivatingConnector(walletconnect)
 			activate(walletconnect)
 		}
-	})
+	}, [])
 
 	const connectWallet = () => {
 		if (account)
