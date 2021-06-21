@@ -21,8 +21,6 @@ import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
 export default function Beta(props) {
 	const context = useWeb3React()
 	const {
-		network,
-		// walletconnect,
 		connector,
 		library,
 		chainId,
@@ -46,10 +44,10 @@ export default function Beta(props) {
 	}, [activatingConnector, connector])
 
 	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
-	// const triedEager = useEagerConnect()
+	const triedEager = useEagerConnect()
 
 	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
-	// useInactiveListener(!triedEager || !!activatingConnector)
+	useInactiveListener(!triedEager || !!activatingConnector)
 
 	// set up block listener
 	useEffect(() => {
@@ -182,6 +180,21 @@ export default function Beta(props) {
 						</p>
 						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
 							<p className="text-2xl font-semibold">
+								Configure your wallet
+							</p>
+							<p className="text-sm font-mono">
+								Rightoken uses a network built on top of Ethereum to keep transaction fees low for artists and investors. This step should take about a minute.
+							</p>
+						</div>
+						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
+							<RoundedLinkButton link="https://docs.matic.network/docs/develop/metamask/config-matic" textClassName="text-sm font-bold" text="Follow steps" />
+						</div>
+
+						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
+							3.
+						</p>
+						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
+							<p className="text-2xl font-semibold">
 								Connect your wallet
 							</p>
 							{!error && (
@@ -199,25 +212,28 @@ export default function Beta(props) {
 							{ !account && (
 								<RoundedButton onClick={() => connectWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
 							)}
-								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
-						
+								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />			
 						</div>
 
-						<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
-							3.
-						</p>
-						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
-							<p className="text-2xl font-semibold">
-								Start investing
-							</p>
-							<p className="text-sm font-mono">
-								Support growing artists and build your portfolio. Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
-							</p>
-						</div>
-						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
-							<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold" />
-							<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
-						</div>
+						{ account && (
+							<>
+								<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
+									4.
+								</p>
+								<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
+									<p className="text-2xl font-semibold">
+										Start investing 💰🚀
+									</p>
+									<p className="text-sm font-mono">
+										You're ready to support growing artists and build your portfolio! Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
+									</p>
+								</div>
+								<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
+									<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold" />
+									<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
+								</div>
+							</>
+						)}
 					</div>
 				</div>
 
@@ -278,56 +294,28 @@ export default function Beta(props) {
 							: `Ξ${parseFloat(formatEther(ethBalance)).toPrecision(4)}`}
 					</span>
 				</h3>
-				<div
-					style={{
-						display: "grid",
-						gridGap: "1rem",
-						gridTemplateColumns: "fit-content",
-						maxWidth: "20rem",
-						margin: "auto"
-					}}
-				>
-					{!!(library && account) && (
-						<button
-							style={{
-								height: "3rem",
-								borderRadius: "1rem",
-								cursor: "pointer"
-							}}
-							onClick={() => {
-								library
-									.getSigner(account)
-									.signMessage("👋")
-									.then(signature => {
-										window.alert(`Success!\n\n${signature}`);
-									})
-									.catch(error => {
-										window.alert(
-											"Failure!" +
-												(error && error.message ? `\n\n${error.message}` : "")
-										);
-									});
-							}}
-						>
-							Sign Message
-						</button>
-					)}
-					{!!(connector === network && chainId) && (
-						<button
-							style={{
-								height: "3rem",
-								borderRadius: "1rem",
-								cursor: "pointer"
-							}}
-							onClick={() => {
-								console.log(connector)
-								connector.changeChainId(chainId === 1 ? 4 : 1);
-							}}
-						>
-							Switch Networks
-						</button>
-					)}
-				</div>
+				<br />
+				{!!(library && account) && (
+					<RoundedButton 
+						onClick={() => {
+							library
+							.getSigner(account)
+							.signMessage("👋")
+							.then(signature => {
+								window.alert(`Success!\n\n${signature}`)
+							})
+							.catch(error => {
+								window.alert(
+									"Failure!" +
+										(error && error.message ? `\n\n${error.message}` : "")
+								)
+							})
+						}}
+						textClassName="text-sm font-bold" 
+						text="Sign Message"
+						className="w-1/4 m-auto"
+					/>
+				)}
 			</div>
 
 			{/*<Footer />*/}
