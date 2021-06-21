@@ -148,13 +148,43 @@ export default function Song(props) {
 								</p>
 							</div>
 						</div>
-						<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
-							<SongCard />
-							<RoundedLinkButton link="/beta" text="Go to beta" className="place-self-center" />
-							<div>
-								<RoundedButton onClick={() => connectWallet()} text="Connect wallet" />
+						{ account && 
+							<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
+								<SongCard />
+								<RoundedButton onClick={() => connectWallet()} text="Invest now" />
 							</div>
-						</div>
+						}
+						{ !account && 
+							<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
+								<SongCard />
+								<RoundedLinkButton link="/beta" text="Start beta testing" className="place-self-center" />
+							</div>
+						}
+						{!!(library && account) && (
+							<button
+								style={{
+									height: "3rem",
+									borderRadius: "1rem",
+									cursor: "pointer"
+								}}
+								onClick={() => {
+									library
+										.getSigner(account)
+										.signMessage("👋")
+										.then(signature => {
+											window.alert(`Success!\n\n${signature}`)
+										})
+										.catch(error => {
+											window.alert(
+												"Failure!" +
+													(error && error.message ? `\n\n${error.message}` : "")
+											)
+										})
+								}}
+							>
+								Sign Message
+							</button>
+						)}
 					</div>
 
 				</main>

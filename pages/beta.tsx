@@ -15,11 +15,14 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
-import { walletconnect } from '../functions/connectors'
+import { injected, network, walletconnect } from '../functions/connectors'
+import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
 
 export default function Beta(props) {
 	const context = useWeb3React()
 	const {
+		network,
+		// walletconnect,
 		connector,
 		library,
 		chainId,
@@ -41,6 +44,12 @@ export default function Beta(props) {
 			setActivatingConnector(undefined)
 		}
 	}, [activatingConnector, connector])
+
+	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
+	// const triedEager = useEagerConnect()
+
+	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
+	// useInactiveListener(!triedEager || !!activatingConnector)
 
 	// set up block listener
 	useEffect(() => {
@@ -119,14 +128,19 @@ export default function Beta(props) {
 	}, [])
 
 	const connectWallet = () => {
+		if (error)
+			disconnectWallet()
+
 		setActivatingConnector(walletconnect)
 		activate(walletconnect)
 	}
 
 	const disconnectWallet = () => {
-		connector.close()
-		deactivate()
-		connector.walletConnectProvider = undefined
+		if (connector) {
+			connector.close()
+			deactivate()
+			connector.walletConnectProvider = undefined
+		}
 	}
 
 	return (
@@ -185,9 +199,8 @@ export default function Beta(props) {
 							{ !account && (
 								<RoundedButton onClick={() => connectWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
 							)}
-							{ account && (
 								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
-							)}
+						
 						</div>
 
 						<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
@@ -299,7 +312,7 @@ export default function Beta(props) {
 							Sign Message
 						</button>
 					)}
-					{!!(connector === /*network && */ chainId) && (
+					{!!(connector === network && chainId) && (
 						<button
 							style={{
 								height: "3rem",
