@@ -1,22 +1,21 @@
 import Head from 'next/head'
 
-import { Fragment, useEffect, useState, useContext } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
+
+import Header from '../components/Header'
+import RoundedLinkButton from '../components/RoundedLinkButton'
+import RoundedButton from '../components/RoundedButton'
+import Footer from '../components/Footer'
 
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
 import { URI_AVAILABLE } from '@web3-react/walletconnect-connector'
 import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
-import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage.js'
+import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 import { walletconnect } from '../functions/connectors'
-import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
-
-import Header from '../components/Header'
-import RoundedLinkButton from '../components/RoundedLinkButton'
-import RoundedButton from '../components/RoundedButton'
-import Footer from '../components/Footer'
 
 export default function Beta(props) {
 	const context = useWeb3React()
@@ -31,32 +30,24 @@ export default function Beta(props) {
 		error
 	} = context
 
-	const [refresh, setRefresh] = useState()
 	const [activatingConnector, setActivatingConnector] = useState()
 	const [blockNumber, setBlockNumber] = useState()
 	const [ethBalance, setEthBalance] = useState()
 
 	// handle logic to recognize the connector currently being activated
 	useEffect(() => {
-		console.log('running')
+		console.log('Identifying connector being activated')
 		if (activatingConnector && activatingConnector === connector) {
 			setActivatingConnector(undefined)
 		}
 	}, [activatingConnector, connector])
 
-	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
-	const triedEager = useEagerConnect()
-
-	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
-	useInactiveListener(!triedEager || !!activatingConnector)
-
 	// set up block listener
 	useEffect(() => {
-		console.log('running')
+		console.log('Getting block number')
 		if (library) {
 			let stale = false
 
-			console.log('fetching block number!!')
 			library.getBlockNumber()
 			.then(blockNumber => {
 				if (!stale) {
@@ -84,7 +75,7 @@ export default function Beta(props) {
 
 	// fetch eth balance of the connected account
 	useEffect(() => {
-		console.log('running')
+		console.log('Getting Eth balance')
 		if (library && account) {
 			let stale = false
 
@@ -110,7 +101,7 @@ export default function Beta(props) {
 
 	// log the walletconnect URI
 	useEffect(() => {
-		console.log('running')
+		console.log('Getting URI')
 		const logURI = uri => {
 			console.log("WalletConnect URI", uri)
 		}
@@ -119,29 +110,22 @@ export default function Beta(props) {
 		return () => {
 			walletconnect.off(URI_AVAILABLE, logURI)
 		}
-	})
+	}, [])
 
 	// link wallet if it is already connected
 	useEffect(() => {
-		if (!account) {
-			setActivatingConnector(walletconnect)
-			activate(walletconnect)
-		}
+		if ((typeof(window) !== undefined) && !!window.localStorage.walletconnect && !account)
+			connectWallet()
 	}, [])
 
 	const connectWallet = () => {
-		if (account)
-			disconnectWallet()
-
 		setActivatingConnector(walletconnect)
 		activate(walletconnect)
 	}
 
 	const disconnectWallet = () => {
-		// setActivatingConnector("")
 		connector.close()
 		deactivate()
-
 		connector.walletConnectProvider = undefined
 	}
 
@@ -163,7 +147,7 @@ export default function Beta(props) {
 					</div>
 
 					<div className="mt-16 max-w-md md:max-w-none grid grid-cols-1 md:grid-cols-3 gap-x-10 md:gap-x-8 gap-y-6 md:gap-y-16 self-center justify-items-center text-center md:text-left m-auto">
-						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-700" } `}>
+						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
 							1.
 						</p>
 						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
@@ -171,7 +155,7 @@ export default function Beta(props) {
 								Download crypto wallet
 							</p>
 							<p className="text-sm font-mono">
-								The MetaMask app is how you store your rightokens independently of the organization. Other wallets might work, but aren't yet fully supported.
+								The MetaMask app is how you store your rightokens independently of the Rightoken organization. Other wallets might work, but aren't yet fully supported.
 							</p>
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
@@ -179,7 +163,7 @@ export default function Beta(props) {
 							<RoundedLinkButton link="https://play.google.com/store/apps/details?id=io.metamask&hl=en_US&ref=producthunt&_branch_match_id=930682544992985021" className="bg-purple-400 hover:bg-purple-500" textClassName="text-sm font-bold" text="For Android" />
 						</div>
 
-						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-700" } `}>
+						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
 							2.
 						</p>
 						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
@@ -199,9 +183,6 @@ export default function Beta(props) {
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
 							{ !account && (
-								<RoundedButton onClick={() => oldConnectWallet()} textClassName="text-sm font-bold" text="Old connect" />
-							)}
-							{ !account && (
 								<RoundedButton onClick={() => connectWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
 							)}
 							{ account && (
@@ -217,11 +198,12 @@ export default function Beta(props) {
 								Start investing
 							</p>
 							<p className="text-sm font-mono">
-								Support growing artists and build your portfolio. Browse rightokens on the market now at the marketplace.
+								Support growing artists and build your portfolio. Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
 							</p>
 						</div>
-						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
+						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
 							<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold" />
+							<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 						</div>
 					</div>
 				</div>
