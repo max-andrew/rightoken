@@ -180,21 +180,6 @@ export default function Beta(props) {
 						</p>
 						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
 							<p className="text-2xl font-semibold">
-								Configure your wallet
-							</p>
-							<p className="text-sm font-mono">
-								Rightoken uses a network built on top of Ethereum to keep transaction fees low for artists and investors. This step should take about a minute.
-							</p>
-						</div>
-						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
-							<RoundedLinkButton link="https://docs.matic.network/docs/develop/metamask/config-matic" textClassName="text-sm font-bold" text="Follow steps" />
-						</div>
-
-						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
-							3.
-						</p>
-						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
-							<p className="text-2xl font-semibold">
 								Connect your wallet
 							</p>
 							{!error && (
@@ -215,14 +200,29 @@ export default function Beta(props) {
 								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />			
 						</div>
 
-						{ account && (
+						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ chainId === 137 && "text-green-600" } `}>
+							3.
+						</p>
+						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
+							<p className="text-2xl font-semibold">
+								Configure your wallet
+							</p>
+							<p className="text-sm font-mono">
+								Rightoken uses a network built on top of Ethereum to keep transaction fees low for artists and investors. This step should take about a minute. Once completed, you should see the 4th and final step.
+							</p>
+						</div>
+						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
+							<RoundedLinkButton link="https://docs.matic.network/docs/develop/metamask/config-matic" textClassName="text-sm font-bold" text="Follow steps" />
+						</div>
+
+						{ account && chainId === 137 && (
 							<>
 								<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
 									4.
 								</p>
 								<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
 									<p className="text-2xl font-semibold">
-										Start investing 💰🚀
+										All set! 🚀
 									</p>
 									<p className="text-sm font-mono">
 										You're ready to support growing artists and build your portfolio! Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
@@ -234,6 +234,10 @@ export default function Beta(props) {
 								</div>
 							</>
 						)}
+					</div>
+
+					<div>
+
 					</div>
 				</div>
 
