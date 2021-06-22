@@ -51,7 +51,7 @@ export default function Home() {
 								</div>
 							</div>
 
-							<div className="mt-16">
+							<div className="mt-16" id="widget">
 								<CommunityWidget />
 							</div>
 						</div>

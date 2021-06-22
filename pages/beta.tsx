@@ -1,6 +1,7 @@
 import Head from 'next/head'
 
 import { Fragment, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
@@ -15,7 +16,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
-import { injected, network, walletconnect } from '../functions/connectors'
+import { injected, network, walletconnect, walletlink } from '../functions/connectors'
 import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
 
 export default function Beta(props) {
@@ -31,6 +32,10 @@ export default function Beta(props) {
 		error
 	} = context
 
+	// get query params for default wallet selection
+	const router = useRouter()
+
+	const [walletAppSelected, setWalletAppSelected] = useState( router.query.wallet === "metamask" ? "metamask" : "coinbase" )
 	const [activatingConnector, setActivatingConnector] = useState()
 	const [blockNumber, setBlockNumber] = useState()
 	const [ethBalance, setEthBalance] = useState()
@@ -125,12 +130,14 @@ export default function Beta(props) {
 			connectWallet()
 	}, [])
 
-	const connectWallet = () => {
+	const connectWallet = walletAppSelected => {
 		if (error)
 			disconnectWallet()
 
-		setActivatingConnector(walletconnect)
-		activate(walletconnect)
+		const walletConnector = walletAppSelected === "coinbase" ? walletlink : walletconnect
+
+		setActivatingConnector(walletConnector)
+		activate(walletConnector)
 	}
 
 	const disconnectWallet = () => {
@@ -154,7 +161,10 @@ export default function Beta(props) {
 				<div className="py-12 bg-white">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 							<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-								Join the beta test
+								{ (!!account && chainId === 137)  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
+							</p>
+							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+								<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
 							</p>
 					</div>
 
@@ -164,15 +174,24 @@ export default function Beta(props) {
 						</p>
 						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
 							<p className="text-2xl font-semibold">
-								Download crypto wallet
+								Download your wallet
 							</p>
-							<p className="text-sm font-mono">
-								The MetaMask app is how you store your rightokens independently of the Rightoken organization. Other wallets might work, but aren't yet fully supported.
-							</p>
+							{ walletAppSelected === "coinbase" &&
+								<p className="text-sm font-mono">
+									The Coinbase Wallet app is how you store your rightokens independently of the Rightoken organization. This is not the same as the Coinbase app for buying and selling crypto. No Coinbase account is required. <br /> <br /> You can optionally choose to use the MetaMask wallet instead of Coinbase Wallet, though this will require slightly more setup.
+								</p>
+							}
+							{ walletAppSelected === "metamask" &&
+								<p className="text-sm font-mono">
+									The MetaMask app is how you store your rightokens independently of the Rightoken organization. You can optionally choose to use Coinbase Wallet instead of MetaMask.
+								</p>
+							}
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
-							<RoundedLinkButton link="https://apps.apple.com/us/app/metamask/id1438144202?_branch_match_id=930587986804252278" textClassName="text-sm font-bold" text="For iOS" />
-							<RoundedLinkButton link="https://play.google.com/store/apps/details?id=io.metamask&hl=en_US&ref=producthunt&_branch_match_id=930682544992985021" className="bg-purple-400 hover:bg-purple-500" textClassName="text-sm font-bold" text="For Android" />
+							<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://apps.apple.com/us/app/coinbase-wallet/id1278383455" : "https://apps.apple.com/us/app/metamask/id1438144202" } textClassName="text-sm font-bold" text="For iOS" />
+							<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://play.google.com/store/apps/details?id=org.toshi" : "https://play.google.com/store/apps/details?id=io.metamask" } className="bg-purple-400 hover:bg-purple-500" textClassName="text-sm font-bold" text="For Android" />
+							<br />
+							<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } className="bg-gray-200 hover:bg-gray-300 font-mono" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
 						</div>
 
 						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
@@ -182,40 +201,58 @@ export default function Beta(props) {
 							<p className="text-2xl font-semibold">
 								Connect your wallet
 							</p>
-							{!error && (
+							{ !error &&
 								<p className="text-sm font-mono">
-									Hit Connect and use your phone camera to scan the QR code.
+									{ (!account) ? "Once you finish creating a wallet, you're ready to link it to Rightoken. Hit Connect and use your phone camera to scan the QR code."
+										: "Great! You connected your wallet to Rightoken, but you still need to change one last setting."
+									}
 								</p>
-							)}
-							{!!error && (
+							}
+							{ !!error &&
 								<p className="text-sm font-mono text-red-800">
 									{ getWeb3ErrorMessage(error) }
 								</p>
-							)}
+							}
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
-							{ !account && (
-								<RoundedButton onClick={() => connectWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
-							)}
-								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />			
+							{ !account &&
+								<RoundedButton onClick={() => connectWallet(walletAppSelected)} textClassName="text-sm font-bold" text="Connect wallet" />
+							}
+							{ account &&
+								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
+							}
 						</div>
 
-						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ chainId === 137 && "text-green-600" } `}>
-							3.
-						</p>
-						<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
-							<p className="text-2xl font-semibold">
-								Configure your wallet
-							</p>
-							<p className="text-sm font-mono">
-								Rightoken uses a network built on top of Ethereum to keep transaction fees low for artists and investors. This step should take about a minute. Once completed, you should see the 4th and final step.
-							</p>
-						</div>
-						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
-							<RoundedLinkButton link="https://docs.matic.network/docs/develop/metamask/config-matic" textClassName="text-sm font-bold" text="Follow steps" />
-						</div>
+						{ account &&
+							<>
+								<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ chainId === 137 && "text-green-600" } `}>
+									3.
+								</p>
+								<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
+									<p className="text-2xl font-semibold">
+										Configure your wallet
+									</p>
+									{ chainId !== 137 && walletAppSelected === "coinbase" &&
+										<p className="text-sm font-mono">
+											Rightoken uses a network called Polygon built on top of Ethereum to keep transactions quick and fees low for artists and investors. <br /> <br /> To change to this network, open Coinbase Wallet and select the settings cog on the bottom right toolbar. Next, scroll down the settings page until you find the Active Network option in the Advanced section. Finally, select Polygon Mainnet and return to your wallet in the bottom left of the toolbar. Once completed, you should see the 4th and final step.
+										</p>
+									}
+									{ chainId !== 137 && walletAppSelected === "metamask" &&
+										<p className="text-sm font-mono">
+											Rightoken uses a network called Polygon built on top of Ethereum to keep transactions quick and fees low for artists and investors. <br /> <br /> To change to this network, open MetaMask and hamburger menu icon in the top left corner. Select Settings in the popover. Then, select Networks. Choose Add Network and enter these values for the following fields: <br /> <br /> Network Name: <br /> Matic Mainnet <br /> <br /> RPC URL: <br /> https://rpc-mainnet.maticvigil.com/ <br /> <br /> Chain ID: <br /> 137 <br /> <br /> Symbol: <br /> MATIC <br /> <br /> Block Explorer URL: <br /> https://polygonscan.com/ <br /> <br /> Finally, click Add. MetaMask should automatically redirect to your wallet page with the new network selected, but you can confirm or change this network by selecting Wallet from the center of the main toolbar, and scrolling down and selecting Matic Mainnet from the Networks popup. Once completed, you should see the 4th and final step.
+										</p>
+									}
+									{ chainId === 137 &&
+										<p className="text-sm font-mono">
+											Nice work! Your wallet successfully linked to the Polygon network. Make sure to stay on this network when using Rightoken.
+										</p>
+									}
+								</div>
+								<div />
+							</>
+						}
 
-						{ account && chainId === 137 && (
+						{ account && chainId === 137 &&
 							<>
 								<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
 									4.
@@ -233,16 +270,13 @@ export default function Beta(props) {
 									<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 								</div>
 							</>
-						)}
-					</div>
-
-					<div>
-
+						}
 					</div>
 				</div>
 
 			</main>
-
+			<br />
+			<br />
 			<div style={{ padding: "1rem" }}>
 				<h3
 					style={{
