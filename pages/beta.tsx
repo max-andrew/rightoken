@@ -126,8 +126,9 @@ export default function Beta(props) {
 
 	// link wallet if it is already connected
 	useEffect(() => {
-		if ((typeof(window) !== undefined) && !!window.localStorage.walletconnect && !account)
-			connectWallet()
+		console.log(window.localStorage["-walletlink:https://www.walletlink.org:Addresses"])
+		if ((typeof(window) !== undefined) && (!!window.localStorage.walletconnect || !!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) && !account)
+			connectWallet(walletAppSelected)
 	}, [])
 
 	const connectWallet = walletAppSelected => {
