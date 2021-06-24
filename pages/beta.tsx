@@ -192,7 +192,9 @@ export default function Beta(props) {
 							<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://apps.apple.com/us/app/coinbase-wallet/id1278383455" : "https://apps.apple.com/us/app/metamask/id1438144202" } textClassName="text-sm font-bold" text="For iOS" />
 							<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://play.google.com/store/apps/details?id=org.toshi" : "https://play.google.com/store/apps/details?id=io.metamask" } className="bg-purple-400 hover:bg-purple-500" textClassName="text-sm font-bold" text="For Android" />
 							<br />
-							<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } className="bg-gray-200 hover:bg-gray-300 font-mono" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
+							{ !account &&
+								<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } className="bg-gray-200 hover:bg-gray-300 font-mono" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
+							}
 						</div>
 
 						<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
