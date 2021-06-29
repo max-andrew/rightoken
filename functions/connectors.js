@@ -2,14 +2,14 @@ import { InjectedConnector } from "@web3-react/injected-connector"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 
-const POLLING_INTERVAL = 12000
+const POLLING_INTERVAL = 6000
 const RPC_URLS = {
 	1: "https://mainnet.infura.io/v3/84842078b09946638c03157f83405213",
 	3: "https://ropsten.infura.io/v3/a821166085054d0891f13e00e9a0767e",
 	4: "https://rinkeby.infura.io/v3/84842078b09946638c03157f83405213",
 	5: "https://goerli.infura.io/v3/a821166085054d0891f13e00e9a0767e",
-	137: "https://polygon-mainnet.infura.io/v3/a821166085054d0891f13e00e9a0767e",
-	80001: "https://polygon-mumbai.infura.io/v3/a821166085054d0891f13e00e9a0767e"
+	137: "https://rpc-mainnet.matic.network",
+	80001: "https://rpc-mumbai.matic.today"
 }
 
 export const injected = new InjectedConnector({
@@ -25,5 +25,6 @@ export const walletconnect = new WalletConnectConnector({
 
 export const walletlink = new WalletLinkConnector({
 	url: RPC_URLS[1, 3, 4, 5, 137, 80001],
+	qrcode: true,
 	appName: "Rightoken"
 })

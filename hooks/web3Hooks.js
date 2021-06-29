@@ -1,7 +1,30 @@
 import { useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
+import { URI_AVAILABLE } from '@web3-react/walletconnect-connector'
 
 import { injected } from "../functions/connectors"
+
+export function useLinkIfConnected(account, connectWallet) {
+	// link wallet if it is already connected
+	useEffect(() => {
+		if ((typeof(window) !== undefined) && (!!window.localStorage.walletconnect || !!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) && !account)
+			connectWallet()
+	}, [])
+}
+
+export function useActivatingConnector(connector) {
+	const [activatingConnector, setActivatingConnector] = useState()
+
+	// handle logic to recognize the connector currently being activated
+	useEffect(() => {
+		console.log('Identifying connector being activated')
+		if (activatingConnector && activatingConnector === connector) {
+			setActivatingConnector(undefined)
+		}
+	}, [activatingConnector, connector])
+
+	return [activatingConnector, setActivatingConnector]
+}
 
 export function useEagerConnect() {
 	const { activate, active } = useWeb3React()
@@ -69,4 +92,88 @@ export function useInactiveListener(suppress = false) {
 
 		return () => {}
 	}, [active, error, suppress, activate])
+}
+
+export function useBlockNumber(library, chainId) {
+	const [blockNumber, setBlockNumber] = useState()
+
+	// set up block listener
+	useEffect(() => {
+		console.log('Getting block number')
+		if (library) {
+			let stale = false
+
+			library.getBlockNumber()
+			.then(blockNumber => {
+				if (!stale) {
+					setBlockNumber(blockNumber)
+				}
+			})
+			.catch(() => {
+				if (!stale) {
+					setBlockNumber(null)
+				}
+			})
+
+			const updateBlockNumber = blockNumber => {
+				setBlockNumber(blockNumber)
+			}
+			library.on("block", updateBlockNumber)
+
+			return () => {
+				library.removeListener("block", updateBlockNumber)
+				stale = true
+				setBlockNumber(undefined)
+			}
+		}
+	}, [library, chainId])
+
+	return blockNumber
+}
+
+export function useEthBalance(library, account, chainId) {
+	const [ethBalance, setEthBalance] = useState()
+
+	// fetch eth balance of the connected account
+	useEffect(() => {
+		console.log('Getting Eth balance')
+		if (library && account) {
+			let stale = false
+
+			library
+				.getBalance(account)
+				.then(balance => {
+					if (!stale) {
+						setEthBalance(balance)
+					}
+				})
+				.catch(() => {
+					if (!stale) {
+						setEthBalance(null)
+					}
+				})
+
+			return () => {
+				stale = true
+				setEthBalance(undefined)
+			}
+		}
+	}, [library, account, chainId])
+
+	return ethBalance
+}
+
+export function useWalletConnectURI(walletconnect) {
+	// log the walletconnect URI
+	useEffect(() => {
+		console.log('Getting URI')
+		const logURI = uri => {
+			console.log("WalletConnect URI", uri)
+		}
+		walletconnect.on(URI_AVAILABLE, logURI)
+
+		return () => {
+			walletconnect.off(URI_AVAILABLE, logURI)
+		}
+	}, [])
 }

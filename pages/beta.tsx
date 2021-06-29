@@ -11,16 +11,22 @@ import RoundedButton from '../components/RoundedButton'
 import Footer from '../components/Footer'
 
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-import { URI_AVAILABLE } from '@web3-react/walletconnect-connector'
-import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
+import { 
+	injected,
+	walletconnect
+} from '../functions/connectors'
+import {
+	useLinkIfConnected,
+	useActivatingConnector, 
+	useEagerConnect, 
+	useInactiveListener, 
+	useBlockNumber, 
+	useEthBalance
+} from '../hooks/web3Hooks'
+import { connectWallet, disconnectWallet } from '../functions/setWalletConnection'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
-import { injected, network, walletconnect, walletlink } from '../functions/connectors'
-import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
-import useActivatingConnector from '../hooks/useActivatingConnector'
-import useBlockNumber from '../hooks/useBlockNumber'
-import useEthBalance from '../hooks/useEthBalance'
 
 export default function Beta(props) {
 	const context = useWeb3React()
@@ -39,69 +45,25 @@ export default function Beta(props) {
 	const router = useRouter()
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useState( router.query.wallet === "metamask" ? "metamask" : "coinbase" )
-	
-	// const activatingConnector = useActivatingConnector(connector)
-
-	/* HOOK */
-
-	const [activatingConnector, setActivatingConnector] = useState()
 
 	// handle logic to recognize the connector currently being activated
-	useEffect(() => {
-		console.log('Identifying connector being activated')
-		if (activatingConnector && activatingConnector === connector) {
-			setActivatingConnector(undefined)
-		}
-	}, [activatingConnector, connector])
+	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
-	/* HOOK */
+	// prepare connect wallet calls with context values
+	const connectThisWallet = () => connectWallet(error, walletAppSelected, setActivatingConnector, activate)
+	const disconnectThisWallet = () => disconnectWallet(connector, deactivate)
+
+	// link wallet if it is already connected
+	useLinkIfConnected(account, connectThisWallet, activate)
 
 	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
 	const triedEager = useEagerConnect()
-
 	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
 	useInactiveListener(!triedEager || !!activatingConnector)
 
 	// get web3 data
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
-
-	// log the walletconnect URI
-	useEffect(() => {
-		console.log('Getting URI')
-		const logURI = uri => {
-			console.log("WalletConnect URI", uri)
-		}
-		walletconnect.on(URI_AVAILABLE, logURI)
-
-		return () => {
-			walletconnect.off(URI_AVAILABLE, logURI)
-		}
-	}, [])
-
-	// link wallet if it is already connected
-	useEffect(() => {
-		if ((typeof(window) !== undefined) && (!!window.localStorage.walletconnect || !!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) && !account)
-			connectWallet(walletAppSelected)
-	}, [])
-
-	const connectWallet = walletAppSelected => {
-		if (error)
-			disconnectWallet()
-
-		const walletConnector = walletAppSelected === "coinbase" ? walletlink : walletconnect
-
-		setActivatingConnector(walletConnector)
-		activate(walletConnector)
-	}
-
-	const disconnectWallet = () => {
-		if (connector) {
-			connector.close()
-			deactivate()
-			connector.walletConnectProvider = undefined
-		}
-	}
 
 	return (
 		<div>
@@ -173,10 +135,10 @@ export default function Beta(props) {
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
 							{ !account &&
-								<RoundedButton onClick={() => connectWallet(walletAppSelected)} textClassName="text-sm font-bold" text="Connect wallet" />
+								<RoundedButton onClick={() => connectThisWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
 							}
 							{ account &&
-								<RoundedButton onClick={ () => disconnectWallet() } className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
+								<RoundedButton onClick={() => disconnectThisWallet()} className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
 							}
 						</div>
 
