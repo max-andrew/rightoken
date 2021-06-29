@@ -18,6 +18,9 @@ import { formatEther } from '@ethersproject/units'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 import { injected, network, walletconnect, walletlink } from '../functions/connectors'
 import { useEagerConnect, useInactiveListener } from '../hooks/web3Hooks'
+import useActivatingConnector from '../hooks/useActivatingConnector'
+import useBlockNumber from '../hooks/useBlockNumber'
+import useEthBalance from '../hooks/useEthBalance'
 
 export default function Beta(props) {
 	const context = useWeb3React()
@@ -34,11 +37,14 @@ export default function Beta(props) {
 
 	// get query params for default wallet selection
 	const router = useRouter()
-
+	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useState( router.query.wallet === "metamask" ? "metamask" : "coinbase" )
+	
+	// const activatingConnector = useActivatingConnector(connector)
+
+	/* HOOK */
+
 	const [activatingConnector, setActivatingConnector] = useState()
-	const [blockNumber, setBlockNumber] = useState()
-	const [ethBalance, setEthBalance] = useState()
 
 	// handle logic to recognize the connector currently being activated
 	useEffect(() => {
@@ -48,68 +54,17 @@ export default function Beta(props) {
 		}
 	}, [activatingConnector, connector])
 
+	/* HOOK */
+
 	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
 	const triedEager = useEagerConnect()
 
 	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
 	useInactiveListener(!triedEager || !!activatingConnector)
 
-	// set up block listener
-	useEffect(() => {
-		console.log('Getting block number')
-		if (library) {
-			let stale = false
-
-			library.getBlockNumber()
-			.then(blockNumber => {
-				if (!stale) {
-					setBlockNumber(blockNumber)
-				}
-			})
-			.catch(() => {
-				if (!stale) {
-					setBlockNumber(null)
-				}
-			})
-
-			const updateBlockNumber = blockNumber => {
-				setBlockNumber(blockNumber)
-			}
-			library.on("block", updateBlockNumber)
-
-			return () => {
-				library.removeListener("block", updateBlockNumber)
-				stale = true
-				setBlockNumber(undefined)
-			}
-		}
-	}, [library, chainId])
-
-	// fetch eth balance of the connected account
-	useEffect(() => {
-		console.log('Getting Eth balance')
-		if (library && account) {
-			let stale = false
-
-			library
-				.getBalance(account)
-				.then(balance => {
-					if (!stale) {
-						setEthBalance(balance)
-					}
-				})
-				.catch(() => {
-					if (!stale) {
-						setEthBalance(null)
-					}
-				})
-
-			return () => {
-				stale = true
-				setEthBalance(undefined)
-			}
-		}
-	}, [library, account, chainId])
+	// get web3 data
+	const blockNumber = useBlockNumber(library, chainId)
+	const ethBalance = useEthBalance(library, account, chainId)
 
 	// log the walletconnect URI
 	useEffect(() => {
@@ -126,7 +81,6 @@ export default function Beta(props) {
 
 	// link wallet if it is already connected
 	useEffect(() => {
-		console.log(window.localStorage["-walletlink:https://www.walletlink.org:Addresses"])
 		if ((typeof(window) !== undefined) && (!!window.localStorage.walletconnect || !!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) && !account)
 			connectWallet(walletAppSelected)
 	}, [])
