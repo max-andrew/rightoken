@@ -12,15 +12,24 @@ import RoundedButton from '../../components/RoundedButton'
 import Footer from '../../components/Footer'
 
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-import { URI_AVAILABLE } from '@web3-react/walletconnect-connector'
-import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
-import { getWeb3ErrorMessage } from '../../functions/getWeb3ErrorMessage'
-import { walletconnect } from '../../functions/connectors'
+import { 
+	injected,
+	walletconnect
+} from '../../functions/connectors'
+import {
+	useWalletAppSelected,
+	useActivatingConnector,
+	useEagerConnect,
+	useInactiveListener,
+	useBlockNumber,
+	useEthBalance
+} from '../../hooks/web3Hooks'
+import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../functions/setWalletConnection'
 
 export default function Song(props) {
-	const context = useWeb3React()
+// get values from context
 	const {
 		connector,
 		library,
@@ -30,103 +39,30 @@ export default function Song(props) {
 		deactivate,
 		active,
 		error
-	} = context
+	} = useWeb3React()
 
-	const [activatingConnector, setActivatingConnector] = useState()
-	const [blockNumber, setBlockNumber] = useState()
-	const [ethBalance, setEthBalance] = useState()
+	// get query params for default wallet selection
+	const router = useRouter()
+	// track user's wallet provider preference
+	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
 
 	// handle logic to recognize the connector currently being activated
+	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
+
+	// link wallet if it is already connected (but page has refreshed)
 	useEffect(() => {
-		console.log('Identifying connector being activated')
-		if (activatingConnector && activatingConnector === connector) {
-			setActivatingConnector(undefined)
-		}
-	}, [activatingConnector, connector])
+		if (!account && getConnectedWalletApp() === walletAppSelected)
+			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
+	})
 
-	// set up block listener
-	useEffect(() => {
-		console.log('Getting block number')
-		if (library) {
-			let stale = false
+	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
+	const triedEager = useEagerConnect()
+	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
+	useInactiveListener(!triedEager || !!activatingConnector)
 
-			library.getBlockNumber()
-			.then(blockNumber => {
-				if (!stale) {
-					setBlockNumber(blockNumber)
-				}
-			})
-			.catch(() => {
-				if (!stale) {
-					setBlockNumber(null)
-				}
-			})
-
-			const updateBlockNumber = blockNumber => {
-				setBlockNumber(blockNumber)
-			}
-			library.on("block", updateBlockNumber)
-
-			return () => {
-				library.removeListener("block", updateBlockNumber)
-				stale = true
-				setBlockNumber(undefined)
-			}
-		}
-	}, [library, chainId])
-
-	// fetch eth balance of the connected account
-	useEffect(() => {
-		console.log('Getting Eth balance')
-		if (library && account) {
-			let stale = false
-
-			library
-				.getBalance(account)
-				.then(balance => {
-					if (!stale) {
-						setEthBalance(balance)
-					}
-				})
-				.catch(() => {
-					if (!stale) {
-						setEthBalance(null)
-					}
-				})
-
-			return () => {
-				stale = true
-				setEthBalance(undefined)
-			}
-		}
-	}, [library, account, chainId])
-
-	// log the walletconnect URI
-	useEffect(() => {
-		console.log('Getting URI')
-		const logURI = uri => {
-			console.log("WalletConnect URI", uri)
-		}
-		walletconnect.on(URI_AVAILABLE, logURI)
-
-		return () => {
-			walletconnect.off(URI_AVAILABLE, logURI)
-		}
-	}, [])
-
-	// link wallet if it is already connected
-	useEffect(() => {
-		if ((typeof(window) !== undefined) && !!window.localStorage.walletconnect && !account)
-			connectWallet()
-	}, [])
-
-	const connectWallet = () => {
-		setActivatingConnector(walletconnect)
-		activate(walletconnect)
-	}
-
-	const router = useRouter()
-	const { name } = router.query
+	// get web3 data
+	const blockNumber = useBlockNumber(library, chainId)
+	const ethBalance = useEthBalance(library, account, chainId)
 
 	return (
 		<div>

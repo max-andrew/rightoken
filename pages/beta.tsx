@@ -19,17 +19,17 @@ import {
 } from '../functions/connectors'
 import {
 	useWalletAppSelected,
-	useActivatingConnector, 
-	useEagerConnect, 
-	useInactiveListener, 
-	useBlockNumber, 
+	useActivatingConnector,
+	useEagerConnect,
+	useInactiveListener,
+	useBlockNumber,
 	useEthBalance
 } from '../hooks/web3Hooks'
 import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 export default function Beta(props) {
-	const context = useWeb3React()
+	// get values from context
 	const {
 		connector,
 		library,
@@ -39,7 +39,7 @@ export default function Beta(props) {
 		deactivate,
 		active,
 		error
-	} = context
+	} = useWeb3React()
 
 	// get query params for default wallet selection
 	const router = useRouter()
@@ -49,11 +49,9 @@ export default function Beta(props) {
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
-	const disconnectThisWallet = () => disconnectWallet(connector, deactivate)
-
 	// link wallet if it is already connected (but page has refreshed)
 	useEffect(() => {
-		if (!account && (getConnectedWalletApp() === walletAppSelected))
+		if (!account && getConnectedWalletApp() === walletAppSelected)
 			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
 	})
 
@@ -139,7 +137,7 @@ export default function Beta(props) {
 								<RoundedButton onClick={() => connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)} textClassName="text-sm font-bold" text="Connect wallet" />
 							}
 							{ account &&
-								<RoundedButton onClick={() => disconnectThisWallet()} className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
+								<RoundedButton onClick={() => disconnectWallet(connector, deactivate)} className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
 							}
 						</div>
 
