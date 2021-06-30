@@ -18,14 +18,14 @@ import {
 	walletconnect
 } from '../functions/connectors'
 import {
-	useLinkIfConnected,
+	useWalletAppSelected,
 	useActivatingConnector, 
 	useEagerConnect, 
 	useInactiveListener, 
 	useBlockNumber, 
 	useEthBalance
 } from '../hooks/web3Hooks'
-import { connectWallet, disconnectWallet } from '../functions/setWalletConnection'
+import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 export default function Beta(props) {
@@ -44,17 +44,18 @@ export default function Beta(props) {
 	// get query params for default wallet selection
 	const router = useRouter()
 	// track user's wallet provider preference
-	const [walletAppSelected, setWalletAppSelected] = useState( router.query.wallet === "metamask" ? "metamask" : "coinbase" )
+	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
 
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
-	// prepare connect wallet calls with context values
-	const connectThisWallet = () => connectWallet(error, walletAppSelected, setActivatingConnector, activate)
 	const disconnectThisWallet = () => disconnectWallet(connector, deactivate)
 
-	// link wallet if it is already connected
-	useLinkIfConnected(account, connectThisWallet, activate)
+	// link wallet if it is already connected (but page has refreshed)
+	useEffect(() => {
+		if (!account && (getConnectedWalletApp() === walletAppSelected))
+			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
+	})
 
 	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
 	const triedEager = useEagerConnect()
@@ -135,7 +136,7 @@ export default function Beta(props) {
 						</div>
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-3">
 							{ !account &&
-								<RoundedButton onClick={() => connectThisWallet()} textClassName="text-sm font-bold" text="Connect wallet" />
+								<RoundedButton onClick={() => connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)} textClassName="text-sm font-bold" text="Connect wallet" />
 							}
 							{ account &&
 								<RoundedButton onClick={() => disconnectThisWallet()} className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />

@@ -3,9 +3,9 @@ import {
 	walletlink 
 } from './connectors'
 
-export const connectWallet = (error, walletAppSelected, setActivatingConnector, activate) => {
+export const connectWallet = (error, walletAppSelected, setActivatingConnector, activate, connector, deactivate) => {
 	if (error)
-		disconnectWallet()
+		disconnectWallet(connector, deactivate)
 
 	const walletConnector = walletAppSelected === "coinbase" ? walletlink : walletconnect
 
@@ -18,5 +18,19 @@ export const disconnectWallet = (connector, deactivate) => {
 		connector.close()
 		deactivate()
 		connector.walletConnectProvider = undefined
+	}
+}
+
+export const getConnectedWalletApp = () => {
+	if (typeof(window) !== "undefined") {
+		if (!!window.localStorage.walletconnect) {
+			return "metamask"
+		}
+		else if (!!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) {
+			return "coinbase"
+		}
+		else {
+			return ""
+		}
 	}
 }
