@@ -9,10 +9,11 @@ import Header from '../../components/Header'
 import SongCard from '../../components/SongCard'
 import RoundedLinkButton from '../../components/RoundedLinkButton'
 import RoundedButton from '../../components/RoundedButton'
+import Web3DebugPanel from '../../components/Web3DebugPanel'
 import Footer from '../../components/Footer'
 
-import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-import { formatEther } from '@ethersproject/units'
+import { useWeb3React } from '@web3-react/core'
+import Matic from "@maticnetwork/maticjs"
 
 import { 
 	injected,
@@ -29,7 +30,7 @@ import {
 import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../functions/setWalletConnection'
 
 export default function Song(props) {
-// get values from context
+	// get values from context
 	const {
 		connector,
 		library,
@@ -38,11 +39,13 @@ export default function Song(props) {
 		activate,
 		deactivate,
 		active,
-		error
+		error,
+		eth
 	} = useWeb3React()
 
 	// get query params for default wallet selection
 	const router = useRouter()
+	const { name } = router.query
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
 
@@ -64,6 +67,32 @@ export default function Song(props) {
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
 
+	useEffect(async () => {
+		// Create sdk instance
+		const matic = new Matic({
+			// set network name
+			network: "testnet",
+			// set network version
+			version: "mumbai",
+			// set Matic provider - string or provider instance
+			maticProvider: "https://polygon-mumbai.infura.io/v3/a821166085054d0891f13e00e9a0767e",
+			// set Mainchain provider - string or provider instance
+			parentProvider: "https://goerli.infura.io/v3/a821166085054d0891f13e00e9a0767e",
+			// set default options e.g { from }
+			parentDefaultOptions: { from: account },
+			// set default options
+			maticDefaultOptions: { from: account },
+		})
+
+		// init matic
+		matic.initialize()
+
+		matic.balanceOfERC721(account, "0x2d7882beDcbfDDce29Ba99965dd3cdF7fcB10A1e", { parent: false })
+		.then(balance => {
+			console.log('balance', balance)
+		})
+	}, [])
+
 	return (
 		<div>
 			<div>
@@ -84,103 +113,19 @@ export default function Song(props) {
 								</p>
 							</div>
 						</div>
-						{ account && 
-							<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
-								<SongCard />
-								<RoundedButton onClick={() => connectWallet()} text="Invest now" />
-							</div>
-						}
-						{ !account && 
-							<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
-								<SongCard />
-								<RoundedLinkButton link="/beta" text="Start beta testing" className="place-self-center" />
-							</div>
-						}
-						{!!(library && account) && (
-							<button
-								style={{
-									height: "3rem",
-									borderRadius: "1rem",
-									cursor: "pointer"
-								}}
-								onClick={() => {
-									library
-										.getSigner(account)
-										.signMessage("👋")
-										.then(signature => {
-											window.alert(`Success!\n\n${signature}`)
-										})
-										.catch(error => {
-											window.alert(
-												"Failure!" +
-													(error && error.message ? `\n\n${error.message}` : "")
-											)
-										})
-								}}
-							>
-								Sign Message
-							</button>
-						)}
+						<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
+							<SongCard />
+							{ account && 
+								<RoundedButton outerDivClassName="place-self-center" onClick={() => {
+									console.log("hello")
+								}} text="Secure your share" />
+							}
+							{ !account && 
+								<RoundedLinkButton outerDivClassName="place-self-center" link="/beta" text="Start beta testing" />
+							}
+						</div>
 					</div>
-
 				</main>
-
-				<div style={{ padding: "1rem" }}>
-					<h3
-						style={{
-							display: "grid",
-							gridGap: "1rem",
-							gridTemplateColumns: "1fr min-content 1fr",
-							maxWidth: "20rem",
-							lineHeight: "2rem",
-							margin: "auto"
-						}}
-					>
-						<span>Chain Id</span>
-						<span role="img" aria-label="chain">
-							⛓
-						</span>
-						<span>{chainId === undefined ? "..." : chainId}</span>
-
-						<span>Block Number</span>
-						<span role="img" aria-label="numbers">
-							🔢
-						</span>
-						<span>
-							{blockNumber === undefined
-								? "..."
-								: blockNumber === null
-								? "Error"
-								: blockNumber.toLocaleString()}
-						</span>
-
-						<span>Account</span>
-						<span role="img" aria-label="robot">
-							🤖
-						</span>
-						<span>
-							{account === undefined
-								? "..."
-								: account === null
-								? "None"
-								: `${account.substring(0, 6)}...${account.substring(
-										account.length - 4
-									)}`}
-						</span>
-
-						<span>Balance</span>
-						<span role="img" aria-label="gold">
-							💰
-						</span>
-						<span>
-							{ethBalance === undefined
-								? "..."
-								: ethBalance === null
-								? "Error"
-								: `Ξ${parseFloat(formatEther(ethBalance)).toPrecision(4)}`}
-						</span>
-					</h3>
-				</div>
 
 				<Footer />
 			</div>

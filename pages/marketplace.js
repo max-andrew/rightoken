@@ -42,11 +42,11 @@ export default function Home() {
 							</div>
 
 							<div className="mt-16 md:mt-22 grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12 lg:gap-x-6 lg:gap-y-14">
-								<SongCard song="Terryfold" artist="Max Andrew" />
+								<SongCard song="Crush" artist="Ekaynuh" price=".03" />
+								<SongCard song="Space" artist="Ekaynuh" price=".01" />
 								<SongCard song="My Baby (Went Over the River)" artist="Sienna Daviau" price=".3" link="mybaby" />
 								<SongCard />
-								<SongCard />
-								<SongCard />
+								<SongCard song="List your song" artist="You" price="0" link="../artist" img="./tulip.jpg" />
 							</div>
 
 						</div>

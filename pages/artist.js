@@ -36,7 +36,8 @@ export default function Home() {
 									/>
 								</div>
 								<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-									By tokenizing rights, artists fund their work and keep control of the profits. Investors can share in the gains after finding the next hit.
+									Rightoken is a tool to let artists keep control of their work and profits. 
+									Artists can decide what amount of their rights they are willing to sell, have the option to buy their rights back, and are given the tools to write their own terms for the investment agreement. Rightoken empowers artists by letting them control monetization and ownership.
 								</p>
 							</div>
 

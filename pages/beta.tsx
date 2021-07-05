@@ -8,10 +8,10 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import Header from '../components/Header'
 import RoundedLinkButton from '../components/RoundedLinkButton'
 import RoundedButton from '../components/RoundedButton'
+import Web3DebugPanel from '../components/Web3DebugPanel'
 import Footer from '../components/Footer'
 
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-import { formatEther } from '@ethersproject/units'
 
 import { 
 	injected,
@@ -184,7 +184,7 @@ export default function Beta(props) {
 									</p>
 								</div>
 								<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
-									<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold" />
+									<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
 									<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 								</div>
 							</>
@@ -192,89 +192,11 @@ export default function Beta(props) {
 					</div>
 				</div>
 
+				<Web3DebugPanel chainId={chainId} blockNumber={blockNumber} account={account} ethBalance={ethBalance} library={library} account={account} />
+
 			</main>
-			<br />
-			<br />
-			<div style={{ padding: "1rem" }}>
-				<h3
-					style={{
-						display: "grid",
-						gridGap: "1rem",
-						gridTemplateColumns: "1fr min-content 1fr",
-						maxWidth: "20rem",
-						lineHeight: "2rem",
-						margin: "auto"
-					}}
-				>
-					<span>Chain Id</span>
-					<span role="img" aria-label="chain">
-						⛓
-					</span>
-					<span>{chainId === undefined ? "..." : chainId}</span>
-
-					<span>Block Number</span>
-					<span role="img" aria-label="numbers">
-						🔢
-					</span>
-					<span>
-						{blockNumber === undefined
-							? "..."
-							: blockNumber === null
-							? "Error"
-							: blockNumber.toLocaleString()}
-					</span>
-
-					<span>Account</span>
-					<span role="img" aria-label="robot">
-						🤖
-					</span>
-					<span>
-						{account === undefined
-							? "..."
-							: account === null
-							? "None"
-							: `${account.substring(0, 6)}...${account.substring(
-									account.length - 4
-								)}`}
-					</span>
-
-					<span>Balance</span>
-					<span role="img" aria-label="gold">
-						💰
-					</span>
-					<span>
-						{ethBalance === undefined
-							? "..."
-							: ethBalance === null
-							? "Error"
-							: `Ξ${parseFloat(formatEther(ethBalance)).toPrecision(4)}`}
-					</span>
-				</h3>
-				<br />
-				{!!(library && account) && (
-					<RoundedButton 
-						onClick={() => {
-							library
-							.getSigner(account)
-							.signMessage("👋")
-							.then(signature => {
-								window.alert(`Success!\n\n${signature}`)
-							})
-							.catch(error => {
-								window.alert(
-									"Failure!" +
-										(error && error.message ? `\n\n${error.message}` : "")
-								)
-							})
-						}}
-						textClassName="text-sm font-bold" 
-						text="Sign Message"
-						className="w-1/4 m-auto"
-					/>
-				)}
-			</div>
-
-			{/*<Footer />*/}
+			
+			<Footer />
 		</div>
 	)
 }

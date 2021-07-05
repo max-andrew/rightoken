@@ -3,9 +3,10 @@ import Link from 'next/link'
 export default function SongCard(props) {
 	return (
 		<Link href={ "/song/" + (typeof(props.link) !== "undefined" ? props.link : "terryfold") }>
-			<div className="overflow-hidden select-none shadow hover:shadow-lg active:shadow transition ease-in duration-200 ease-in-out rounded-2xl rounded-br-sm w-64 h-128">
+			<div className="cursor-pointer overflow-hidden select-none shadow hover:shadow-lg active:shadow transition ease-in duration-200 ease-in-out rounded-2xl rounded-br-sm w-64 h-128">
 				
-				<img className="overflow-hidden" src="/musician.jpg"/>
+				<img className="object-cover object-top h-48 w-full" src={ (typeof(props.img) !== "undefined" ? props.img : "/musician.jpg") } />
+	
 				<div className="flex justify-center py-5 px-3 text-center">
 					<div className="flex flex-col font-semibold uppercase overflow-hidden whitespace-nowrap">
 						<p className="text-2xl overflow-hidden overflow-ellipsis">
