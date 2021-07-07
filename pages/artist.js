@@ -9,6 +9,12 @@ import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
 export default function Home() {
+	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1080" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
+
+	function Iframe(props) {
+		return (<div dangerouslySetInnerHTML={ {__html:  props.iframe?props.iframe:""}} />);
+	}
+
 	return (
 		<div>
 			<div>
@@ -39,17 +45,16 @@ export default function Home() {
 									Rightoken is a tool to let artists keep control of their work and profits. 
 									Artists can decide what amount of their rights they are willing to sell, have the option to buy their rights back, and are given the tools to write their own terms for the investment agreement. Rightoken empowers artists by letting them control monetization and ownership.
 								</p>
+								<p className="mt-6 max-w-2xl text-md text-gray-500 lg:mx-auto">
+									By signing up below you agree you are the sole owner of the sound recording rights associated with the uploaded file. You agree that all rights will be transferred to tokenholders in proportion to outstanding tokens. This process can only be reverted if 100% of tokens are held by the publishing artist and are subsequently burned. After approval, 100% of tokenized rights for the song provided will be transferred to the wallet address provided for the artist to disburse, sell, or swap with any other user on the blockchain.
+								</p>
 							</div>
 
-							<div className="mt-5 sm:mt-12 sm:flex sm:justify-center lg:justify-center">
-								<div className="rounded-md shadow">
-									<a
-										href="beta"
-										className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10"
-									>
-										Try it out
-									</a>
-								</div>
+							<br />
+							<br />
+
+							<div className="flex justify-center">
+								<Iframe iframe={iframe} />		
 							</div>
 						</div>
 					</div>

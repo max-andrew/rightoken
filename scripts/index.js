@@ -1,15 +1,11 @@
 async function main() {
-	// Set up an ethers contract, representing our deployed Box instance
-	const address = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
-	const Box = await ethers.getContractFactory('Box');
-	const box = await Box.attach(address);
+	// Set up an ethers contract, representing our deployed Contract instance
+	const address = '0x5d6894d063917aeAD69135C19745C81393dcB9D5';
+	const Contract = await ethers.getContractFactory('UnspokenRightoken');
+	const contract = await Contract.attach(address);
 
-	// Send a transaction to store() a new value in the Box
-	await box.store(23);
-
-	// Call the retrieve() function of the deployed Box contract
-	const value = await box.retrieve();
-	console.log('Box value is', value.toString());
+	// Send a transaction to store() a new value in the Contract
+	await contract;
 }
 
 main()

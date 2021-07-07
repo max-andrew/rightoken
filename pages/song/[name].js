@@ -29,6 +29,8 @@ import {
 } from '../../hooks/web3Hooks'
 import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../functions/setWalletConnection'
 
+import songLibrary from '../../data/songLibrary'
+
 export default function Song(props) {
 	// get values from context
 	const {
@@ -43,9 +45,18 @@ export default function Song(props) {
 		eth
 	} = useWeb3React()
 
+	// get balance of rightoken
+	const [rightokenBalance, setRightokenBalance] = useState(0)
+
 	// get query params for default wallet selection
 	const router = useRouter()
 	const { name } = router.query
+
+	// redirect user if song does not exist
+	if ((typeof(window) !== "undefined") && (typeof(songLibrary[name]) === "undefined")) {
+		window.location.replace("../marketplace")
+	}
+
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
 
@@ -68,7 +79,6 @@ export default function Song(props) {
 	const ethBalance = useEthBalance(library, account, chainId)
 
 	useEffect(() => {
-		console.log(account)
 		if (account) {
 			// Create sdk instance
 			const matic = new Matic({
@@ -89,9 +99,9 @@ export default function Song(props) {
 			// init matic
 			matic.initialize()
 
-			matic.balanceOfERC721(account, "0x2d7882beDcbfDDce29Ba99965dd3cdF7fcB10A1e", { parent: false })
+			matic.balanceOfERC20(account, songLibrary[name].tokenAddress, { parent: false })
 			.then(balance => {
-				console.log("balance", balance)
+				setRightokenBalance(balance)
 			})
 		}
 	}, [account])
@@ -111,26 +121,32 @@ export default function Song(props) {
 					<div className="py-12 bg-white">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 							<div className="lg:text-center">
-								<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+								<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl uppercase">
 									Invest in { name }
+								</p>
+								<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+									You currently hold {rightokenBalance/(10**18)}% of {name.toUpperCase()}
 								</p>
 							</div>
 						</div>
 						<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
-							<SongCard song="Rigamortus" artist="Kendrick Lamar" />
+							{ typeof(songLibrary[name]) !== "undefined" &&
+								<SongCard key={name} song={name} artist={songLibrary[name].artist} img={`../${songLibrary[name].albumArt}`} price={songLibrary[name].price} link={name} />
+							}
 							{ account && 
-								<RoundedButton outerDivClassName="place-self-center" onClick={() => {
-									console.log("hello")
-								}} text="Secure your share" />
+								<RoundedLinkButton outerDivClassName="place-self-center" link="https://quickswap.exchange/#/swap" text="Secure your share" />
 							}
 							{ !account && 
 								<RoundedLinkButton outerDivClassName="place-self-center" link="/beta" text="Start beta testing" />
 							}
 						</div>
+						<br />
+						<br />
+						<p className="mt-6 max-w-2xl text-center text-md text-gray-500 lg:mx-auto">
+							Add the token address {songLibrary[name].tokenAddress} to track your ownership off Rightoken.
+						</p>
 					</div>
 				</main>
-
-				<Web3DebugPanel chainId={chainId} blockNumber={blockNumber} account={account} ethBalance={ethBalance} library={library} account={account} />
 
 				<Footer />
 			</div>

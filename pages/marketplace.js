@@ -9,7 +9,9 @@ import SongCard from '../components/SongCard'
 import RoundedLinkButton from '../components/RoundedLinkButton'
 import Footer from '../components/Footer'
 
-export default function Home() {
+import songLibrary from '../data/songLibrary'
+
+export default function Marketplace() {
 	return (
 		<div>
 			<div>
@@ -42,11 +44,8 @@ export default function Home() {
 							</div>
 
 							<div className="mt-16 md:mt-22 grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12 lg:gap-x-6 lg:gap-y-14">
-								<SongCard song="Crush" artist="Ekaynuh" price=".03" />
-								<SongCard song="Space" artist="Ekaynuh" price=".01" />
-								<SongCard song="My Baby (Went Over the River)" artist="Sienna Daviau" price=".3" link="mybaby" />
-								<SongCard />
-								<SongCard song="List your song" artist="You" price="0" link="../artist" img="./tulip.jpg" />
+								{Object.keys(songLibrary).map(songName => <SongCard key={songName} song={songName} artist={songLibrary[songName].artist} img={`./${songLibrary[songName].albumArt}`} price={songLibrary[songName].price} link={songName} />)}
+								<SongCard song="List your song" artist="You" img="./tulip.jpg" price="0" link="../artist" />
 							</div>
 
 						</div>

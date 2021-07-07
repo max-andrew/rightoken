@@ -1,4 +1,8 @@
 (await box.retrieve()).toString()
+const box = await Box.attach('0x655375305B882569040c08c9ee645827cb0c71B1');
+const Box = await ethers.getContractFactory('Box');
+accounts = await ethers.provider.listAccounts()
+(await box.retrieve()).toString()
 await box.store(420);
 const box = await Box.attach('0x655375305B882569040c08c9ee645827cb0c71B1');
 const box = await Box.attach('0xD7fBC6865542846e5d7236821B5e045288259cf0');

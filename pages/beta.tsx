@@ -77,7 +77,7 @@ export default function Beta(props) {
 				<div className="py-12 bg-white">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 							<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-								{ (!!account && chainId === 137)  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
+								{ (!!account && (chainId === 137 || chainId === 80001))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
 							</p>
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 								<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
@@ -145,24 +145,24 @@ export default function Beta(props) {
 
 						{ account &&
 							<>
-								<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ chainId === 137 && "text-green-600" } `}>
+								<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ (chainId === 137 || chainId === 80001) && "text-green-600" } `}>
 									3.
 								</p>
 								<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
 									<p className="text-2xl font-semibold">
 										Configure your wallet
 									</p>
-									{ chainId !== 137 && walletAppSelected === "coinbase" &&
+									{ (chainId !== 137 || chainId === 80001) && walletAppSelected === "coinbase" &&
 										<p className="text-sm font-mono">
 											Rightoken uses a network called Polygon built on top of Ethereum to keep transactions quick and fees low for artists and investors. <br /> <br /> To change to this network, open Coinbase Wallet and select the settings cog on the bottom right toolbar. Next, scroll down the settings page until you find the Active Network option in the Advanced section. Finally, select Polygon Mainnet and return to your wallet in the bottom left of the toolbar. Once completed, you should see the 4th and final step.
 										</p>
 									}
-									{ chainId !== 137 && walletAppSelected === "metamask" &&
+									{ (chainId !== 137 || chainId === 80001) && walletAppSelected === "metamask" &&
 										<p className="text-sm font-mono">
 											Rightoken uses a network called Polygon built on top of Ethereum to keep transactions quick and fees low for artists and investors. <br /> <br /> To change to this network, open MetaMask and hamburger menu icon in the top left corner. Select Settings in the popover. Then, select Networks. Choose Add Network and enter these values for the following fields: <br /> <br /> Network Name: <br /> Matic Mainnet <br /> <br /> RPC URL: <br /> https://rpc-mainnet.maticvigil.com/ <br /> <br /> Chain ID: <br /> 137 <br /> <br /> Symbol: <br /> MATIC <br /> <br /> Block Explorer URL: <br /> https://polygonscan.com/ <br /> <br /> Finally, click Add. MetaMask should automatically redirect to your wallet page with the new network selected, but you can confirm or change this network by selecting Wallet from the center of the main toolbar, and scrolling down and selecting Matic Mainnet from the Networks popup. Once completed, you should see the 4th and final step.
 										</p>
 									}
-									{ chainId === 137 &&
+									{ (chainId !== 137 || chainId === 80001) &&
 										<p className="text-sm font-mono">
 											Nice work! Your wallet successfully linked to the Polygon network. Make sure to stay on this network when using Rightoken.
 										</p>
@@ -172,7 +172,7 @@ export default function Beta(props) {
 							</>
 						}
 
-						{ account && chainId === 137 &&
+						{ account && (chainId !== 137 || chainId === 80001) &&
 							<>
 								<p className="text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end">
 									4.
@@ -193,9 +193,6 @@ export default function Beta(props) {
 						}
 					</div>
 				</div>
-
-				<Web3DebugPanel chainId={chainId} blockNumber={blockNumber} account={account} ethBalance={ethBalance} library={library} account={account} />
-
 			</main>
 			
 			<Footer />
