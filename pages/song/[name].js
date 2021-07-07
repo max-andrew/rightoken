@@ -13,7 +13,7 @@ import Web3DebugPanel from '../../components/Web3DebugPanel'
 import Footer from '../../components/Footer'
 
 import { useWeb3React } from '@web3-react/core'
-import Matic from "@maticnetwork/maticjs"
+import Matic from '@maticnetwork/maticjs'
 
 import { 
 	injected,
@@ -67,31 +67,34 @@ export default function Song(props) {
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
 
-	useEffect(async () => {
-		// Create sdk instance
-		const matic = new Matic({
-			// set network name
-			network: "testnet",
-			// set network version
-			version: "mumbai",
-			// set Matic provider - string or provider instance
-			maticProvider: "https://polygon-mumbai.infura.io/v3/a821166085054d0891f13e00e9a0767e",
-			// set Mainchain provider - string or provider instance
-			parentProvider: "https://goerli.infura.io/v3/a821166085054d0891f13e00e9a0767e",
-			// set default options e.g { from }
-			parentDefaultOptions: { from: account },
-			// set default options
-			maticDefaultOptions: { from: account },
-		})
+	useEffect(() => {
+		console.log(account)
+		if (account) {
+			// Create sdk instance
+			const matic = new Matic({
+				// set network name
+				network: "testnet",
+				// set network version
+				version: "mumbai",
+				// set Matic provider - string or provider instance
+				maticProvider: "https://polygon-mumbai.infura.io/v3/a821166085054d0891f13e00e9a0767e",
+				// set Mainchain provider - string or provider instance
+				parentProvider: "https://goerli.infura.io/v3/a821166085054d0891f13e00e9a0767e",
+				// set default options e.g { from }
+				parentDefaultOptions: { from: account },
+				// set default options
+				maticDefaultOptions: { from: account },
+			})
 
-		// init matic
-		matic.initialize()
+			// init matic
+			matic.initialize()
 
-		matic.balanceOfERC721(account, "0x2d7882beDcbfDDce29Ba99965dd3cdF7fcB10A1e", { parent: false })
-		.then(balance => {
-			console.log('balance', balance)
-		})
-	}, [])
+			matic.balanceOfERC721(account, "0x2d7882beDcbfDDce29Ba99965dd3cdF7fcB10A1e", { parent: false })
+			.then(balance => {
+				console.log("balance", balance)
+			})
+		}
+	}, [account])
 
 	return (
 		<div>
@@ -114,7 +117,7 @@ export default function Song(props) {
 							</div>
 						</div>
 						<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
-							<SongCard />
+							<SongCard song="Rigamortus" artist="Kendrick Lamar" />
 							{ account && 
 								<RoundedButton outerDivClassName="place-self-center" onClick={() => {
 									console.log("hello")
@@ -126,6 +129,8 @@ export default function Song(props) {
 						</div>
 					</div>
 				</main>
+
+				<Web3DebugPanel chainId={chainId} blockNumber={blockNumber} account={account} ethBalance={ethBalance} library={library} account={account} />
 
 				<Footer />
 			</div>
