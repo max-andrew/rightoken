@@ -9,7 +9,7 @@ import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
 export default function Home() {
-	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1080" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
+	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1280" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
 
 	function Iframe(props) {
 		return (<div dangerouslySetInnerHTML={ {__html:  props.iframe?props.iframe:""}} />);
