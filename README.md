@@ -6,6 +6,12 @@ Rightoken is a marketplace for legal rights to songs powered by the Rightoken co
 
 ## How to use
 
+Download dependencies
+```bash
+yarn install
+```
+
+Run the front end client app
 ```bash
 yarn dev
 ```
