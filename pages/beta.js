@@ -29,6 +29,10 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../funct
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 export default function Beta(props) {
+	if (typeof(window) !== "undefined") {
+		return (<p>Rendering server-side</p>)
+	}
+
 	// get values from context
 	const {
 		connector,
