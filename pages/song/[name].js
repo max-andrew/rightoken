@@ -32,6 +32,10 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../fu
 import songLibrary from '../../data/songLibrary'
 
 export default function Song(props) {
+	if (typeof(window) !== "undefined") {
+		return (<p>Rendering server-side</p>)
+	}
+
 	// get values from context
 	const {
 		connector,
