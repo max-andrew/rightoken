@@ -41,11 +41,11 @@ export default function Beta(props) {
 		error
 	} = useWeb3React()
 
+	
 	// get query params for default wallet selection
 	const router = useRouter()
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
-
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
@@ -74,14 +74,16 @@ export default function Beta(props) {
 			<main>
 				<Header />
 
+				{ typeof(walletAppSelected !== "undefined") && (
+
 				<div className="py-12 bg-white">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-							<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-								{ (!!account && (chainId === 137 || chainId === 80001))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
-							</p>
-							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-								<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
-							</p>
+						<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+							{ (!!account && (chainId === 137 || chainId === 80001))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
+						</p>
+						<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+							<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
+						</p>
 					</div>
 
 					<div className="mt-16 max-w-md md:max-w-none grid grid-cols-1 md:grid-cols-3 gap-x-10 md:gap-x-8 gap-y-6 md:gap-y-16 self-center justify-items-center text-center md:text-left m-auto">
@@ -193,6 +195,8 @@ export default function Beta(props) {
 						}
 					</div>
 				</div>
+
+				) }
 			</main>
 			
 			<Footer />

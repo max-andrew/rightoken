@@ -5,6 +5,12 @@ import { URI_AVAILABLE } from "@web3-react/walletconnect-connector"
 import { injected } from "../functions/connectors"
 
 export function useWalletAppSelected(connectedWalletApp, walletQuery) {
+	if (typeof(walletQuery === "undefined")) {
+		console.log("hello")
+		const [walletAppSelected, setWalletAppSelected] = useState("coinbase")
+		return [walletAppSelected, setWalletAppSelected]
+	}
+
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useState(walletQuery === "metamask" ? "metamask" : "coinbase")
 	// account for existing connectors and query params
