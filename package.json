@@ -38,8 +38,5 @@
     "postcss": "^8.1.10",
     "tailwindcss": "^2.1.1",
     "typescript": "^4.3.2"
-  },
-  "browser": {
-    "electron": false
   }
 }
