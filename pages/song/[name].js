@@ -32,10 +32,6 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../fu
 import songLibrary from '../../data/songLibrary'
 
 export default function Song(props) {
-	if (typeof(window) !== "undefined") {
-		return (<p>Rendering server-side</p>)
-	}
-
 	// get values from context
 	const {
 		connector,
@@ -125,16 +121,14 @@ export default function Song(props) {
 					<div className="py-12 bg-white">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 							<div className="lg:text-center">
-							{ typeof(window) !== "undefined" &&
-								<>
-									<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl uppercase">
-										Invest in { name }
-									</p>
+								<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl uppercase">
+									Invest in { name }
+								</p>
+								{ typeof(songLibrary[name]) !== "undefined" &&
 									<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 										You currently hold {rightokenBalance/(10**18)}% of {name.toUpperCase()}
 									</p>
-								</>
-							}
+								}
 							</div>
 						</div>
 						<div className="min-w-xl mt-12 flex flex-row justify-center space-x-12">
@@ -150,11 +144,9 @@ export default function Song(props) {
 						</div>
 						<br />
 						<br />
-						{ typeof(window) !== "undefined" &&
-							<p className="mt-6 max-w-2xl text-center text-md text-gray-500 lg:mx-auto">
-								Add the token address {songLibrary[name].tokenAddress} to track your ownership off Rightoken.
-							</p>
-						}
+						<p className="mt-6 max-w-2xl text-center text-md text-gray-500 lg:mx-auto">
+							Add the token address {songLibrary[name].tokenAddress} to track your ownership off Rightoken.
+						</p>
 					</div>
 				</main>
 

@@ -29,10 +29,6 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../funct
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 export default function Beta(props) {
-	if (typeof(window) !== "undefined") {
-		return (<p>Rendering server-side</p>)
-	}
-
 	// get values from context
 	const {
 		connector,
@@ -45,11 +41,11 @@ export default function Beta(props) {
 		error
 	} = useWeb3React()
 
-	
 	// get query params for default wallet selection
 	const router = useRouter()
 	// track user's wallet provider preference
 	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
+
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
@@ -77,8 +73,6 @@ export default function Beta(props) {
 
 			<main>
 				<Header />
-
-				{ typeof(walletAppSelected !== "undefined") && (
 
 				<div className="py-12 bg-white">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -199,8 +193,6 @@ export default function Beta(props) {
 						}
 					</div>
 				</div>
-
-				) }
 			</main>
 			
 			<Footer />
