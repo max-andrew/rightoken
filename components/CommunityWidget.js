@@ -14,7 +14,7 @@ export default function CommunityWidget(props) {
 			<div className="flex flex-col justify-center items-center space-x-0 space-y-4 mt-10 sm:space-x-2 sm:space-y-0 sm:flex-row sm:space-x-8">
 				<div>
 					<a 
-						className="flex flex-col p-2 h-32 w-72 rounded-md bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-black overflow-hidden sm:h-48 sm:w-48 sm:p-4"
+						className="flex flex-col p-2 h-32 w-72 rounded-md bg-white hover:bg-white active:bg-white shadow hover:shadow-lg active:shadow transition ease-in duration-200 ease-in-out overflow-hidden sm:h-48 sm:w-48 sm:p-4"
 						href="https://reddit.com/r/rightoken"
 						rel="_blank"
 					>
@@ -27,7 +27,7 @@ export default function CommunityWidget(props) {
 				</div>
 				<div>
 					<a 
-						className="flex flex-col p-2 h-36 w-72 rounded-md bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-black overflow-hidden sm:h-48 sm:w-48 sm:p-4"
+						className="flex flex-col p-2 h-36 w-72 rounded-md bg-white hover:bg-white active:bg-white shadow hover:shadow-lg active:shadow transition ease-in duration-200 ease-in-out overflow-hidden sm:h-48 sm:w-48 sm:p-4"
 						href="https://twitter.com/rightoken"
 						rel="_blank"
 					>
@@ -40,7 +40,7 @@ export default function CommunityWidget(props) {
 				</div>
 				<div>
 					<a 
-						className="flex flex-col p-2 h-36 w-72 rounded-md bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-black overflow-hidden sm:h-48 sm:w-48 sm:p-4"
+						className="flex flex-col p-2 h-36 w-72 rounded-md bg-white hover:bg-white active:bg-white shadow hover:shadow-lg active:shadow transition ease-in duration-200 ease-in-out  overflow-hidden sm:h-48 sm:w-48 sm:p-4"
 						href="https://discord.gg/AZcKByZZ7j"
 						rel="_blank"
 					>

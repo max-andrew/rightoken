@@ -65,7 +65,7 @@ export default function Beta(props) {
 	const ethBalance = useEthBalance(library, account, chainId)
 
 	return (
-		<div>
+		<>
 			<Head>
 				<title>Rightoken</title>
 				<link rel="icon" href="/favicon.ico" />
@@ -74,7 +74,7 @@ export default function Beta(props) {
 			<main>
 				<Header />
 
-				<div className="py-12 bg-white">
+				<div className="py-12">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 						<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
 							{ (!!account && (chainId === 137 || chainId === 80001))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
@@ -106,10 +106,10 @@ export default function Beta(props) {
 						<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
 							{ !account && 
 								<>
-									<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://apps.apple.com/us/app/coinbase-wallet/id1278383455" : "https://apps.apple.com/us/app/metamask/id1438144202" } textClassName="text-sm font-bold" text="For iOS" />
-									<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://play.google.com/store/apps/details?id=org.toshi" : "https://play.google.com/store/apps/details?id=io.metamask" } className="bg-purple-400 hover:bg-purple-500" textClassName="text-sm font-bold" text="For Android" />
+									<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://apps.apple.com/us/app/coinbase-wallet/id1278383455" : "https://apps.apple.com/us/app/metamask/id1438144202" } textClassName="text-sm font-bold" text="iOS" />
+									<RoundedLinkButton link={walletAppSelected === "coinbase" ? "https://play.google.com/store/apps/details?id=org.toshi" : "https://play.google.com/store/apps/details?id=io.metamask" } className="bg-opacity-80 hover:bg-opacity-80" textClassName="text-sm font-bold" text="Android" />
 									<br />
-									<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } className="bg-gray-200 hover:bg-gray-300 font-mono" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
+									<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } customBG className="bg-gray-200 hover:bg-gray-300" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
 								</>
 							}
 						</div>
@@ -139,7 +139,7 @@ export default function Beta(props) {
 								<RoundedButton onClick={() => connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)} textClassName="text-sm font-bold" text="Connect wallet" />
 							}
 							{ account &&
-								<RoundedButton onClick={() => disconnectWallet(connector, deactivate)} className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
+								<RoundedButton onClick={() => disconnectWallet(connector, deactivate)} customBG className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
 							}
 						</div>
 
@@ -186,8 +186,8 @@ export default function Beta(props) {
 									</p>
 								</div>
 								<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">
-									<RoundedLinkButton link="/marketplace" text="Invest now" className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
-									<RoundedLinkButton link="/artist" text="I'm an artist" className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
+									<RoundedLinkButton link="/marketplace" text="Invest now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
+									<RoundedLinkButton link="/artist" text="I'm an artist" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 								</div>
 							</>
 						}
@@ -196,6 +196,6 @@ export default function Beta(props) {
 			</main>
 			
 			<Footer />
-		</div>
+		</>
 	)
 }
