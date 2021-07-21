@@ -32,7 +32,7 @@ export default function Marketplace() {
 							<div className="mt-8 w-full text-center flex items-center justify-center">
 								<img
 									className="h-auto w-52"
-									src="/artist-graphic.svg"
+									src="/marketplace-graphic.svg"
 									alt=""
 								/>
 							</div>

@@ -29,7 +29,7 @@ export default function Home() {
 							<div className="mt-8 w-full text-center flex items-center justify-center">
 								<img
 									className="h-auto w-52"
-									src="/investor-graphic.svg"
+									src="/community-graphic.svg"
 									alt=""
 								/>
 							</div>
