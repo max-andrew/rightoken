@@ -20,7 +20,7 @@ export default function SongCard(props) {
 				<div className="border-b-2 border-gray-100 mx-8" />
 				<div className="py-4 pr-8 bg-white">
 					<p className="text-right text-lg font-semibold font-mono">
-						{ (typeof(props.price) !== "undefined" ? props.price : ".1") + " MATIC" }
+						{ (typeof(props.price) !== "undefined" ? props.price : ".1") + " ETH" }
 					</p>
 					<p className="italic lowercase text-xs text-right">
 						{ "for " + (typeof(props.percentage) !== "undefined" ? props.percentage : "1") + "%" }

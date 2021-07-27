@@ -163,7 +163,7 @@ export default function Home() {
 												<span className="block text-purple-600 xl:inline">for music</span>
 											</h1>
 											<p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-												Rightoken is a marketplace for legal rights to songs powered by the Rightoken community and secured by Polygon. Sound recording copyrights and royalties are transferred to tokenholders who can sell their shares on any open market. 
+												Rightoken is a marketplace for legal rights to songs powered by the Rightoken community and secured by Ethereum. Sound recording copyrights and royalties are transferred to tokenholders who can sell their shares on any open market. 
 											</p>
 											<div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
 												<div className="rounded-md shadow">

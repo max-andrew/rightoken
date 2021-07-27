@@ -7,7 +7,7 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
-export default function Home() {
+export default function Investor() {
 	return (
 		<>
 			<Head>

@@ -6,7 +6,6 @@ import { injected } from "../functions/connectors"
 
 export function useWalletAppSelected(connectedWalletApp, walletQuery) {
 	if (typeof(walletQuery === "undefined")) {
-		console.log("hello")
 		const [walletAppSelected, setWalletAppSelected] = useState("coinbase")
 		return [walletAppSelected, setWalletAppSelected]
 	}
