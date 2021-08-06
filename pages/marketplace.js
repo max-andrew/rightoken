@@ -16,7 +16,7 @@ export default function Marketplace() {
 		<>
 			<Head>
 				<title>Rightoken</title>
-				<link rel="icon" href="/favicon.ico" />
+				<link rel="icon" href="/favicon.png" />
 			</Head>
 
 			<main>

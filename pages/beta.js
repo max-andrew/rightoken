@@ -43,7 +43,7 @@ export default function Beta(props) {
 
 	// get query params for default wallet selection
 	const router = useRouter()
-	// track user's wallet provider preference
+	// track user's wallet preference
 	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
 
 	// handle logic to recognize the connector currently being activated

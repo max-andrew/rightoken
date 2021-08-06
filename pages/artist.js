@@ -5,14 +5,72 @@ import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
 import Header from '../components/Header'
+import RoundedButton from '../components/RoundedButton'
 import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
-export default function Home() {
-	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1280" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
+import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
 
+import { 
+	injected,
+	walletconnect
+} from '../functions/connectors'
+import {
+	useWalletAppSelected,
+	useActivatingConnector,
+	useEagerConnect,
+	useInactiveListener,
+	useBlockNumber,
+	useEthBalance
+} from '../hooks/web3Hooks'
+import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
+import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
+
+import * as zksync from 'zksync'
+import { ethers } from 'ethers'
+
+import deployFunction from '../scripts/deploy'
+
+export default function Artist() {
+	// get values from context
+	const {
+		connector,
+		library,
+		chainId,
+		account,
+		activate,
+		deactivate,
+		active,
+		error
+	} = useWeb3React()
+
+	/*
+
+	// Create ethereum wallet using ethers.js
+	const ethWallet = ethers.Wallet.createRandom(MNEMONIC).connect(ethersProvider)
+	// Derive zksync.Signer from ethereum wallet.
+	const syncWallet = async () => await zksync.Wallet.fromEthSigner(ethWallet, syncProvider)
+
+	const deposit = async () => await syncWallet.depositToSyncFromEthereum({
+		depositTo: syncWallet.address(),
+		token: "ETH",
+		amount: ethers.utils.parseEther("1.0"),
+	})
+
+	// Await confirmation from the zkSync operator
+	// Completes when a promise is issued to process the tx
+	const depositReceipt = async () => await deposit.awaitReceipt()
+
+	// Await verification
+	// Completes when the tx reaches finality on Ethereum
+	// const depositReceipt = await deposit.awaitVerifyReceipt()
+
+	*/
+
+	// Google Form
+	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1280" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
 	function Iframe(props) {
-		return (<div dangerouslySetInnerHTML={ {__html:  props.iframe?props.iframe:""}} />);
+		return (<div dangerouslySetInnerHTML={ {__html:  props.iframe?props.iframe:""}} />)
 	}
 
 	return (
@@ -49,6 +107,10 @@ export default function Home() {
 						</div>
 
 						<br />
+						<br />
+
+						<RoundedButton onClick={() => deployFunction()} customBG className="bg-green-300 hover:bg-green-400 max-w-md m-auto uppercase" textClassName="text-sm font-bold" text="Mint" />
+
 						<br />
 
 						<div className="flex justify-center">

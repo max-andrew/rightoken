@@ -52,7 +52,7 @@ export default function Home() {
 			</Head>
 
 			<main>
-				<Popover className="relative overflow-hidden">
+				<Popover className="relative overflow-hidden bg-white">
 					{({ open }) => (
 						<>
 							<div className="max-w-7xl mx-auto">
