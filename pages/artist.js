@@ -26,7 +26,6 @@ import {
 import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
-import * as zksync from 'zksync'
 import { ethers } from 'ethers'
 
 import deployFunction from '../scripts/deploy'
@@ -43,35 +42,6 @@ export default function Artist() {
 		active,
 		error
 	} = useWeb3React()
-
-	/*
-
-	// Create ethereum wallet using ethers.js
-	const ethWallet = ethers.Wallet.createRandom(MNEMONIC).connect(ethersProvider)
-	// Derive zksync.Signer from ethereum wallet.
-	const syncWallet = async () => await zksync.Wallet.fromEthSigner(ethWallet, syncProvider)
-
-	const deposit = async () => await syncWallet.depositToSyncFromEthereum({
-		depositTo: syncWallet.address(),
-		token: "ETH",
-		amount: ethers.utils.parseEther("1.0"),
-	})
-
-	// Await confirmation from the zkSync operator
-	// Completes when a promise is issued to process the tx
-	const depositReceipt = async () => await deposit.awaitReceipt()
-
-	// Await verification
-	// Completes when the tx reaches finality on Ethereum
-	// const depositReceipt = await deposit.awaitVerifyReceipt()
-
-	*/
-
-	// Google Form
-	const iframe = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdRaG36o70M0bEqztSYGLLcInFwI2Iy7uWTUjMdyZ8o5ycl1A/viewform?embedded=true" width="640" height="1280" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>'
-	function Iframe(props) {
-		return (<div dangerouslySetInnerHTML={ {__html:  props.iframe?props.iframe:""}} />)
-	}
 
 	return (
 		<>
@@ -94,27 +64,68 @@ export default function Artist() {
 								<img
 									className="h-auto w-52"
 									src="/artist-graphic.svg"
-									alt=""
+									alt="music note graphic"
 								/>
 							</div>
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-								Rightoken is a tool to let artists keep control of their work and profits. 
-								Artists can decide what amount of their rights they are willing to sell, have the option to buy their rights back, and are given the tools to write their own terms for the investment agreement. Rightoken empowers artists by letting them control monetization and ownership.
+								Rightoken empowers artists by letting them control monetization and ownership. Artists are given the tools to write their own terms for the investment agreement and have the option to buy their rights back.
 							</p>
 							<p className="mt-6 max-w-2xl text-md text-gray-500 lg:mx-auto">
-								By signing up below you agree you are the sole owner of the sound recording rights associated with the uploaded file. You agree that all rights will be transferred to tokenholders in proportion to outstanding tokens. This process can only be reverted if 100% of tokens are held by the publishing artist and are subsequently burned. After approval, 100% of tokenized rights for the song provided will be transferred to the wallet address provided for the artist to disburse, sell, or swap with any other user on the blockchain.
+								
 							</p>
 						</div>
 
 						<br />
 						<br />
 
-						<RoundedButton onClick={() => deployFunction()} customBG className="bg-green-300 hover:bg-green-400 max-w-md m-auto uppercase" textClassName="text-sm font-bold" text="Mint" />
-
-						<br />
-
-						<div className="flex justify-center">
-							<Iframe iframe={iframe} />		
+						<div className="border-2 border-indigo-100 bg-gradient-to-r from-green-50 to-blue-50 rounded-md px-12 py-10 max-w-xl flex flex-col place-items-center place-self-center m-auto">
+							<p className="text-center text-xs font-bold uppercase mb-2">Tokenize your song</p>
+							<br />
+							<p className="text-xs font-mono my-2">
+								By signing up below you acknowledge you are the sole owner of the sound recording rights associated with the uploaded file. You agree that all rights will be transferred to tokenholders. 
+								<br />
+								<br /> 
+								This process is reverted if the token is burned. After approval, 100% of tokenized rights for the song provided will be transferred to the wallet address provided for the artist to disburse, sell, or swap with any other user on the blockchain.
+							</p>
+							<p className="text-xs font-mono text-center">❦</p>
+							<br />
+							<div className="align-left">
+								<div>
+									<p className="italic bold text-4xl mb-2 text-gray-800">Presenting</p>
+									<input className="bg-transparent border-indigo-100 border-b-2 outline-none max-w-md py-2 text-5xl font-mono text-purple-700" spellcheck="false" placeholder="Song Title" type="textarea" />
+								</div>
+								<br />
+								<br />
+								<div>
+									<p className="italic bold text-3xl mb-2 text-gray-700">By the illustrious</p>
+									<input className="bg-transparent border-indigo-100 border-b-2 outline-none max-w-md py-2 text-4xl font-mono text-purple-700" placeholder="Artist Name" />
+								</div>
+							</div>
+							<br />
+							<br />
+							<div className="space-y-1 text-center">
+								<div className="flex justify-center text-sm text-gray-600">
+									<label
+										htmlFor="file-upload"
+										className="p-4 mb-2 relative cursor-pointer bg-white hover:bg-indigo-50 rounded-md font-medium text-purple-500 hover:text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500 capitalize"
+									>
+										<span>Upload your track &nbsp; ♫</span>
+										<input id="file-upload" name="file-upload" type="file" accept=".mp4" className="sr-only" />
+									</label>
+								</div>
+								<p className="text-xs font-mono text-gray-500">MP4 up to 32MB</p>
+							</div>
+							<br />
+							<br />
+							<p>Rightoken Agreement</p>
+							<br />
+							<div className="flex flex-row text-xs">
+								<input className="place-self-center mr-2" type="checkbox" />
+								<p>I, &nbsp;</p> <input className="bg-transparent border-b-2 outline-none max-w-md" placeholder="Legal name" /> <p>,&nbsp; agree to the terms constructed above &nbsp;</p>
+							</div>
+							<br />
+							<br />
+							<RoundedButton onClick={() => deployFunction()} customBG className="bg-green-400 hover:bg-green-500 max-w-md m-auto uppercase" textClassName="text-xs font-bold" text="Mint" />
 						</div>
 					</div>
 				</div>
