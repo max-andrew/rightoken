@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 export default function Footer(props) {
-	const sadverbs = ["with anxiety", "on a deadline", "apprehensively", "under duress", "poorly", "and rewritten"]
+	const sadverbs = ["with anxiety", "on a deadline", "nervously", "under duress", "poorly", "and rewritten", "through tears"]
 
 	const [sadverb, setSadverb] = useState(sadverbs[Math.floor(Math.random() * sadverbs.length)])
 

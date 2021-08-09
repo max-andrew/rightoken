@@ -9,7 +9,7 @@ function getLibrary(provider) {
 function App({ Component, pageProps }) {
 	return (
 		<Web3ReactProvider getLibrary={getLibrary}>
-			<div className="bg-gradient-to-r from-purple-100">
+			<div className="bg-gradient-to-r from-purple-100 to-yellow-50">
 				<Component {...pageProps} />
 			</div>
 		</Web3ReactProvider>
