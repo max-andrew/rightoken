@@ -182,7 +182,7 @@ export default function Beta(props) {
 										All set! 🚀
 									</p>
 									<p className="text-sm font-mono">
-										You're ready to support growing artists and build your portfolio! Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
+										You&apos;re ready to support growing artists and build your portfolio! Browse rightokens on the market now at the marketplace. Your rightokens will be available to view or trade in your wallet.
 									</p>
 								</div>
 								<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start space-y-4">

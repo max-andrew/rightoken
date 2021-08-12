@@ -4,7 +4,7 @@ export default function CommunityWidget(props) {
 			<div className="lg:text-center">
 				<h2 className="text-base text-purple-600 font-semibold tracking-wide uppercase">Supporting Ensemble</h2>
 				<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-					Don't miss a beat
+					Don&apos;t miss a beat
 				</p>
 				<p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 					Connect with the Rightoken community and core team to stay up-to-date on progress, troubleshoot problems, and riff around.

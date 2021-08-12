@@ -35,9 +35,6 @@ export default function Investor() {
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 								Next time get paid for it. And support growing and independent artists while doing it. Rightoken allows independent investors to buy shares of a song recording and take a cut of the revenue from it.
 							</p>
-							<p className="mt-6 max-w-2xl text-md text-gray-500 lg:mx-auto">
-								Any rightokens owned by your account will be visible here after successfully investing in a song.
-							</p>
 						</div>
 
 						<div className="mt-5 sm:mt-12 sm:flex sm:justify-center lg:justify-center">
