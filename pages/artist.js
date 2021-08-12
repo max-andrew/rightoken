@@ -32,8 +32,8 @@ import { ethers } from 'ethers'
 // const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ'
 // const client = new NFTStorage({ token: apiKey })
 
-import { Zora } from '@zoralabs/zdk'
-import { AuctionHouse } from '@zoralabs/zdk'
+// import { Zora } from '@zoralabs/zdk'
+// import { AuctionHouse } from '@zoralabs/zdk'
 
 import Confetti from 'react-confetti'
 
@@ -49,6 +49,7 @@ export default function Artist() {
 		error
 	} = useWeb3React()
 
+	/*
 	useEffect(async () => {
 		if (chainId) {
 			alert(chainId)
@@ -61,6 +62,7 @@ export default function Artist() {
 			return new AuctionHouse(library.getSigner(), chainId)
 		}
 	}, [library, chainId])
+	*/
 
 	const [songTitle, setSongTitle] = useState()
 	const [artistName, setArtistName] = useState()
@@ -127,19 +129,19 @@ export default function Artist() {
 		}
 	}
 
-	const storeNFT = async () => {
-		const metadata = await client.store({
-			name: 'Rightoken',
-			description: 'Test Rightoken v0',
-			image: new File([/* data */], 'rightoken.png', { type: 'image/png' }),
-			properties: {
-				audio: new File([/* data */], audioInputFile.current.files[0], { type: 'audio/wav' }),
-				songTitle: songTitle,
-				artistName: artistName
-			}
-		})
-		return metadata.url
-	}
+	// const storeNFT = async () => {
+	// 	const metadata = await client.store({
+	// 		name: 'Rightoken',
+	// 		description: 'Test Rightoken v0',
+	// 		image: new File([/* data */], 'rightoken.png', { type: 'image/png' }),
+	// 		properties: {
+	// 			audio: new File([/* data */], audioInputFile.current.files[0], { type: 'audio/wav' }),
+	// 			songTitle: songTitle,
+	// 			artistName: artistName
+	// 		}
+	// 	})
+	// 	return metadata.url
+	// }
 
 	const mintRightoken = () => {
 		resetErrors()
@@ -149,7 +151,7 @@ export default function Artist() {
 			scrollTo(topOfPage)
 			// storeNFT().then(text => alert(text))
 			setMintSuccessful(true)
-			resetFormValues()
+			// resetFormValues()
 			setTimeout(() => setMintSuccessful(false), 10000)
 		}
 	}
