@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
@@ -9,9 +9,109 @@ import SongCard from '../components/SongCard'
 import RoundedLinkButton from '../components/RoundedLinkButton'
 import Footer from '../components/Footer'
 
+import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
+
+import { 
+	injected,
+	walletconnect
+} from '../functions/connectors'
+import {
+	useWalletAppSelected,
+	useActivatingConnector,
+	useEagerConnect,
+	useInactiveListener,
+	useBlockNumber,
+	useEthBalance
+} from '../hooks/web3Hooks'
+import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
+
+import { Zora, AuctionHouse, ManageAuction } from '@zoralabs/zdk'
+
+import { createClient } from 'urql'
+const APIURL = "https://api.thegraph.com/subgraphs/name/ourzora/zora-v1-mumbai"
+
 import songLibrary from '../data/songLibrary'
 
 export default function Marketplace() {
+	const {
+		connector,
+		library,
+		chainId,
+		account,
+		activate,
+		deactivate,
+		active,
+		error,
+		eth
+	} = useWeb3React()
+
+	const [walletAppSelected, setWalletAppSelected] = useState(getConnectedWalletApp())
+	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
+
+	// link wallet if it is already connected (but page has refreshed)
+	useEffect(() => {
+		if (!account && getConnectedWalletApp() === walletAppSelected)
+			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
+	})
+
+	const getNFTMetadata = async id => {
+		if (library && chainId) {
+			const zora = new Zora(library.getSigner(), chainId)
+
+			return await fetch(""+await zora.fetchMetadataURI(id)+"/metadata.json")
+			.then(response => response.json())
+			.then(data => { return data })
+			.catch(error => console.log(error))
+		}
+	}
+
+	const [rightokens, setRightokens] = useState([])
+	useEffect(async () => {
+		const tokensQuery = `
+			query {
+				medias {
+					id
+					metadataURI
+				}
+			}
+		`
+
+		const client = createClient({ url: APIURL })
+		const data = await client.query(tokensQuery).toPromise()
+
+		const rightokenIDs = []
+		for (const media of data.data.medias) {
+			fetch(""+media.metadataURI+"/metadata.json")
+			.then(response => response.json())
+			.then(data => { 
+				if (data.name === "Rightoken" && rightokens.indexOf(media.id) === -1)
+					setRightokens({...rightokens,  test: { properties: data.properties } })
+			})
+			.catch(error => {/*console.log(error)*/})
+		}
+	}, [])
+
+	useEffect(async () => {
+		if (library && chainId) {
+			const zora = new Zora(library.getSigner(), chainId)
+
+			console.log(await zora.fetchCurrentBidShares(32))
+		}
+	})
+
+	const getRightokenCard = id => {
+		return (
+			<SongCard 
+				key={id} 
+				song={rightokens.test.properties.songTitle} 
+				artist={rightokens.test.properties.artistName} 
+				img={`./${songLibrary["space"].albumArt}`}
+				price={songLibrary["space"].price}
+				link={id} 
+			/>
+		)
+	}
+
 	return (
 		<>
 			<Head>
@@ -42,6 +142,7 @@ export default function Marketplace() {
 						</div>
 
 						<div className="mt-16 md:mt-22 grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12 lg:gap-x-6 lg:gap-y-14">
+							{ Object.keys(rightokens).map(id => getRightokenCard(id) ) }
 							{ Object.keys(songLibrary).map(songName => <SongCard key={songName} song={songName} artist={songLibrary[songName].artist} img={`./${songLibrary[songName].albumArt}`} price={songLibrary[songName].price} link={songName} />) }
 							<SongCard song="List your song" artist="You" price="X" link="../artist" />
 						</div>

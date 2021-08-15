@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -31,6 +31,9 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../fu
 
 import songLibrary from '../../data/songLibrary'
 
+import { AuctionHouse, ManageAuction } from '@zoralabs/zdk'
+import {useZNFT, useNFTMetadata, MediaFetchAgent, Networks} from '@zoralabs/nft-hooks'
+
 export default function Song(props) {
 	// get values from context
 	const {
@@ -48,6 +51,7 @@ export default function Song(props) {
 	// get balance of rightoken
 	const [rightokenBalance, setRightokenBalance] = useState(0)
 
+/*
 	// get query params for default wallet selection
 	const router = useRouter()
 	const { name } = router.query
@@ -56,11 +60,9 @@ export default function Song(props) {
 	if ((typeof(window) !== "undefined") && (typeof(songLibrary[name]) === "undefined")) {
 		window.location.replace("../marketplace")
 	}
+*/
 
-	// track user's wallet provider preference
-	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
-
-	// handle logic to recognize the connector currently being activated
+	const [walletAppSelected, setWalletAppSelected] = useState(getConnectedWalletApp())
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
 
 	// link wallet if it is already connected (but page has refreshed)
@@ -69,11 +71,22 @@ export default function Song(props) {
 			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
 	})
 
-	// handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
-	const triedEager = useEagerConnect()
-	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
-	useInactiveListener(!triedEager || !!activatingConnector)
+/*
+	useEffect(async () => {
+		if (chainId) {
+			const auctionHouse = new AuctionHouse(library.getSigner(), chainId)
 
+			// 2. Create an Auction
+			const createAuctionTx = await auctionHouse.createAuction(18, 1000000, .001, "0x000", curatorFeePercentage, auctionCurrency)
+
+			// 3. Await confirmation from the Ethereum Network and receive a receipt
+			const receipt = await createAuctionTx.wait()
+
+			// 4. Finally, get the auction information from the transaction receipt
+			const auction = await auctionHouse.fetchAuctionFromTransactionReceipt(receipt)
+		}
+	})
+*/
 	// get web3 data
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
@@ -106,6 +119,21 @@ export default function Song(props) {
 		}
 	}, [account])
 
+	const {data} = useZNFT("32")
+	const {metadata} = useNFTMetadata(data && data.metadataURI)
+
+	const auctionHouse = useMemo(() => {
+		if (library && chainId) {
+			return new AuctionHouse(library.getSigner(), chainId);
+		}
+	}, [library, chainId])
+
+	useEffect(async () => {
+		const fetchAgent = new MediaFetchAgent(Networks.TESTNET)
+		const result = await fetchAgent.loadZNFTData("17")
+		console.log(result)
+	})
+
 	return (
 		<>
 			<Head>
@@ -115,7 +143,18 @@ export default function Song(props) {
 
 			<main>
 				<Header />
-
+				{ /*
+					auctionHouse ? (		
+						<ManageAuction auctionHouse={auctionHouse} />
+					) : <div>Please connect wallet</div>
+				*/ }
+{/*
+				<div>
+					<h3>{metadata.title}</h3>
+					<p>{metadata.description}</p>
+					<p>Owned by: {data.owner.id}</p>
+				</div>
+*/}
 				<div className="py-12">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 						<div className="lg:text-center">

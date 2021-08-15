@@ -26,7 +26,7 @@ const features = [
 	{
 		name: 'Democratic & transparent',
 		description:
-			'No constraining contracts with bureaucratic record labels. Own your own work and support artists directly.',
+			'No constraining contracts with bureaucratic record labels. Own your own work and support artists directly. All Rightoken code is open-source and belongs to the community.',
 		icon: ScaleIcon,
 	},
 	{
