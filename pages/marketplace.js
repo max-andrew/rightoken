@@ -84,28 +84,24 @@ export default function Marketplace() {
 			fetch(""+media.metadataURI+"/metadata.json")
 			.then(response => response.json())
 			.then(data => { 
-				if (data.name === "Rightoken" && rightokens.indexOf(media.id) === -1)
-					setRightokens({...rightokens,  test: { properties: data.properties } })
+				if (data.name === "Rightoken" && rightokens.indexOf(media.id) === -1) {
+					console.log("found",media.id)
+					const newRightokens = rightokens
+					newRightokens[media.id] = { properties: data.properties }
+					setRightokens(newRightokens)
+				}
 			})
 			.catch(error => {/*console.log(error)*/})
 		}
-	}, [])
-
-	useEffect(async () => {
-		if (library && chainId) {
-			const zora = new Zora(library.getSigner(), chainId)
-
-			console.log(await zora.fetchCurrentBidShares(32))
-		}
-	})
+	}, [account, rightokens])
 
 	const getRightokenCard = id => {
 		return (
 			<SongCard 
 				key={id} 
-				song={rightokens.test.properties.songTitle} 
-				artist={rightokens.test.properties.artistName} 
-				img={`./${songLibrary["space"].albumArt}`}
+				song={rightokens[id].properties.songTitle} 
+				artist={rightokens[id].properties.artistName} 
+				img="./rightoken-logo.png"
 				price={songLibrary["space"].price}
 				link={id} 
 			/>
@@ -142,8 +138,9 @@ export default function Marketplace() {
 						</div>
 
 						<div className="mt-16 md:mt-22 grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12 lg:gap-x-6 lg:gap-y-14">
-							{ Object.keys(rightokens).map(id => getRightokenCard(id) ) }
-							{ Object.keys(songLibrary).map(songName => <SongCard key={songName} song={songName} artist={songLibrary[songName].artist} img={`./${songLibrary[songName].albumArt}`} price={songLibrary[songName].price} link={songName} />) }
+							{ rightokens &&
+								Object.keys(rightokens).map(id => getRightokenCard(id)) 
+							}
 							<SongCard song="List your song" artist="You" price="X" link="../artist" />
 						</div>
 

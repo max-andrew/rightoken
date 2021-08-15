@@ -161,7 +161,7 @@ export default function Artist() {
 			version: "zora-20210101",
 		})
 
-		console.log("Got media data")
+		console.log("Got metadata")
 
 		const contentHash = sha256FromBuffer(Buffer.from(contentURI))
 		const metadataHash = sha256FromBuffer(Buffer.from(metadataJSON))
@@ -171,10 +171,13 @@ export default function Artist() {
 			contentHash,
 			metadataHash
 		)
+
+		console.log("Constructed NFT")
+
 		return mediaData
 	}
 
-	const getBidShares = async resaleRoyaltyPercent => {
+	const getBidShares = resaleRoyaltyPercent => {
 		let creatorShare = parseInt(resaleRoyaltyPercent)
 		let ownerShare = Math.min(Math.max(100-parseInt(resaleRoyaltyPercent || 0), 0), 100)
 
@@ -184,30 +187,9 @@ export default function Artist() {
 			0 // prevOwner share
 		)
 
+		console.log("Got resale split")
+
 		return bidShares
-	}
-
-	const mintZNFT = async () => {
-		const waitConfirmations = 2
-		setMinting(true)
-
-		const mediaData = await getMediaData()
-		const bidShares = await getBidShares(resaleRoyaltyPercent)
-
-		const zora = new Zora(library.getSigner(), chainId)
-		const tx = await zora.mint(mediaData, bidShares)
-
-		console.log(`Waiting for ${waitConfirmations} confirmations`)
-		tx.wait(waitConfirmations).then((a) => {
-			console.log(a)
-			console.log(tx)
-			debugger
-			setMinting(false)
-			setMintSuccessful(true)
-			scrollTo(topOfPage)
-			setRunConfetti(true)
-			setTimeout(() => setMintSuccessful(false), 12000)
-		})
 	}
 
 	const storeFile = async () => {
@@ -278,6 +260,32 @@ export default function Artist() {
 		}
 
 		return sectionsIncluded
+	}
+
+	const mintZNFT = async () => {
+		const waitConfirmations = 2
+		setMinting(true)
+
+		const mediaData = await getMediaData()
+		const bidShares = await getBidShares(resaleRoyaltyPercent)
+
+		const zora = new Zora(library.getSigner(), chainId)
+		console.log("Got signer")
+
+		const tx = await zora.mint(mediaData, getBidShares(resaleRoyaltyPercent))
+		console.log("Minted")
+
+		console.log(`Waiting for ${waitConfirmations} confirmations`)
+		tx.wait(waitConfirmations).then((a) => {
+			console.log(a)
+			console.log(tx)
+			debugger
+			setMinting(false)
+			setMintSuccessful(true)
+			scrollTo(topOfPage)
+			setRunConfetti(true)
+			setTimeout(() => setMintSuccessful(false), 12000)
+		})
 	}
 
 	const mintRightoken = async () => {

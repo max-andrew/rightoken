@@ -18,12 +18,9 @@ export default function SongCard(props) {
 					</div>
 				</div>
 				<div className="border-b-2 border-gray-100 mx-8" />
-				<div className="py-4 pr-8 bg-white">
-					<p className="text-right text-lg font-semibold font-mono">
-						{ (typeof(props.price) !== "undefined" ? props.price : ".1") + " ETH" }
-					</p>
-					<p className="italic lowercase text-xs text-right">
-						{ "for " + (typeof(props.percentage) !== "undefined" ? props.percentage : "1") + "%" }
+				<div className="py-4 bg-white">
+					<p className="font-medium uppercase text-xs font-gray-200 font-mono text-center">
+						Rightoken
 					</p>
 				</div>
 			</div>
