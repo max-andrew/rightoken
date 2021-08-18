@@ -28,10 +28,16 @@ import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 import { ethers } from 'ethers'
 
-import { NFTStorage, File, Blob } from 'nft.storage' 
+import dynamic from 'next/dynamic'
+
+/*const { NFTStorage, File, Blob } = dynamic(
+	() => import('nft.storage'),
+	{ ssr: false }
+)*/
+
+// import { NFTStorage, File, Blob } from 'nft.storage' 
 const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
-const client = new NFTStorage({ token: nftStorageAPIKey })
-const web3StorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEM5MGFDY2ExNjQ3YmE0NDNmRTRBNGEwOUEzODk2MWU3NDYxNjYyZWQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2Mjg1MjQ2NzQ1NTcsIm5hbWUiOiJSaWdodG9rZW4ifQ.hFQetgrge3zorxWjfU5HUPmwUqJYGlU4E4AJg604wrQ"
+// const client = new NFTStorage({ token: nftStorageAPIKey })
 
 import { 
 	Zora,
@@ -135,19 +141,19 @@ export default function Artist() {
 	const storeNFTMetadata = async () => {
 		const legalAgreement = getRightokenLegalAgreement()
 
-		const metadata = await client.store({
-			name: 'Rightoken',
-			description: 'Test Rightoken v0',
-			image: new File([/* data */], 'rightoken.png', { type: 'image/png' }),
-			properties: {
-				audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
-				songTitle,
-				artistName,
-				legalAgreement,
-				legalName,
-			}
-		})
-		return metadata.ipnft
+		// const metadata = await client.store({
+		// 	name: 'Rightoken',
+		// 	description: 'Test Rightoken v0',
+		// 	image: new File([/* data */], 'rightoken.png', { type: 'image/png' }),
+		// 	properties: {
+		// 		audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
+		// 		songTitle,
+		// 		artistName,
+		// 		legalAgreement,
+		// 		legalName,
+		// 	}
+		// })
+		// return metadata.ipnft
 	}
 
 	const getMediaData = async () => {
@@ -194,7 +200,7 @@ export default function Artist() {
 
 	const storeFile = async () => {
 		const content = new Blob([files][0])
-		const cid = await client.storeBlob(content)
+		// const cid = await client.storeBlob(content)
 		return cid
 	}
 
