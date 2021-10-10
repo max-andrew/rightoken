@@ -30,9 +30,6 @@ import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../../fu
 
 import songLibrary from '../../data/songLibrary'
 
-import { Zora, AuctionHouse, ManageAuction } from '@zoralabs/zdk'
-import {useZNFT, useNFTMetadata, MediaFetchAgent, Networks} from '@zoralabs/nft-hooks'
-
 import { createClient } from 'urql'
 const APIURL = "https://api.thegraph.com/subgraphs/name/ourzora/zora-v1-mumbai"
 

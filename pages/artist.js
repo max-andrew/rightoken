@@ -28,9 +28,6 @@ import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 import { ethers } from 'ethers'
 
-import { NFTStorage, File, Blob } from 'nft.storage' 
-const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
-
 import Confetti from 'react-confetti'
 
 export default function Artist() {
@@ -85,7 +82,7 @@ export default function Artist() {
 	const [runConfetti, setRunConfetti] = useState(false)
 	const topOfPage = useRef(null)
 
-	const client = new NFTStorage({ token: nftStorageAPIKey })
+	// const client = new NFTStorage({ token: nftStorageAPIKey })
 
 	const resetFormValues = () => {
 		setSongTitle("")
