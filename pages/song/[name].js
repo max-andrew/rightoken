@@ -13,7 +13,6 @@ import Web3DebugPanel from '../../components/Web3DebugPanel'
 import Footer from '../../components/Footer'
 
 import { useWeb3React } from '@web3-react/core'
-import Matic from '@maticnetwork/maticjs'
 
 import { 
 	injected,

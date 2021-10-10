@@ -8,9 +8,8 @@ import {
 export default function Header(props) {
 	const navigation = [
 		{ name: 'Artists', href: '/artist' },
-		{ name: 'Investors', href: '/investor' },
 		{ name: 'Community', href: '/community' },
-		{ name: 'Marketplace', href: '/marketplace' },
+		{ name: 'Marketplace', href: 'https://zora.co' },
 	]
 
 	return (

@@ -28,25 +28,8 @@ import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
 import { ethers } from 'ethers'
 
-import dynamic from 'next/dynamic'
-
-/*const { NFTStorage, File, Blob } = dynamic(
-	() => import('nft.storage'),
-	{ ssr: false }
-)*/
-
-// import { NFTStorage, File, Blob } from 'nft.storage' 
+import { NFTStorage, File, Blob } from 'nft.storage' 
 const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
-// const client = new NFTStorage({ token: nftStorageAPIKey })
-
-import { 
-	Zora,
-	generateMetadata,
-	constructMediaData,
-	constructBidShares,
-	sha256FromBuffer,
-	isMediaDataVerified
-} from '@zoralabs/zdk'
 
 import Confetti from 'react-confetti'
 
@@ -101,6 +84,8 @@ export default function Artist() {
 	const [mintSuccessful, setMintSuccessful] = useState(false)
 	const [runConfetti, setRunConfetti] = useState(false)
 	const topOfPage = useRef(null)
+
+	const client = new NFTStorage({ token: nftStorageAPIKey })
 
 	const resetFormValues = () => {
 		setSongTitle("")

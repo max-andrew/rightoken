@@ -1,5 +1,6 @@
-require('@nomiclabs/hardhat-ethers');
-const { infuraApiKey, mnemonic } = require('./secrets.json');
+require('@nomiclabs/hardhat-ethers')
+require('@eth-optimism/hardhat-ovm')
+const { infuraApiKey, mnemonic } = require('./secrets.json')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -24,6 +25,18 @@ const { infuraApiKey, mnemonic } = require('./secrets.json');
 			url: `https://polygon-mumbai.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 		},
+		optimistic: {
+			url: `https://optimism-mainnet.infura.io/v3/${infuraApiKey}`,
+			accounts: { mnemonic: mnemonic },
+			gasPrice: 15000000,
+			ovm: true,
+		},
+		optimistic-kovan: {
+			url: `https://optimism-kovan.infura.io/v3/${infuraApiKey}`,
+			accounts: { mnemonic: mnemonic },
+			gasPrice: 15000000,
+			ovm: true,
+		}
 	},
 };
 
