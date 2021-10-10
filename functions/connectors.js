@@ -1,7 +1,7 @@
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
-const { infuraApiKey } = require('../secrets.json')
+const { infuraApiKey } = ""
 
 const POLLING_INTERVAL = 6000
 const RPC_URLS = {
