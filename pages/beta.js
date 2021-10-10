@@ -118,8 +118,8 @@ export default function Beta(props) {
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
 
-	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
-	const mintLinkButton = <RoundedLinkButton link="/artist" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
+	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace.html" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
+	const mintLinkButton = <RoundedLinkButton link="/artist.html" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 
 	return (
 		<>
@@ -137,7 +137,7 @@ export default function Beta(props) {
 							{ (!!account && acceptableNetworks.includes(chainId))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
 						</p>
 						<p className="mt-6 max-w-2xl text-xl text-gray-500 mx-auto">
-							<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
+							<a className="underline" href="/community.html#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
 						</p>
 					</div>
 
