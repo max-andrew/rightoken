@@ -7,8 +7,8 @@ import {
 
 export default function Header(props) {
 	const navigation = [
-		{ name: 'Artists', href: '/artist' },
-		{ name: 'Community', href: '/community' },
+		{ name: 'Artists', href: '/artist.html' },
+		{ name: 'Community', href: '/community/html' },
 		{ name: 'Marketplace', href: 'https://zora.co' },
 	]
 
@@ -44,7 +44,7 @@ export default function Header(props) {
 
 							</Popover.Group>
 							<div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-								<a href="/beta" className="whitespace-nowrap text-base font-medium text-purple-600 hover:text-purple-500">
+								<a href="/beta.html" className="whitespace-nowrap text-base font-medium text-purple-600 hover:text-purple-500">
 									Beta test
 								</a>
 							</div>
