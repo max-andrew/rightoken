@@ -10,8 +10,8 @@ import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
 const navigation = [
-	{ name: 'Artists', href: '/artist' },
-	{ name: 'Community', href: '/community' },
+	{ name: 'Artists', href: '/artist.html' },
+	{ name: 'Community', href: '/community.html' },
 	{ name: 'Marketplace', href: 'https://zora.co' },
 ]
 
@@ -94,7 +94,7 @@ export default function Home() {
 														{item.name}
 													</a>
 												))}
-												<a href="beta" className="font-medium text-purple-600 hover:text-purple-500">
+												<a href="/beta.html" className="font-medium text-purple-600 hover:text-purple-500">
 													Beta test
 												</a>
 											</div>
