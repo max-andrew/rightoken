@@ -48,6 +48,7 @@ export default function Home() {
 			<Head>
 				<title>Rightoken</title>
 				<link rel="icon" href="/favicon.ico" />
+				<link rel="manifest" href="/manifest.json" />
 			</Head>
 
 			<main>
