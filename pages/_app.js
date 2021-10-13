@@ -9,7 +9,7 @@ function getLibrary(provider) {
 function App({ Component, pageProps }) {
 	return (
 		<Web3ReactProvider getLibrary={getLibrary}>
-			<link rel="manifest" href="/manifest.json">
+			<link rel="manifest" href="/manifest.json" />
 			<div className="bg-gradient-to-r from-purple-100 to-yellow-50">
 				<Component {...pageProps} />
 			</div>
