@@ -1,0 +1,27 @@
+{
+	"background_color": "#fff",
+	"display": "standalone",
+	"homepage_url": "https://04055p02lbhv8i5n73e33tjgbl0m5glpl18figbnnp1a5ogcgv7o1d8.siasky.net/",
+	"icons": [
+	{
+		"src": "./192x192_App_Icon.png",
+		"sizes": "192x192",
+		"type": "image/png",
+		"purpose": "any maskable"
+	},
+	{
+		"src": "./512x512_App_Icon.png",
+		"sizes": "512x512",
+		"type": "image/png",
+		"purpose": "any maskable"
+	}
+	],
+	"orientation": "portrait",
+	"name": "Rightoken",
+	"description": "The stock market for music",
+	"iconPath": "./256x256_App_Icon.svg",
+	"short_name": "Rightoken",
+	"start_url": ".",
+	"theme_color": "#B05CD6",
+	"skylink": "AQBS5AKq4_RItzjcMfZwXUFiwrmoUPlBd75CouIMh8-AtQ",
+}

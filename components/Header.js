@@ -35,13 +35,11 @@ export default function Header(props) {
 								</Popover.Button>
 							</div>
 							<Popover.Group as="nav" className="hidden md:flex space-x-10">
-
 								{navigation.map((item) => (
 									<a key={item.name} href={item.href} className="text-base font-medium text-gray-500 hover:text-gray-900">
 										{item.name}
 									</a>
 								))}
-
 							</Popover.Group>
 							<div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
 								<a href="/beta.html" className="whitespace-nowrap text-base font-medium text-purple-600 hover:text-purple-500">
@@ -100,7 +98,7 @@ export default function Header(props) {
 									</div>
 									<div>
 										<a
-											href="/beta"
+											href="/beta.html"
 											className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700"
 										>
 											Beta test
