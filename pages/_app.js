@@ -1,6 +1,7 @@
 import 'tailwindcss/tailwind.css'
 import { Web3ReactProvider } from '@web3-react/core'
 import { Web3Provider } from '@ethersproject/providers'
+import Head from 'next/head'
 
 function getLibrary(provider) {
 	return new Web3Provider(provider)
@@ -9,7 +10,9 @@ function getLibrary(provider) {
 function App({ Component, pageProps }) {
 	return (
 		<Web3ReactProvider getLibrary={getLibrary}>
-			<link rel="manifest" href="/manifest.json" />
+			<Head>
+				<link rel="manifest" href="/manifest.json" />
+			</Head>
 			<div className="bg-gradient-to-r from-purple-100 to-yellow-50">
 				<Component {...pageProps} />
 			</div>
