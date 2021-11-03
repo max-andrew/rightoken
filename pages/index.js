@@ -6,12 +6,14 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
 import { TrendingUpIcon, GlobeAltIcon, LightBulbIcon, ScaleIcon } from '@heroicons/react/outline'
 
+import FloatingRoundedButton from '../components/CommunityWidget'
+
 import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
 const navigation = [
-	{ name: 'Artists', href: '/artist.html' },
-	{ name: 'Community', href: '/community.html' },
+	{ name: 'Artists', href: '/artist' },
+	{ name: 'Community', href: '/community' },
 	{ name: 'Marketplace', href: 'https://zora.co' },
 ]
 
@@ -95,7 +97,7 @@ export default function Home() {
 														{item.name}
 													</a>
 												))}
-												<a href="/beta.html" className="font-medium text-purple-600 hover:text-purple-500">
+												<a href="/beta" className="font-medium text-purple-600 hover:text-purple-500">
 													Beta test
 												</a>
 											</div>
@@ -168,7 +170,7 @@ export default function Home() {
 											<div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
 												<div className="rounded-md shadow">
 													<a
-														href="/artist.html"
+														href="/artist"
 														className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10"
 													>
 														For artists
@@ -220,7 +222,7 @@ export default function Home() {
 						<div className="mt-5 sm:mt-12 sm:flex sm:justify-center lg:justify-center">
 							<div className="rounded-md shadow">
 								<a
-									href="/beta.html"
+									href="/beta"
 									className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10"
 								>
 									Try it out

@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
@@ -8,7 +8,7 @@ import Header from '../components/Header'
 import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
-export default function Home() {
+export default function Community() {
 	return (
 		<>
 			<Head>
@@ -34,7 +34,7 @@ export default function Home() {
 								/>
 							</div>
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-								Rightoken is a community-first project built collaboratively by developers, artists, and music investors around the world. <a href="https://www.dropbox.com/s/mb9hf9u5sg1x4xc/Rightoken%20Whitepaper?dl=0">Read more about our vision for Rightoken and artist empowerment here.</a>
+								Rightoken is a community-first project built collaboratively by developers, artists, and music investors around the world. <a className="underline" href="https://www.dropbox.com/s/mb9hf9u5sg1x4xc/Rightoken%20Whitepaper?dl=0">Read more about our vision for Rightoken and artist empowerment here.</a>
 							</p>
 						</div>
 

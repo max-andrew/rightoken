@@ -10,7 +10,6 @@ import CommunityWidget from '../components/CommunityWidget'
 import Footer from '../components/Footer'
 
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-
 import { 
 	injected,
 	walletconnect
@@ -26,11 +25,46 @@ import {
 import { connectWallet, disconnectWallet, getConnectedWalletApp } from '../functions/setWalletConnection'
 import { getWeb3ErrorMessage } from '../functions/getWeb3ErrorMessage'
 
+import { NFTStorage, File } from 'nft.storage'
+
 import { ethers } from 'ethers'
 
 import Confetti from 'react-confetti'
 
 export default function Artist() {
+	const legalAgreementLibrary = {
+		socialRecovery: {
+			title: "Social Recovery",
+			body: "The original artist may verify their identity and contact the Rightoken team in case of lost Rightoken. The artist's must be verified before having lost the asset and the artist must publicly post that the token was lost to allow any potential rightful owner to come forward to dispute the issue. If a dispute arises Rightoken will initiate a dispute resolution process and transparently weigh the facts of the case before arriving at a decision. Following its ruling, a replacement Rightoken will be issued, voiding the previous token.",
+			mutable: true,
+		},
+		metadata: {
+			title: "Metadata",
+			body: "The sound recording title and associated cover art may be distributed by the tokenholder, but copyright is not conferred for these works.",
+			mutable: false,
+		},
+		credit: {
+			title: "Credit",
+			body: "The tokenholder shall acknowledge the original authorship of the composition appropriately and reasonably in all media and performance formats in writing where possible and vocally otherwise.",
+			mutable: false,
+		},
+		definingRights: {
+			title: "Defining Rights",
+			body: "Scope of exclusive rights in sound recordings shall be understood under the terms of 17 U.S. Code § 114.",
+			mutable: false,
+		},
+		governingLaw: {
+			title: "Governing Law",
+			body: "This agreement is governed by and shall be construed under the law of the State of New York, United States of America, without regard to the conflicts of laws principles thereof.",
+			mutable: false,
+		},
+		rightTransfer: {
+			title: "Copyright Transfer",
+			body: "You agree that perpetual, irrevocable, and exclusive license to use the song will be transferred to tokenholders, until burned whereby rights are returned to the artist.",
+			mutable: false,
+		}
+	}
+
 	const {
 		connector,
 		library,
@@ -82,8 +116,6 @@ export default function Artist() {
 	const [runConfetti, setRunConfetti] = useState(false)
 	const topOfPage = useRef(null)
 
-	// const client = new NFTStorage({ token: nftStorageAPIKey })
-
 	const resetFormValues = () => {
 		setSongTitle("")
 		setArtistName("")
@@ -112,33 +144,31 @@ export default function Artist() {
 	}
 
 	const isFormValid = () => {
-		if (songTitleError || artistNameError || legalNameError || audioFileError) {
-			return false
-		}
-		else {
-			return true
-		}
+		return (songTitle !== "" && artistName !== "" && legalName !== "" && audioFileName !== "")
 	}
 
 	const storeNFTMetadata = async () => {
 		const legalAgreement = getRightokenLegalAgreement()
 
-		// const metadata = await client.store({
-		// 	name: 'Rightoken',
-		// 	description: 'Test Rightoken v0',
-		// 	image: new File([/* data */], 'rightoken.png', { type: 'image/png' }),
-		// 	properties: {
-		// 		audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
-		// 		songTitle,
-		// 		artistName,
-		// 		legalAgreement,
-		// 		legalName,
-		// 	}
-		// })
-		// return metadata.ipnft
+		const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
+		const client = new NFTStorage({ token: nftStorageAPIKey })
+
+		const metadata = await client.store({
+			name: 'Rightoken',
+			description: 'Test Rightoken v0',
+			image: new File(['./rightokenNFT.png'], 'rightokenNFT.png', { type: 'image/png' }),
+			properties: {
+				// audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
+				songTitle,
+				// artistName,
+				// legalAgreement,
+				// legalName,
+			}
+		})
+		return metadata.ipnft
 	}
 
-	const getMediaData = async () => {
+	/*const getMediaData = async () => {
 		const contentURI = await storeFile()
 		const metadataURI = await storeNFTMetadata()
 
@@ -163,9 +193,9 @@ export default function Artist() {
 		console.log("Constructed NFT")
 
 		return mediaData
-	}
+	}*/
 
-	const getBidShares = resaleRoyaltyPercent => {
+	/*const getBidShares = resaleRoyaltyPercent => {
 		let creatorShare = parseInt(resaleRoyaltyPercent)
 		let ownerShare = Math.min(Math.max(100-parseInt(resaleRoyaltyPercent || 0), 0), 100)
 
@@ -184,42 +214,9 @@ export default function Artist() {
 		const content = new Blob([files][0])
 		// const cid = await client.storeBlob(content)
 		return cid
-	}
+	}*/
 
 	const scrollTo = (ref) => ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
-
-	const legalAgreementLibrary = {
-		socialRecovery: {
-			title: "Social Recovery",
-			body: "The original artist may verify their identity and contact the Rightoken team in case of lost Rightoken. The artist's must be verified before having lost the asset and the artist must publicly post that the token was lost to allow any potential rightful owner to come forward to dispute the issue. If a dispute arises Rightoken will initiate a dispute resolution process and transparently weigh the facts of the case before arriving at a decision. Following its ruling, a replacement Rightoken will be issued, voiding the previous token.",
-			mutable: true,
-		},
-		metadata: {
-			title: "Metadata",
-			body: "The sound recording title and associated cover art may be distributed by the tokenholder, but copyright is not conferred for these works.",
-			mutable: false,
-		},
-		credit: {
-			title: "Credit",
-			body: "The tokenholder shall acknowledge the original authorship of the composition appropriately and reasonably in all media and performance formats in writing where possible and vocally otherwise.",
-			mutable: false,
-		},
-		definingRights: {
-			title: "Defining Rights",
-			body: "Scope of exclusive rights in sound recordings shall be understood under the terms of 17 U.S. Code § 114.",
-			mutable: false,
-		},
-		governingLaw: {
-			title: "Governing Law",
-			body: "This agreement is governed by and shall be construed under the law of the State of New York, United States of America, without regard to the conflicts of laws principles thereof.",
-			mutable: false,
-		},
-		rightTransfer: {
-			title: "Copyright Transfer",
-			body: "You agree that perpetual, irrevocable, and exclusive license to use the song will be transferred to tokenholders. will be transferred to the tokenholder, untill burned whereby rights are returned to the artist.",
-			mutable: false,
-		}
-	}
 
 	const getLegalAgreementSectionJSX = sectionKey => {
 		const section = legalAgreementLibrary[sectionKey]
@@ -250,7 +247,7 @@ export default function Artist() {
 		return sectionsIncluded
 	}
 
-	const mintZNFT = async () => {
+	/*const mintZNFT = async () => {
 		const waitConfirmations = 2
 		setMinting(true)
 
@@ -274,13 +271,15 @@ export default function Artist() {
 			setRunConfetti(true)
 			setTimeout(() => setMintSuccessful(false), 12000)
 		})
-	}
+	}*/
 
 	const mintRightoken = async () => {
-		const formIsValid = (songTitle !== "" && artistName !== "" && legalName !== "" && audioFileName !== "")
+		storeNFTMetadata()
 
+		/*
 		if (formIsValid && library)
 			mintZNFT()
+		*/
 	}
 
 	return (
@@ -331,7 +330,7 @@ export default function Artist() {
 							<p className="text-xs font-mono my-2">
 								By signing up below you acknowledge you are the sole owner of the sound recording rights associated with the uploaded file. You agree that all rights will be transferred to tokenholders. 
 								<br />
-								<br /> 
+								<br />
 								This process is reverted if the token is burned. After approval, 100% of tokenized rights for the song provided will be transferred to the wallet address provided for the artist to disburse, sell, or swap with any other user on the blockchain.
 							</p>
 							<p className="text-xs font-mono text-center">❦</p>

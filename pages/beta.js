@@ -64,22 +64,55 @@ export default function Beta(props) {
 			unconfigured: {
 				coinbase: {
 					pro: <>
-						Rightoken is built on Optimistic Ethereum. Select Optimism as your Active Network under Connections in the settings.
+						Rightoken is built on Optimistic Ethereum. Select Optimism as your Default Network under Connections in the settings.
 					</>,
 					noob: <>
 						Rightoken uses a network called Optimism built on top of Ethereum to give artists and investors the option to keep transactions quick and fees low. <br /> <br /> 
-						To change to this network, open Coinbase Wallet and select the settings cog on the right of the toolbar at the bottom. Next, find the Active Network option in the Connections section. 
+						To change to this network, open Coinbase Wallet and select the settings cog on the right of the toolbar at the bottom. Next, find the Default Network option in the Connections section. 
 						Finally, select Optimism under Eth Mainnets and return to your wallet in the left of the toolbar.
 					</>
 				},
 				metamask: {
 					pro: <>
-						Rightoken is built on Optimistic Ethereum. Select Optimism as your network. If you haven&apos;t added it yet you can use the following details: <br /> <br /> Network Name: <br /> Optimistic Ethereum <br /> <br /> RPC URL: <br /> https://mainnet.optimism.io <br /> <br /> 
+						Rightoken is built on Optimistic Ethereum. Select Optimism as your network. 
+						<RoundedButton onClick={ 
+							() => window.ethereum.sendAsync({
+								id: 1,
+								jsonrpc: "2.0",
+								method: "wallet_addEthereumChain",
+								params: [
+									{
+										chainId: "0xa", // 10
+										chainName: "Optimistic Ethereum",
+										rpcUrls: ["https://mainnet.optimism.io"],
+										blockExplorerUrls: ["https://optimistic.etherscan.io/"]
+									}
+								]
+							}) 
+						} customBG className="bg-green-200 hover:bg-green-300" textClassName="text-xs font-bold text-white-400" text="Switch to Optimism" />
+						<br />
+						You can also add the network manually using the following details: <br /> <br /> Network Name: <br /> Optimistic Ethereum <br /> <br /> RPC URL: <br /> https://mainnet.optimism.io <br /> <br /> 
 						Chain ID: <br /> 10 <br /> <br /> Symbol: <br /> ETH <br /> <br /> Block Explorer URL: <br /> https://optimistic.etherscan.io
 					</>,
 					noob: <>
 						Rightoken uses a network called Optimism built on top of Ethereum to give artists and investors the option to keep transactions quick and fees low. <br /> <br /> 
-						To change to this network, open MetaMask and tap the hamburger menu in the top left corner. Select Settings in the popover. Then, select Networks. 
+						<RoundedButton onClick={ 
+							() => window.ethereum.sendAsync({
+								id: 1,
+								jsonrpc: "2.0",
+								method: "wallet_addEthereumChain",
+								params: [
+									{
+										chainId: "0xa", // 10
+										chainName: "Optimistic Ethereum",
+										rpcUrls: ["https://mainnet.optimism.io"],
+										blockExplorerUrls: ["https://optimistic.etherscan.io/"]
+									}
+								]
+							}) 
+						} customBG className="bg-green-200 hover:bg-green-300" textClassName="text-xs font-bold text-white-400" text="Switch to Optimism" />
+						<br />
+						To change to this network manually, open MetaMask and tap the hamburger menu in the top left corner. Select Settings in the popover. Then, select Networks. 
 						Choose Add Network and enter these values for the following fields: <br /> <br /> Network Name: <br /> Optimistic Ethereum <br /> <br /> RPC URL: <br /> https://mainnet.optimism.io <br /> <br /> 
 						Chain ID: <br /> 10 <br /> <br /> Symbol: <br /> ETH <br /> <br /> Block Explorer URL: <br /> https://optimistic.etherscan.io <br /> <br /> 
 						Finally, click Add. MetaMask should automatically redirect to your wallet page with the new network selected, but you can confirm or change this network by selecting Wallet from the center of the main toolbar, and scrolling down and selecting Optimistic Ethereum from the Networks popup.
@@ -118,8 +151,8 @@ export default function Beta(props) {
 	const blockNumber = useBlockNumber(library, chainId)
 	const ethBalance = useEthBalance(library, account, chainId)
 
-	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace.html" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
-	const mintLinkButton = <RoundedLinkButton link="/artist.html" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
+	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
+	const mintLinkButton = <RoundedLinkButton link="/artist" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 
 	return (
 		<>
@@ -137,11 +170,11 @@ export default function Beta(props) {
 							{ (!!account && acceptableNetworks.includes(chainId))  ? "Welcome to the beta test! 🎉" : "Join the beta test" }
 						</p>
 						<p className="mt-6 max-w-2xl text-xl text-gray-500 mx-auto">
-							<a className="underline" href="/community.html#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
+							<a className="underline" href="/community#widget">Please reach out to our community with any questions here.</a> Your feedback makes us better and we love to hear from you!
 						</p>
 					</div>
 
-					<div className="mt-16 max-w-md md:max-w-none self-center justify-items-center text-center md:text-left m-auto self-center">
+					<div className="mt-16 max-w-sm md:max-w-none self-center justify-items-center text-center md:text-left m-auto self-center">
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 md:gap-x-8 gap-y-8 md:gap-y-16">
 							<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
 								0.

@@ -1,13 +1,24 @@
 import {
 	walletconnect, 
-	walletlink 
+	walletlink,
+	injected
 } from './connectors'
 
 export const connectWallet = (error, walletAppSelected, setActivatingConnector, activate, connector, deactivate) => {
 	if (error)
 		disconnectWallet(connector, deactivate)
 
-	const walletConnector = walletAppSelected === "coinbase" ? walletlink : walletconnect
+	let walletConnector
+
+	if (walletAppSelected == "metamask") {
+		walletConnector = injected
+	}
+	else if (walletAppSelected == "coinbase") {
+		walletConnector = walletlink
+	}
+	else {
+		walletConnector = walletconnect
+	}
 
 	setActivatingConnector(walletConnector)
 	activate(walletConnector)
@@ -15,9 +26,16 @@ export const connectWallet = (error, walletAppSelected, setActivatingConnector, 
 
 export const disconnectWallet = (connector, deactivate) => {
 	if (connector) {
-		connector.close()
-		deactivate()
-		connector.walletConnectProvider = undefined
+		try {
+			connector.close()
+		}
+		catch {
+			console.log("Injected connector disconnecting")
+		}
+		finally {
+			deactivate()
+			connector.walletConnectProvider = undefined
+		}
 	}
 }
 
