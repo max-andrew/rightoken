@@ -76,7 +76,7 @@ export default function Beta(props) {
 					pro: <>
 						Rightoken is built on Optimistic Ethereum. Select Optimism as your network. 
 						<RoundedButton onClick={ 
-							() => window.ethereum.sendAsync({
+							() => window?.ethereum.sendAsync({
 								id: 1,
 								jsonrpc: "2.0",
 								method: "wallet_addEthereumChain",
@@ -97,7 +97,7 @@ export default function Beta(props) {
 					noob: <>
 						Rightoken uses a network called Optimism built on top of Ethereum to give artists and investors the option to keep transactions quick and fees low. <br /> <br /> 
 						<RoundedButton onClick={ 
-							() => window.ethereum.sendAsync({
+							() => window?.ethereum.sendAsync({
 								id: 1,
 								jsonrpc: "2.0",
 								method: "wallet_addEthereumChain",

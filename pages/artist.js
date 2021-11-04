@@ -35,7 +35,7 @@ export default function Artist() {
 	const legalAgreementLibrary = {
 		socialRecovery: {
 			title: "Social Recovery",
-			body: "The original artist may verify their identity and contact the Rightoken team in case of lost Rightoken. The artist's must be verified before having lost the asset and the artist must publicly post that the token was lost to allow any potential rightful owner to come forward to dispute the issue. If a dispute arises Rightoken will initiate a dispute resolution process and transparently weigh the facts of the case before arriving at a decision. Following its ruling, a replacement Rightoken will be issued, voiding the previous token.",
+			body: "The original artist may verify their identity and contact the Rightoken team in case of lost Rightoken. The artist's must be verified before having lost the asset and the artist must publicly post that the token was lost to allow any potential rightful owner to come forward to dispute the issue. If a dispute arises Rightoken will initiate a dispute resolution process and transparently weigh the facts of the case before arriving at a decision. Following its ruling, replacement tokens will be issued, voiding the previous token.",
 			mutable: true,
 		},
 		metadata: {
@@ -60,7 +60,7 @@ export default function Artist() {
 		},
 		rightTransfer: {
 			title: "Copyright Transfer",
-			body: "You agree that perpetual, irrevocable, and exclusive license to use the song will be transferred to tokenholders, until burned whereby rights are returned to the artist.",
+			body: "You agree that perpetual, irrevocable, and exclusive license to use the song will be transferred to tokenholders, until burned or otherwise determined through a social recovery mechanism, whereby rights are returned to the artist, or to the appropriate owner, respectively.",
 			mutable: false,
 		}
 	}
@@ -81,13 +81,12 @@ export default function Artist() {
 
 	// link wallet if it is already connected (but page has refreshed)
 	useEffect(() => {
-		if (!account && getConnectedWalletApp() === walletAppSelected)
+		if ((!account && getConnectedWalletApp() === walletAppSelected) && !window?.ethereum)
 			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
 	})
 
 	const [songTitle, setSongTitle] = useState("")
 	const [artistName, setArtistName] = useState("")
-	const [resaleRoyaltyPercent, setResaleRoyaltyPercent] = useState(0)
 	const [legalName, setLegalName] = useState("")
 
 	const audioInputFile = useRef(null)
@@ -168,49 +167,7 @@ export default function Artist() {
 		return metadata.ipnft
 	}
 
-	/*const getMediaData = async () => {
-		const contentURI = await storeFile()
-		const metadataURI = await storeNFTMetadata()
-
-		const metadataJSON = generateMetadata("zora-20210101", {
-			description: [songTitle, ` view: https://ipfs.io/ipfs/${metadataURI}`].join("\n"),
-			mimeType: "audio/wav",
-			name: songTitle,
-			version: "zora-20210101",
-		})
-
-		console.log("Got metadata")
-
-		const contentHash = sha256FromBuffer(Buffer.from(contentURI))
-		const metadataHash = sha256FromBuffer(Buffer.from(metadataJSON))
-		const mediaData = constructMediaData(
-			`https://ipfs.io/ipfs/${contentURI}`,
-			`https://ipfs.io/ipfs/${metadataURI}`,
-			contentHash,
-			metadataHash
-		)
-
-		console.log("Constructed NFT")
-
-		return mediaData
-	}*/
-
-	/*const getBidShares = resaleRoyaltyPercent => {
-		let creatorShare = parseInt(resaleRoyaltyPercent)
-		let ownerShare = Math.min(Math.max(100-parseInt(resaleRoyaltyPercent || 0), 0), 100)
-
-		const bidShares = constructBidShares(
-			creatorShare, // creator share
-			ownerShare, // owner share
-			0 // prevOwner share
-		)
-
-		console.log("Got resale split")
-
-		return bidShares
-	}
-
-	const storeFile = async () => {
+	/*const storeFile = async () => {
 		const content = new Blob([files][0])
 		// const cid = await client.storeBlob(content)
 		return cid
@@ -376,18 +333,7 @@ export default function Artist() {
 							</div>
 							<br />
 							<br />
-							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full" />
-							<br />
-							<br />
-							<p className="my-2 text-md text-center font-semibold italic">Get paid after every resale</p>
-							<p className="text-sm text-center font-semibold font-mono">¢</p>
-							<br />
-							<p className="text-xs font-mono my-2">Set the percent of profit you receive for each subsequent sale. The closer this number is set to 0%, the higher the expected value of the Rightoken. This is because investors will make more profit after your cut from each sale. Still, this royalty can help artists make sure that they continue to benefit from their work, especially if the song explodes in popularity after the initial sale.</p>
-							<br/>
-							<p className="text-sm font-mono">Creator resale royalty:&nbsp;<input className="bg-transparent font-semibold border-indigo-100 border-b-2 outline-none py-2 text-xs font-mono text-gray-700 font-center" spellCheck="false" type="number" min="0" max="50" placeholder="0" value={resaleRoyaltyPercent} onChange={e => setResaleRoyaltyPercent(event.target.value)} />%</p>
-							<br />
-							<p className="text-xs font-mono text-gray-500">(Investor profit from secondary market sale: {Math.min(Math.max(100-parseInt(resaleRoyaltyPercent || 0), 0), 100)}%)</p>
-							<br />
+							
 							<br />
 							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full" />
 							<br />

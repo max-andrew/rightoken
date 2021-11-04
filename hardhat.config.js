@@ -1,5 +1,4 @@
 require('@nomiclabs/hardhat-ethers')
-require('@eth-optimism/hardhat-ovm')
 const { infuraApiKey, mnemonic } = require('./secrets.json')
 
 /**
@@ -8,9 +7,6 @@ const { infuraApiKey, mnemonic } = require('./secrets.json')
  module.exports = {
 	solidity: {
 		compilers: [
-			{
-				version: "0.6.6",
-			},
 			{
 				version: "0.8.4",
 			},
@@ -21,21 +17,19 @@ const { infuraApiKey, mnemonic } = require('./secrets.json')
 			url: `https://goerli.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 		},
-		mumbai: {
-			url: `https://polygon-mumbai.infura.io/v3/${infuraApiKey}`,
+		kovan: {
+			url: `https://kovan.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
+			companionNetworks: {
+				l2: "kovanOptimism",
+			},
 		},
-		optimistic: {
-			url: `https://optimism-mainnet.infura.io/v3/${infuraApiKey}`,
-			accounts: { mnemonic: mnemonic },
-			gasPrice: 15000000,
-			ovm: true,
-		},
-		optimistic-kovan: {
+		kovanOptimism: {
 			url: `https://optimism-kovan.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
-			gasPrice: 15000000,
-			ovm: true,
+			companionNetworks: {
+				l1: "kovan",
+			},
 		}
 	},
 };

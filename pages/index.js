@@ -14,7 +14,7 @@ import Footer from '../components/Footer'
 const navigation = [
 	{ name: 'Artists', href: '/artist' },
 	{ name: 'Community', href: '/community' },
-	{ name: 'Marketplace', href: 'https://zora.co' },
+	{ name: 'Marketplace', href: 'https://app.uniswap.org/#/swap' },
 ]
 
 const features = [

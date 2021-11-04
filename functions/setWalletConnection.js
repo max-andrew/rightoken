@@ -47,6 +47,9 @@ export const getConnectedWalletApp = () => {
 		else if (!!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) {
 			return "coinbase"
 		}
+		else if (!!window.ethereum) {
+			return "injected"
+		}
 		else {
 			return ""
 		}
