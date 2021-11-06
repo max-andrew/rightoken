@@ -2,8 +2,12 @@ import 'tailwindcss/tailwind.css'
 import { Web3ReactProvider } from '@web3-react/core'
 import { Web3Provider } from '@ethersproject/providers'
 
+import { ethers } from "ethers"
+
 function getLibrary(provider) {
-	return new Web3Provider(provider)
+	// return new Web3Provider(provider)
+	// return ethers
+	return new ethers.providers.Web3Provider(window.ethereum)
 }
 
 function App({ Component, pageProps }) {

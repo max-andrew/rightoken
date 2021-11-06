@@ -11,13 +11,13 @@ export const connectWallet = (error, walletAppSelected, setActivatingConnector, 
 	let walletConnector
 
 	if (walletAppSelected == "metamask") {
-		walletConnector = injected
+		walletConnector = walletconnect
 	}
 	else if (walletAppSelected == "coinbase") {
 		walletConnector = walletlink
 	}
 	else {
-		walletConnector = walletconnect
+		walletConnector = injected
 	}
 
 	setActivatingConnector(walletConnector)
@@ -50,8 +50,6 @@ export const getConnectedWalletApp = () => {
 		else if (!!window.ethereum) {
 			return "injected"
 		}
-		else {
-			return ""
-		}
 	}
+	return ""
 }

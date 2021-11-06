@@ -1,10 +1,10 @@
-require('@nomiclabs/hardhat-ethers')
+import "@nomiclabs/hardhat-ethers"
 const { infuraApiKey, mnemonic } = require('./secrets.json')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
- module.exports = {
+module.exports = {
 	solidity: {
 		compilers: [
 			{
