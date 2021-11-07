@@ -77,7 +77,7 @@ export default function Artist() {
 
 	// link wallet if it is already connected (but page has refreshed)
 	useEffect(async () => {
-		if ((!account && getConnectedWalletApp() === walletAppSelected) && await !!window?.ethereum?.selectedAddress)
+		if (!account)
 			connectWallet(error, walletAppSelected, setActivatingConnector, activate, connector, deactivate)
 	})
 
