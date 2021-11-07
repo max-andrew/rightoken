@@ -278,7 +278,9 @@ export default function Artist() {
 		const liquidityReceipt = await liquidity.wait()
 		console.log(liquidityReceipt)
 
-		alert("Welcome to the new world of music! 🎉 Keep this token address for the next step: " + customERC20RightokenAddress)
+		const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=1&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
+
+		alert("Welcome to the new world of music! 🎉🎺🤘 Here's your link to share with investors: " + customUniswapSwapLink)
 
 		/*
 		if (formIsValid && library)
