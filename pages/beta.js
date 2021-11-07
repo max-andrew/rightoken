@@ -77,7 +77,7 @@ export default function Beta(props) {
 						Rightoken is currently in test mode. Select Kovan as your active network.
 					</>,
 					noob: <>
-						Rightoken uses a network called Kovan to collect user feedback before launching on the mainnet. Change to this network by selecting Wallet from the center of the main toolbar and selecting Kovan Test Network from the Networks popup.
+						Rightoken uses a network called Kovan to test Rightoken and collect user feedback before launching on the mainnet. Change to this network by selecting Wallet from the center of the main toolbar and selecting Kovan Test Network from the Networks popup.
 					</>
 				}
 			},
