@@ -238,8 +238,6 @@ export default function Artist() {
 		// wait for approval transaction to be mined
 		await approvedContract.wait()
 
-		// get asking price and quantity listed
-
 		// create a Uniswap LP
 		const uniswapRouterContract = new ethers.Contract("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", IUniswapV2Router02.abi, signer)
 		const liquidity = await uniswapRouterContract.addLiquidityETH(customERC20RightokenAddress, (saleAmount * 10 ** 18).toString(), (.25 * 10 ** 18).toString(), (.01 * 10 ** 18).toString(), account, (Date.now() + 1000 * 60 * 10).toString(), {from: account, gasPrice: ethers.utils.parseUnits('5', 'gwei'), gasLimit: 3400000, value: ((askingPrice*(saleAmount/100)) * 10 ** 18).toString()})
@@ -253,7 +251,7 @@ export default function Artist() {
 		scrollTo(topOfPage)
 		setRunConfetti(true)
 		setTimeout(() => setMintSuccessful(false), 12000)
-		alert("Welcome to the new world of music! 🎉🎺🤘 \n \n Here's your link to share with investors: \n" + customUniswapSwapLink)
+		alert("Welcome to the new world of music! 🎉🎺🤘\n\nHere's your link to share with investors: \n" + customUniswapSwapLink)
 
 		/*
 		if (formIsValid && library)
