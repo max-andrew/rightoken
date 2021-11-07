@@ -17,14 +17,14 @@ const RPC_URLS = {
 export const injected = new InjectedConnector({ supportedChainIds: [1, 4, 10, 42, 69, 42161, 421611] })
 
 export const walletconnect = new WalletConnectConnector({
-	rpc: { 1: RPC_URLS[1], 4: RPC_URLS[4], 42161: RPC_URLS[42161], 421611: RPC_URLS[421611] },
+	rpc: { 1: RPC_URLS[1], 4: RPC_URLS[4], 42: RPC_URLS[42], 42161: RPC_URLS[42161], 421611: RPC_URLS[421611] },
 	bridge: "https://bridge.walletconnect.org",
 	qrcode: true,
 	pollingInterval: POLLING_INTERVAL
 })
 
 export const walletlink = new WalletLinkConnector({
-	url: RPC_URLS[1, 4, 42161, 421611],
+	url: RPC_URLS[1, 4, 42, 42161, 421611],
 	qrcode: true,
 	appName: "Rightoken"
 })
