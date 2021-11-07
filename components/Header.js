@@ -9,7 +9,6 @@ export default function Header(props) {
 	const navigation = [
 		{ name: 'Artists', href: '/artist' },
 		{ name: 'Community', href: '/community' },
-		{ name: 'Marketplace', href: 'https://app.uniswap.org/#/swap' },
 	]
 
 	return (

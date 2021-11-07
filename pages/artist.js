@@ -33,11 +33,6 @@ import Confetti from 'react-confetti'
 
 export default function Artist() {
 	const legalAgreementLibrary = {
-		socialRecovery: {
-			title: "Social Recovery",
-			body: "The original artist may verify their identity and contact the Rightoken team in case of lost Rightoken. The artist's must be verified before having lost the asset and the artist must publicly post that the token was lost to allow any potential rightful owner to come forward to dispute the issue. If a dispute arises Rightoken will initiate a dispute resolution process and transparently weigh the facts of the case before arriving at a decision. Following its ruling, replacement tokens will be issued, voiding the previous token.",
-			mutable: true,
-		},
 		metadata: {
 			title: "Metadata",
 			body: "The sound recording title and associated cover art may be distributed by the tokenholder, but copyright is not conferred for these works.",
@@ -89,6 +84,9 @@ export default function Artist() {
 	const [songTitle, setSongTitle] = useState("")
 	const [artistName, setArtistName] = useState("")
 	const [legalName, setLegalName] = useState("")
+
+	const [askingPrice, setAskingPrice] = useState("")
+	const [saleAmount, setSaleAmount] = useState("")
 
 	const audioInputFile = useRef(null)
 	const [audioFileName, setAudioFileName] = useState("")
@@ -169,12 +167,6 @@ export default function Artist() {
 	// 	return metadata.ipnft
 	// }
 
-	/*const storeFile = async () => {
-		const content = new Blob([files][0])
-		// const cid = await client.storeBlob(content)
-		return cid
-	}*/
-
 	const scrollTo = (ref) => ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
 
 	const getLegalAgreementSectionJSX = sectionKey => {
@@ -205,32 +197,6 @@ export default function Artist() {
 
 		return sectionsIncluded
 	}
-
-	/*const mintZNFT = async () => {
-		const waitConfirmations = 2
-		setMinting(true)
-
-		const mediaData = await getMediaData()
-		const bidShares = await getBidShares(resaleRoyaltyPercent)
-
-		const zora = new Zora(library.getSigner(), chainId)
-		console.log("Got signer")
-
-		const tx = await zora.mint(mediaData, getBidShares(resaleRoyaltyPercent))
-		console.log("Minted")
-
-		console.log(`Waiting for ${waitConfirmations} confirmations`)
-		tx.wait(waitConfirmations).then((a) => {
-			console.log(a)
-			console.log(tx)
-			debugger
-			setMinting(false)
-			setMintSuccessful(true)
-			scrollTo(topOfPage)
-			setRunConfetti(true)
-			setTimeout(() => setMintSuccessful(false), 12000)
-		})
-	}*/
 
 	const mintRightoken = async () => {
 		const signer = library.getSigner(account)
@@ -272,13 +238,15 @@ export default function Artist() {
 		// wait for approval transaction to be mined
 		await approvedContract.wait()
 
+		// get asking price and quantity listed
+
 		// create a Uniswap LP
 		const uniswapRouterContract = new ethers.Contract("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", IUniswapV2Router02.abi, signer)
-		const liquidity = await uniswapRouterContract.addLiquidityETH(customERC20RightokenAddress, (10 * 10 ** 18).toString(), (8 * 10 ** 18).toString(), (.01 * 10 ** 18).toString(), account, (Date.now() + 1000 * 60 * 10).toString(), {from: account, gasPrice: ethers.utils.parseUnits('5', 'gwei'), gasLimit: 3400000, value: (.025 * 10 ** 18).toString()})
+		const liquidity = await uniswapRouterContract.addLiquidityETH(customERC20RightokenAddress, (saleAmount * 10 ** 18).toString(), (.25 * 10 ** 18).toString(), (.01 * 10 ** 18).toString(), account, (Date.now() + 1000 * 60 * 10).toString(), {from: account, gasPrice: ethers.utils.parseUnits('5', 'gwei'), gasLimit: 3400000, value: ((askingPrice*(saleAmount/100)) * 10 ** 18).toString()})
 		const liquidityReceipt = await liquidity.wait()
 		console.log(liquidityReceipt)
 
-		const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=1&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
+		const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
 		
 		setMinting(false)
 		setMintSuccessful(true)
@@ -347,12 +315,12 @@ export default function Artist() {
 							<p className="text-xs font-mono text-center">❦</p>
 							<br />
 							<br />
-							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full" />
+							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full py-4" />
 							<br />
 							<br />
 							<div>
 								<div>
-									<p className="tracking-widest text-center font-extrabold text-2xl mb-6 text-indigo-600 uppercase">• Presenting •</p>
+									<p className="tracking-widest text-center font-extrabold text-2xl mb-6 text-indigo-600 uppercase py-6">• Presenting •</p>
 									<input className="bg-transparent font-semibold border-indigo-100 border-b-2 outline-none max-w-md py-2 text-3xl font-mono text-gray-700 font-center" spellCheck="false" placeholder="Song Title" value={songTitle} onChange={e => setSongTitle(event.target.value)} />
 								</div>
 								<br />
@@ -363,12 +331,26 @@ export default function Artist() {
 								</div>
 							</div>
 							<br />
+							<br />
+							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full py-4" />
+							<br />
+							<br />
+							<div className="flex flex-col">
+								<p className="tracking-wider text-center italic font-bold text-lg mb-4 text-gray-800 py-4">initially offering</p>
+								<input className="bg-transparent font-semibold border-indigo-100 border-b-2 outline-none py-2 text-2xl font-mono text-gray-700 place-self-center" spellCheck="false" placeholder="10%" type="number" min="0.5" max="100" step="0.5" value={saleAmount} onChange={e => setSaleAmount(event.target.value)} />
+							</div>
+							<br />
+							<br />
+							<div className="flex flex-col">
+								<p className="tracking-wider text-center italic font-bold text-lg mb-4 text-gray-800 py-4">for the low price of</p>
+								<input className="bg-transparent font-semibold border-indigo-100 border-b-2 outline-none py-2 text-2xl font-mono text-gray-700 place-self-center" spellCheck="false" placeholder="(X Eth / 100%)" type="number" min="0.1" step="0.1" value={askingPrice} onChange={e => setAskingPrice(event.target.value)} />
+							</div>
 
 							<br />
 							<br />
 							
 							<br />
-							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full" />
+							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full py-6" />
 							<br />
 							<br />
 							<p className="my-2 text-md text-center font-semibold italic">The Rightoken holder shall agree to the following and be granted the rights included</p>
@@ -379,10 +361,10 @@ export default function Artist() {
 							</div>
 							<br />
 							<br />
-							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full" />
+							<div className="border-b-2 border-indigo-100 border-dotted border-opacity-80 min-w-full py-4" />
 							<br />
 							<br />
-							<div className="flex flex-row text-sm word-wrap">
+							<div className="flex flex-row text-sm word-wrap py-4">
 								<p>I,&nbsp;<input className="bg-transparent outline-none border-b-2 border-indigo-100" placeholder="Full Legal Name" value={legalName} onChange={e => setLegalName(event.target.value)}  />,&nbsp;affirm I am the rightful owner of sound recording and agree to the terms constructed above.</p>
 							</div>
 							<br />

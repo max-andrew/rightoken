@@ -43,15 +43,15 @@ export default function Beta(props) {
 
 	const acceptableMainNetworks = [1, 10]
 	const acceptableTestNetworks = [5, 42, 69]
-	const optimisticNetworks = [10, 69]
+	const optimisticNetworks = [42, 10, 69]
 	const acceptableNetworks = acceptableMainNetworks.concat(acceptableTestNetworks)
 
 	const [cryptoPro, setCryptoPro] = useState(false)
 
 	const instructionSet = {
 		download: {
-			coinbase: <>The Coinbase Wallet app is how you store your rightokens independently of the Rightoken organization. This is not the same as the Coinbase app for buying and selling crypto. No Coinbase account is required. <br /> <br /> You can optionally choose to use the MetaMask wallet instead of Coinbase Wallet, though this will require slightly more setup.</>,
-			metamask: <>The MetaMask app is how you store your rightokens independently of the Rightoken organization. You can optionally choose to use Coinbase Wallet instead of MetaMask.</>,
+			coinbase: <>The Coinbase Wallet app is how you store your rightokens independently of the Rightoken organization. This is not the same as the Coinbase app for buying and selling crypto. No Coinbase account is required. <br /> <br /> You can optionally choose to use the MetaMask browser extension.</>,
+			metamask: <>The MetaMask app is how you store your rightokens independently of the Rightoken organization. You can optionally choose to use the MetaMask browser extension.</>,
 		},
 		connect: {
 			unconnected: {
@@ -74,64 +74,26 @@ export default function Beta(props) {
 				},
 				metamask: {
 					pro: <>
-						Rightoken is built on Optimistic Ethereum. Select Optimism as your network. 
-						<RoundedButton onClick={ 
-							() => window?.ethereum.sendAsync({
-								id: 1,
-								jsonrpc: "2.0",
-								method: "wallet_addEthereumChain",
-								params: [
-									{
-										chainId: "0xa", // 10
-										chainName: "Optimistic Ethereum",
-										rpcUrls: ["https://mainnet.optimism.io"],
-										blockExplorerUrls: ["https://optimistic.etherscan.io/"]
-									}
-								]
-							}) 
-						} customBG className="bg-green-200 hover:bg-green-300" textClassName="text-xs font-bold text-white-400" text="Switch to Optimism" />
-						<br />
-						You can also add the network manually using the following details: <br /> <br /> Network Name: <br /> Optimistic Ethereum <br /> <br /> RPC URL: <br /> https://mainnet.optimism.io <br /> <br /> 
-						Chain ID: <br /> 10 <br /> <br /> Symbol: <br /> ETH <br /> <br /> Block Explorer URL: <br /> https://optimistic.etherscan.io
+						Rightoken is currently in test mode. Select Kovan as your active network.
 					</>,
 					noob: <>
-						Rightoken uses a network called Optimism built on top of Ethereum to give artists and investors the option to keep transactions quick and fees low. <br /> <br /> 
-						<RoundedButton onClick={ 
-							() => window?.ethereum.sendAsync({
-								id: 1,
-								jsonrpc: "2.0",
-								method: "wallet_addEthereumChain",
-								params: [
-									{
-										chainId: "0xa", // 10
-										chainName: "Optimistic Ethereum",
-										rpcUrls: ["https://mainnet.optimism.io"],
-										blockExplorerUrls: ["https://optimistic.etherscan.io/"]
-									}
-								]
-							}) 
-						} customBG className="bg-green-200 hover:bg-green-300" textClassName="text-xs font-bold text-white-400" text="Switch to Optimism" />
-						<br />
-						To change to this network manually, open MetaMask and tap the hamburger menu in the top left corner. Select Settings in the popover. Then, select Networks. 
-						Choose Add Network and enter these values for the following fields: <br /> <br /> Network Name: <br /> Optimistic Ethereum <br /> <br /> RPC URL: <br /> https://mainnet.optimism.io <br /> <br /> 
-						Chain ID: <br /> 10 <br /> <br /> Symbol: <br /> ETH <br /> <br /> Block Explorer URL: <br /> https://optimistic.etherscan.io <br /> <br /> 
-						Finally, click Add. MetaMask should automatically redirect to your wallet page with the new network selected, but you can confirm or change this network by selecting Wallet from the center of the main toolbar, and scrolling down and selecting Optimistic Ethereum from the Networks popup.
+						Rightoken uses a network called Kovan to collect user feedback before launching on the mainnet. Change to this network by selecting Wallet from the center of the main toolbar and selecting Kovan Test Network from the Networks popup.
 					</>
 				}
 			},
 			configured: <>
-				Nice work! Your wallet successfully linked to Optimistic Ethereum. Make sure to stay on this network when using Rightoken.
+				Nice work! Your wallet successfully linked to Kovan. Make sure to stay on this network when using Rightoken.
 			</>
 		},
 		done: <>
-			You&apos;re ready to support growing artists and build your portfolio! Browse rightokens now at the marketplace. Any rightokens you own can be made available there.
+			You&apos;re ready to mint rightokens and build your portfolio!
 		</>
 	}
 
 	// get query params for default wallet selection
 	const router = useRouter()
 	// track user's wallet preference
-	const [walletAppSelected, setWalletAppSelected] = useWalletAppSelected(getConnectedWalletApp(), router.query.wallet)
+	const [walletAppSelected, setWalletAppSelected] = useState("metamask")
 
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
@@ -228,9 +190,6 @@ export default function Beta(props) {
 										: <RoundedButton onClick={() => disconnectWallet(connector, deactivate)} customBG className="bg-red-200 hover:bg-red-300" textClassName="text-sm font-bold" text="Disconnect" />
 									
 								}
-								{ !account && 
-									<RoundedButton onClick={ () => setWalletAppSelected(walletAppSelected === "coinbase" ? "metamask" : "coinbase") } customBG className="bg-gray-200 hover:bg-gray-300" textClassName="text-xs font-bold text-gray-400" text={"Use " + (walletAppSelected === "coinbase" ? "MetaMask" : "Coinbase")} />
-								}
 							</div>
 
 							{ (!cryptoPro || account) &&
@@ -316,7 +275,6 @@ export default function Beta(props) {
 										</p>
 									</div>
 									<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start mb-6 md:mb-0 m-auto md:m-0 space-y-4">
-										{ browseMarketplaceLinkButton }
 										{ mintLinkButton }
 									</div>
 								</>
