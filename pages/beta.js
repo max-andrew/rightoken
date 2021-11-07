@@ -109,10 +109,6 @@ export default function Beta(props) {
 	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
 	useInactiveListener(!triedEager || !!activatingConnector)
 
-	// get web3 data
-	const blockNumber = useBlockNumber(library, chainId)
-	const ethBalance = useEthBalance(library, account, chainId)
-
 	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
 	const mintLinkButton = <RoundedLinkButton link="/artist" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 
