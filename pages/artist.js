@@ -29,8 +29,6 @@ import IUniswapV2Router02 from '@uniswap/v2-periphery/build/IUniswapV2Router02.j
 
 import { ethers } from "ethers"
 
-import { NFTStorage, File } from 'nft.storage'
-
 import Confetti from 'react-confetti'
 
 export default function Artist() {
@@ -147,29 +145,29 @@ export default function Artist() {
 	}
 
 	const isFormValid = () => {
-		return (songTitle !== "" && artistName !== "" && legalName !== "" && audioFileName !== "")
+		return (songTitle !== "" && artistName !== "" && legalName !== "" /*&& audioFileName !== ""*/)
 	}
 
-	const storeNFTMetadata = async () => {
-		const legalAgreement = getRightokenLegalAgreement()
+	// const storeNFTMetadata = async () => {
+	// 	const legalAgreement = getRightokenLegalAgreement()
 
-		const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
-		const client = new NFTStorage({ token: nftStorageAPIKey })
+	// 	const nftStorageAPIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkyNmViRWFFMUUyQmUxNDFCREM0QjIxRjBGYTlBNzdiMDU3OGZlNjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyODQ1MjAxMDQ4MiwibmFtZSI6IlJpZ2h0b2tlbiJ9.D8o845sX8yBmgwDc6DkNSTFJ4-auXFjRGHLyC7MOSIQ"
+	// 	const client = new NFTStorage({ token: nftStorageAPIKey })
 
-		const metadata = await client.store({
-			name: 'Rightoken',
-			description: 'Test Rightoken v0',
-			image: new File(['./rightokenNFT.png'], 'rightokenNFT.png', { type: 'image/png' }),
-			properties: {
-				// audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
-				songTitle,
-				// artistName,
-				// legalAgreement,
-				// legalName,
-			}
-		})
-		return metadata.ipnft
-	}
+	// 	const metadata = await client.store({
+	// 		name: 'Rightoken',
+	// 		description: 'Test Rightoken v0',
+	// 		image: new File(['./rightokenNFT.png'], 'rightokenNFT.png', { type: 'image/png' }),
+	// 		properties: {
+	// 			// audio: new File([/* data */], [files[0]], { type: 'audio/wav' }),
+	// 			songTitle,
+	// 			// artistName,
+	// 			// legalAgreement,
+	// 			// legalName,
+	// 		}
+	// 	})
+	// 	return metadata.ipnft
+	// }
 
 	/*const storeFile = async () => {
 		const content = new Blob([files][0])
@@ -237,6 +235,8 @@ export default function Artist() {
 	const mintRightoken = async () => {
 		const signer = library.getSigner(account)
 
+		setMinting(true)
+		
 		// deploy custom ERC20 contract
 		const erc20RightokenABI = [
 			{
@@ -279,8 +279,13 @@ export default function Artist() {
 		console.log(liquidityReceipt)
 
 		const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=1&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
-
-		alert("Welcome to the new world of music! 🎉🎺🤘 Here's your link to share with investors: " + customUniswapSwapLink)
+		
+		setMinting(false)
+		setMintSuccessful(true)
+		scrollTo(topOfPage)
+		setRunConfetti(true)
+		setTimeout(() => setMintSuccessful(false), 12000)
+		alert("Welcome to the new world of music! 🎉🎺🤘 \n \n Here's your link to share with investors: \n" + customUniswapSwapLink)
 
 		/*
 		if (formIsValid && library)
@@ -358,28 +363,7 @@ export default function Artist() {
 								</div>
 							</div>
 							<br />
-							<div className="text-center">
-								{!!audioFileName &&
-									<div className="space-y-2 mt-8 p-4 border-purple-900 border-t-2 border-b-2">
-										<p className="text-sm font-mono font-semibold">Located at</p>
-										<p className="text-md font-mono font-bold">{audioFileName}</p>
-										<p className="text-xs font-mono font-semibold">(certified ҉ <i>slapper</i> ҉)</p>
-									</div>
-								}
-								<br />
-								<div className="flex justify-center text-sm text-gray-600">
-									<label
-										htmlFor="audio-upload"
-										className={"mb-2 relative cursor-pointer hover:bg-indigo-50 rounded-md font-medium focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500 capitalize" + " " + (!!audioFileName ? "text-xs p-2 text-gray-500 hover:text-gray-600" : "bg-white text-md p-4 text-purple-500 hover:text-purple-600") }
-									>
-										<span>{(!!audioFileName ? "Choose a different track" : "Upload master track")} &nbsp; ♫</span>
-										<input id="audio-upload" name="audio-upload" type="file" accept=".wav" className="sr-only" ref={audioInputFile} onChange={e => setFiles(e.target.files)} multiple required />
-									</label>
-								</div>
-								{(!audioFileName &&
-									<p className="text-xs font-mono text-gray-500">WAV up to 80MB</p>
-								)}
-							</div>
+
 							<br />
 							<br />
 							
