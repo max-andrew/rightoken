@@ -43,7 +43,7 @@ export default function Beta(props) {
 
 	const acceptableMainNetworks = [1, 10]
 	const acceptableTestNetworks = [5, 42, 69]
-	const optimisticNetworks = [42, 10, 69]
+	const optimisticNetworks = [1, 42, 10, 69]
 	const acceptableNetworks = acceptableMainNetworks.concat(acceptableTestNetworks)
 
 	const [cryptoPro, setCryptoPro] = useState(false)
@@ -190,7 +190,7 @@ export default function Beta(props) {
 
 							{ (!cryptoPro || account) &&
 								<>
-									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ ((!cryptoPro && account) || (cryptoPro && optimisticNetworks.includes(chainId)))  && "text-green-600" } `}>
+									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ ((!cryptoPro && account) || (cryptoPro && acceptableTestNetworks.includes(chainId)))  && "text-green-600" } `}>
 										2.
 									</p>
 									<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
@@ -204,9 +204,9 @@ export default function Beta(props) {
 														!account ?
 															instructionSet.connect.unconnected.noob
 															: instructionSet.connect.connected
-														: optimisticNetworks.includes(chainId) ?
+														: acceptableTestNetworks.includes(chainId) ?
 															instructionSet.configure.configured
-															: instructionSet.configure.unconfigured[walletAppSelected].pro
+															: instructionSet.configure.unconfigured["metamask"].pro
 
 												}
 											</p>
@@ -227,9 +227,9 @@ export default function Beta(props) {
 								</>
 							}
 
-							{ account && (!cryptoPro || (cryptoPro && optimisticNetworks.includes(chainId))) && 
+							{ account && (!cryptoPro || (cryptoPro && acceptableTestNetworks.includes(chainId))) && 
 								<>
-									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ optimisticNetworks.includes(chainId) && "text-green-600" } `}>
+									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ acceptableTestNetworks.includes(chainId) && "text-green-600" } `}>
 										3.
 									</p>
 									<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
@@ -239,8 +239,8 @@ export default function Beta(props) {
 										<p className="text-sm font-mono">
 											{ 
 												!cryptoPro ?
-													!optimisticNetworks.includes(chainId) ?
-														instructionSet.configure.unconfigured[walletAppSelected].noob
+													!acceptableTestNetworks.includes(chainId) ?
+														instructionSet.configure.unconfigured["metamask"].noob
 														: instructionSet.configure.configured
 													: instructionSet.done
 											}
@@ -257,9 +257,9 @@ export default function Beta(props) {
 								</>
 							}
 
-							{ account && optimisticNetworks.includes(chainId) && !cryptoPro &&
+							{ account && acceptableTestNetworks.includes(chainId) && !cryptoPro &&
 								<>
-									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ optimisticNetworks.includes(chainId) && "text-green-600" } `}>
+									<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ acceptableTestNetworks.includes(chainId) && "text-green-600" } `}>
 										4.
 									</p>
 									<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
