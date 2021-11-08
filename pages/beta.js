@@ -46,7 +46,7 @@ export default function Beta(props) {
 	const optimisticNetworks = [1, 42, 10, 69]
 	const acceptableNetworks = acceptableMainNetworks.concat(acceptableTestNetworks)
 
-	const [cryptoPro, setCryptoPro] = useState(false)
+	const [cryptoPro, setCryptoPro] = useState(true)
 
 	const instructionSet = {
 		download: {
@@ -55,7 +55,7 @@ export default function Beta(props) {
 		},
 		connect: {
 			unconnected: {
-				pro: <>Rightoken currently supports the Coinbase Wallet and MetaMask mobile wallets. Hit Connect and scan the QR code inside the wallet app.</>,
+				pro: <>Rightoken currently only supports the MetaMask browser wallet.</>,
 				noob: <>Once you finish creating a wallet, you&apos;re ready to link it to Rightoken. Hit Connect and scan the QR code inside the wallet app.</>
 			},
 			connected: <>Your wallet is connected! Next you have to configure it.</>,
@@ -93,7 +93,7 @@ export default function Beta(props) {
 	// get query params for default wallet selection
 	const router = useRouter()
 	// track user's wallet preference
-	const [walletAppSelected, setWalletAppSelected] = useState(getConnectedWalletApp())
+	const [walletAppSelected, setWalletAppSelected] = useState("injected")
 
 	// handle logic to recognize the connector currently being activated
 	const [activatingConnector, setActivatingConnector] = useActivatingConnector(connector)
@@ -134,29 +134,6 @@ export default function Beta(props) {
 
 					<div className="mt-16 max-w-sm md:max-w-none self-center justify-items-center text-center md:text-left m-auto self-center">
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 md:gap-x-8 gap-y-8 md:gap-y-16">
-							<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
-								0.
-							</p>
-							<div className="w-full lg:max-w-xs self-center sm:place-self-center space-y-3">
-								<p className="text-2xl font-semibold">
-									{ !cryptoPro ? "New to crypto?" : "Crypto pro mode ⚡️" }
-								</p>
-								<p className="text-sm font-mono">
-									{ !cryptoPro &&
-										"More forward to the next step if you're a crypto beginner and we'll provide additional instructions to get you started from scratch. Unselect the box if you're a crypto pro though and we'll streamline this tutorial."
-									}
-								</p>
-							</div>
-							<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start mb-6 md:mb-0 m-auto md:m-0 space-y-3">
-								<div>
-									<input
-										className="my-4"
-										type="checkbox"
-										defaultChecked={!cryptoPro}
-										onChange={() => setCryptoPro(!cryptoPro)} />
-									<p className="text-sm font-mono">Simple instructions</p>
-								</div>
-							</div>
 
 							<p className={`text-4xl font-mono font-semibold self-center md:place-self-center md:justify-self-end ${ account && "text-green-600" } `}>
 								1.
@@ -167,7 +144,7 @@ export default function Beta(props) {
 								</p>
 								<p className="text-sm font-mono">
 									{ !cryptoPro ? 
-										instructionSet.download[walletAppSelected] 
+										instructionSet.download["metamask"] 
 										: !account ?
 											instructionSet.connect.unconnected.pro
 											: instructionSet.connect.connected }
