@@ -109,7 +109,6 @@ export default function Beta(props) {
 	// handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
 	useInactiveListener(!triedEager || !!activatingConnector)
 
-	const browseMarketplaceLinkButton = <RoundedLinkButton link="/marketplace" text="Browse now" customBG className="bg-green-500 hover:bg-green-600" textClassName="text-sm font-bold hover:bg-green-600" />
 	const mintLinkButton = <RoundedLinkButton link="/artist" text="Mint now" customBG className="bg-green-300 hover:bg-green-400" textClassName="text-sm font-bold" />
 
 	return (
@@ -226,7 +225,6 @@ export default function Beta(props) {
 									{
 										cryptoPro ?
 											<div className="flex flex-col self-center text-center w-1/2 md:justify-self-start mb-6 md:mb-0 m-auto md:m-0 space-y-4">
-												{ browseMarketplaceLinkButton }
 												{ mintLinkButton }
 											</div>
 											: <div />
