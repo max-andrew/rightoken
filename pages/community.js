@@ -35,6 +35,7 @@ export default function Community() {
 							</div>
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
 								Rightoken is a community-first project built collaboratively by artists, developers, and music fans around the world. Our mission is to give the music industry to artists.
+							</p>
 						</div>
 
 						<div className="mt-16" id="widget">
