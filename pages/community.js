@@ -24,7 +24,7 @@ export default function Community() {
 						<div className="lg:text-center">
 							<h2 className="text-base text-purple-600 font-semibold tracking-wide uppercase">Community</h2>
 							<p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-								Companies aren&apos;t very punk rock.
+								Community is very punk rock.
 							</p>
 							<div className="mt-8 w-full text-center flex items-center justify-center">
 								<img
@@ -34,8 +34,7 @@ export default function Community() {
 								/>
 							</div>
 							<p className="mt-6 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-								Rightoken is a community-first project built collaboratively by artists, developers, and music fans around the world. Our mission is to give the music industry to artists. <a className="underline" href="https://www.dropbox.com/s/mb9hf9u5sg1x4xc/Rightoken%20Whitepaper?dl=0">Read more about our vision for Rightoken and artist empowerment here.</a>
-							</p>
+								Rightoken is a community-first project built collaboratively by artists, developers, and music fans around the world. Our mission is to give the music industry to artists.
 						</div>
 
 						<div className="mt-16" id="widget">
