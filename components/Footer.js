@@ -7,14 +7,8 @@ export default function Footer(props) {
 
 	return (
 		<footer className="flex items-center justify-center w-full h-24 border-t">
-			<a
-				className="flex items-center justify-center"
-				href="/"
-				rel="noopener noreferrer"
-			>
-				<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-6 mr-2" />
-				{' '}Written {sadverb} in NYC
-			</a>
+			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5 mr-2" />
+			<p className="text-sm">Written {sadverb} in NYC</p>
 		</footer>
 	)
 }

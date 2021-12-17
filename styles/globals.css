@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	@font-face {
+		font-family: Apercu;
+		font-weight: 300;
+		src: url(/fonts/apercu/Apercu-Light.otf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 400;
+		src: url(/fonts/apercu/Apercu.ttf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 500;
+		src: url(/fonts/apercu/Apercu-Medium.otf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 700;
+		src: url(/fonts/apercu/Apercu-Bold.otf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 300;
+		font-style: italic;
+		src: url(/fonts/apercu/Apercu-Light-Italic.ttf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 400;
+		font-style: italic;
+		src: url(/fonts/apercu/Apercu-Italic.otf);
+	}
+	@font-face {
+		font-family: Apercu;
+		font-weight: 700;
+		font-style: italic;
+		src: url(/fonts/apercu/Apercu-Bold-Italic.otf);
+	}
+	@font-face {
+		font-family: Apercu-Mono;
+		font-weight: 400;
+		src: url(/fonts/apercu/Apercu-Mono.otf);
+	}
+}
