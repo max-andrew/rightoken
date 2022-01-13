@@ -1,4 +1,4 @@
-import "@nomiclabs/hardhat-ethers"
+require('@nomiclabs/hardhat-ethers')
 const { infuraApiKey, mnemonic } = require('./secrets.json')
 
 /**
@@ -13,24 +13,34 @@ module.exports = {
 		],
 	},
 	networks: {
-		goerli: {
-			url: `https://goerli.infura.io/v3/${infuraApiKey}`,
-			accounts: { mnemonic: mnemonic },
-		},
-		kovan: {
-			url: `https://kovan.infura.io/v3/${infuraApiKey}`,
+		mainnet: {
+			url: `https://mainnet.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 			companionNetworks: {
-				l2: "kovanOptimism",
+				l2: "arbitrum",
 			},
 		},
-		kovanOptimism: {
-			url: `https://optimism-kovan.infura.io/v3/${infuraApiKey}`,
+		arbitrum: {
+			url: `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 			companionNetworks: {
-				l1: "kovan",
+				l1: "mainnet",
 			},
-		}
+		},
+		rinkeby: {
+			url: `https://rinkeby.infura.io/v3/${infuraApiKey}`,
+			accounts: { mnemonic: mnemonic },
+			companionNetworks: {
+				l2: "arbitrumRinkeby",
+			},
+		},
+		arbitrumRinkeby: {
+			url: `https://arbitrum-rinkeby.infura.io/v3/${infuraApiKey}`,
+			accounts: { mnemonic: mnemonic },
+			companionNetworks: {
+				l1: "rinkeby",
+			},
+		},
 	},
 };
 

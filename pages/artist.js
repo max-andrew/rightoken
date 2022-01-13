@@ -91,11 +91,6 @@ export default function Artist() {
 
 	return (
 		<>
-			<Head>
-				<title>Rightoken</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-
 			<main>
 				<Header linkTo="invest" />
 

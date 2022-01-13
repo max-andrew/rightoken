@@ -6,9 +6,9 @@ export default function Footer(props) {
 	const [sadverb, setSadverb] = useState(sadverbs[Math.floor(Math.random() * sadverbs.length)])
 
 	return (
-		<footer className="flex items-center justify-center w-full h-24 border-t">
-			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5 mr-2" />
-			<p className="text-sm">Written {sadverb} in NYC</p>
+		<footer className="flex flex-col space-y-2 items-center justify-center w-full h-24 border-t">
+			<p className="text-xs font-medium" suppressHydrationWarning>Written {sadverb} in NYC & Lisbon</p>
+			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5" />
 		</footer>
 	)
 }
