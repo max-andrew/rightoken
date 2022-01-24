@@ -24,7 +24,7 @@ export default function Header(props) {
 				</form>
 			}
 			{ linkTo === "support" &&
-				<p className="text-xs text-zinc-500 font-mono text-right underline mt-6 md:mt-8"><a href="https://discord.gg/QCmetTcbPj" target="_blank">Same-day help</a></p>
+				<p className="text-xs text-zinc-500 font-mono text-right underline mt-6 md:mt-8"><a href="https://discord.gg/QCmetTcbPj" target="_blank" rel="noreferrer">Same-day help</a></p>
 				
 			}
 		</div>

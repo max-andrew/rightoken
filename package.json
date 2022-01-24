@@ -23,7 +23,7 @@
     "@web3-react/walletconnect-connector": "^6.2.8",
     "@web3-react/walletlink-connector": "^6.2.8",
     "chai": "^4.3.4",
-    "ethers": "^5.5.2",
+    "ethers": "^5.5.3",
     "graphql": "^15.5.1",
     "hardhat": "^2.4.1",
     "mnemonics": "^1.1.3",

@@ -471,7 +471,7 @@ export default function Mint() {
 
 			main()
 
-			console.log("yup")
+			console.log("success")
 
 			// setSongIsListed(true)
 
@@ -522,7 +522,7 @@ export default function Mint() {
 		})
 
 		runCelebration
-		.then(() => { window?.location.href = postCelebrationLink })
+		.then(() => { window?.location.replace(postCelebrationLink) })
 	}
 
 
@@ -651,7 +651,7 @@ export default function Mint() {
 		},
 		{
 			title: "Link wallet",
-			body: <>You need a crypto wallet to create, hold, and sell your tokens. <a className="underline" href="https://www.coinbase.com/learn/crypto-basics/what-is-a-crypto-wallet" target="_blank">Learn more about crypto wallets here.</a> <br /><br /> Rightoken is optimized for the Coinbase Wallet app on <a href="https://apps.apple.com/us/app/coinbase-wallet/id1278383455" className="underline" target="_blank">iOS</a> and <a href="https://play.google.com/store/apps/details?id=org.toshi&hl=en_US&gl=US" className="underline" target="_blank">Android</a>. It's different from the standalone Coinbase app. <br /><br /> Download the app, create your wallet, and return to this page in the in-app browser.</>,
+			body: <>You need a crypto wallet to create, hold, and sell your tokens. <a className="underline" href="https://www.coinbase.com/learn/crypto-basics/what-is-a-crypto-wallet" target="_blank" rel="noreferrer">Learn more about crypto wallets here.</a> <br /><br /> Rightoken is optimized for the Coinbase Wallet app on <a href="https://apps.apple.com/us/app/coinbase-wallet/id1278383455" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=org.toshi&hl=en_US&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a>. It's different from the standalone Coinbase app. <br /><br /> Download the app, create your wallet, and return to this page in the in-app browser.</>,
 			additionalContent: <LinkWalletButton account={account} />,
 			successCondition: typeof(account) !== 'undefined',
 		},
@@ -663,7 +663,7 @@ export default function Mint() {
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank">Android</a> app, purchase at least 0.006 ETH, and to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank">bridge to Arbitrum</a>, but it'll cost more in gas fees. <br /><br /> {(chainId === 42161 || chainId === 421611) ? <span className={ethBalance > 0.005 ? "text-green-600" : undefined}> You have {ethBalance} ETH in your Arbitrum wallet.</span> : "Connect to the Arbitrum network using the previous page to check your balance here."}</>,
+			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH, and to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees. <br /><br /> {(chainId === 42161 || chainId === 421611) ? <span className={ethBalance > 0.005 ? "text-green-600" : undefined}> You have {ethBalance} ETH in your Arbitrum wallet.</span> : "Connect to the Arbitrum network using the previous page to check your balance here."}</>,
 			successCondition: ethBalance > 0.005
 		},
 		{
