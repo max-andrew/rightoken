@@ -4,6 +4,14 @@ import { useWeb3React } from '@web3-react/core'
 import { injected } from '../functions/connectors'
 import { formatEther } from '@ethersproject/units'
 
+import { ethers } from 'ethers'
+
+import { Pool } from '@uniswap/v3-sdk'
+import { Token } from '@uniswap/sdk-core'
+import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+
+import Confetti from 'react-confetti'
+
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -43,9 +51,8 @@ export default function Mint() {
 		}
 		else {
 			currentStepInSessionStorage = window?.sessionStorage.getItem('currentStep')
+			setCurrentStep(parseInt(currentStepInSessionStorage))
 		}
-
-		setCurrentStep(parseInt(currentStepInSessionStorage))
 	}, [])
 
 	useEffect(() => {
@@ -69,6 +76,454 @@ export default function Mint() {
 			setInvalidTokenPriceInfo(false)
 		}
 	}, [percentListed, marketCap])
+
+
+	const [songIsTokenizing, setSongIsTokenizing] = useState(false)
+	const [rightokenERC20Address, setRightokenERC20Address] = useState("")
+	async function mintRightokenERC20() {
+		setSongIsTokenizing(true)
+
+		const signer = library.getSigner(account)
+		
+		// deploy custom ERC20 contract
+		const erc20RightokenABI = [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "name_",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "symbol_",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+		]
+		try {
+			const factory = new ethers.ContractFactory(erc20RightokenABI, '0x60806040523480156200001157600080fd5b5060405162001a0438038062001a04833981810160405281019062000037919062000335565b818181600390805190602001906200005192919062000213565b5080600490805190602001906200006a92919062000213565b505050620000883368056bc75e2d631000006200009060201b60201c565b50506200065f565b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16141562000103576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401620000fa90620003e0565b60405180910390fd5b62000117600083836200020960201b60201c565b80600260008282546200012b91906200048f565b92505081905550806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282546200018291906200048f565b925050819055508173ffffffffffffffffffffffffffffffffffffffff16600073ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef83604051620001e9919062000402565b60405180910390a362000205600083836200020e60201b60201c565b5050565b505050565b505050565b82805462000221906200052c565b90600052602060002090601f01602090048101928262000245576000855562000291565b82601f106200026057805160ff191683800117855562000291565b8280016001018555821562000291579182015b828111156200029057825182559160200191906001019062000273565b5b509050620002a09190620002a4565b5090565b5b80821115620002bf576000816000905550600101620002a5565b5090565b6000620002da620002d48462000448565b6200041f565b905082815260208101848484011115620002f357600080fd5b62000300848285620004f6565b509392505050565b600082601f8301126200031a57600080fd5b81516200032c848260208601620002c3565b91505092915050565b600080604083850312156200034957600080fd5b600083015167ffffffffffffffff8111156200036457600080fd5b620003728582860162000308565b925050602083015167ffffffffffffffff8111156200039057600080fd5b6200039e8582860162000308565b9150509250929050565b6000620003b7601f836200047e565b9150620003c48262000636565b602082019050919050565b620003da81620004ec565b82525050565b60006020820190508181036000830152620003fb81620003a8565b9050919050565b6000602082019050620004196000830184620003cf565b92915050565b60006200042b6200043e565b905062000439828262000562565b919050565b6000604051905090565b600067ffffffffffffffff821115620004665762000465620005f6565b5b620004718262000625565b9050602081019050919050565b600082825260208201905092915050565b60006200049c82620004ec565b9150620004a983620004ec565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115620004e157620004e062000598565b5b828201905092915050565b6000819050919050565b60005b8381101562000516578082015181840152602081019050620004f9565b8381111562000526576000848401525b50505050565b600060028204905060018216806200054557607f821691505b602082108114156200055c576200055b620005c7565b5b50919050565b6200056d8262000625565b810181811067ffffffffffffffff821117156200058f576200058e620005f6565b5b80604052505050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6000601f19601f8301169050919050565b7f45524332303a206d696e7420746f20746865207a65726f206164647265737300600082015250565b611395806200066f6000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c80633950935111610071578063395093511461016857806370a082311461019857806395d89b41146101c8578063a457c2d7146101e6578063a9059cbb14610216578063dd62ed3e14610246576100a9565b806306fdde03146100ae578063095ea7b3146100cc57806318160ddd146100fc57806323b872dd1461011a578063313ce5671461014a575b600080fd5b6100b6610276565b6040516100c39190610e35565b60405180910390f35b6100e660048036038101906100e19190610c83565b610308565b6040516100f39190610e1a565b60405180910390f35b610104610326565b6040516101119190610f37565b60405180910390f35b610134600480360381019061012f9190610c34565b610330565b6040516101419190610e1a565b60405180910390f35b610152610428565b60405161015f9190610f52565b60405180910390f35b610182600480360381019061017d9190610c83565b610431565b60405161018f9190610e1a565b60405180910390f35b6101b260048036038101906101ad9190610bcf565b6104dd565b6040516101bf9190610f37565b60405180910390f35b6101d0610525565b6040516101dd9190610e35565b60405180910390f35b61020060048036038101906101fb9190610c83565b6105b7565b60405161020d9190610e1a565b60405180910390f35b610230600480360381019061022b9190610c83565b6106a2565b60405161023d9190610e1a565b60405180910390f35b610260600480360381019061025b9190610bf8565b6106c0565b60405161026d9190610f37565b60405180910390f35b60606003805461028590611067565b80601f01602080910402602001604051908101604052809291908181526020018280546102b190611067565b80156102fe5780601f106102d3576101008083540402835291602001916102fe565b820191906000526020600020905b8154815290600101906020018083116102e157829003601f168201915b5050505050905090565b600061031c610315610747565b848461074f565b6001905092915050565b6000600254905090565b600061033d84848461091a565b6000600160008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000610388610747565b73ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905082811015610408576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103ff90610eb7565b60405180910390fd5b61041c85610414610747565b85840361074f565b60019150509392505050565b60006012905090565b60006104d361043e610747565b84846001600061044c610747565b73ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008873ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020546104ce9190610f89565b61074f565b6001905092915050565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b60606004805461053490611067565b80601f016020809104026020016040519081016040528092919081815260200182805461056090611067565b80156105ad5780601f10610582576101008083540402835291602001916105ad565b820191906000526020600020905b81548152906001019060200180831161059057829003601f168201915b5050505050905090565b600080600160006105c6610747565b73ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905082811015610683576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161067a90610f17565b60405180910390fd5b61069761068e610747565b8585840361074f565b600191505092915050565b60006106b66106af610747565b848461091a565b6001905092915050565b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b600033905090565b600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614156107bf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016107b690610ef7565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16141561082f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161082690610e77565b60405180910390fd5b80600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508173ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9258360405161090d9190610f37565b60405180910390a3505050565b600073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff16141561098a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161098190610ed7565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1614156109fa576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016109f190610e57565b60405180910390fd5b610a05838383610b9b565b60008060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905081811015610a8b576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610a8290610e97565b60405180910390fd5b8181036000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254610b1e9190610f89565b925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef84604051610b829190610f37565b60405180910390a3610b95848484610ba0565b50505050565b505050565b505050565b600081359050610bb481611331565b92915050565b600081359050610bc981611348565b92915050565b600060208284031215610be157600080fd5b6000610bef84828501610ba5565b91505092915050565b60008060408385031215610c0b57600080fd5b6000610c1985828601610ba5565b9250506020610c2a85828601610ba5565b9150509250929050565b600080600060608486031215610c4957600080fd5b6000610c5786828701610ba5565b9350506020610c6886828701610ba5565b9250506040610c7986828701610bba565b9150509250925092565b60008060408385031215610c9657600080fd5b6000610ca485828601610ba5565b9250506020610cb585828601610bba565b9150509250929050565b610cc881610ff1565b82525050565b6000610cd982610f6d565b610ce38185610f78565b9350610cf3818560208601611034565b610cfc816110f7565b840191505092915050565b6000610d14602383610f78565b9150610d1f82611108565b604082019050919050565b6000610d37602283610f78565b9150610d4282611157565b604082019050919050565b6000610d5a602683610f78565b9150610d65826111a6565b604082019050919050565b6000610d7d602883610f78565b9150610d88826111f5565b604082019050919050565b6000610da0602583610f78565b9150610dab82611244565b604082019050919050565b6000610dc3602483610f78565b9150610dce82611293565b604082019050919050565b6000610de6602583610f78565b9150610df1826112e2565b604082019050919050565b610e058161101d565b82525050565b610e1481611027565b82525050565b6000602082019050610e2f6000830184610cbf565b92915050565b60006020820190508181036000830152610e4f8184610cce565b905092915050565b60006020820190508181036000830152610e7081610d07565b9050919050565b60006020820190508181036000830152610e9081610d2a565b9050919050565b60006020820190508181036000830152610eb081610d4d565b9050919050565b60006020820190508181036000830152610ed081610d70565b9050919050565b60006020820190508181036000830152610ef081610d93565b9050919050565b60006020820190508181036000830152610f1081610db6565b9050919050565b60006020820190508181036000830152610f3081610dd9565b9050919050565b6000602082019050610f4c6000830184610dfc565b92915050565b6000602082019050610f676000830184610e0b565b92915050565b600081519050919050565b600082825260208201905092915050565b6000610f948261101d565b9150610f9f8361101d565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610fd457610fd3611099565b5b828201905092915050565b6000610fea82610ffd565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b600060ff82169050919050565b60005b83811015611052578082015181840152602081019050611037565b83811115611061576000848401525b50505050565b6000600282049050600182168061107f57607f821691505b60208210811415611093576110926110c8565b5b50919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b6000601f19601f8301169050919050565b7f45524332303a207472616e7366657220746f20746865207a65726f206164647260008201527f6573730000000000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a20617070726f766520746f20746865207a65726f20616464726560008201527f7373000000000000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a207472616e7366657220616d6f756e742065786365656473206260008201527f616c616e63650000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a207472616e7366657220616d6f756e742065786365656473206160008201527f6c6c6f77616e6365000000000000000000000000000000000000000000000000602082015250565b7f45524332303a207472616e736665722066726f6d20746865207a65726f20616460008201527f6472657373000000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a20617070726f76652066726f6d20746865207a65726f2061646460008201527f7265737300000000000000000000000000000000000000000000000000000000602082015250565b7f45524332303a2064656372656173656420616c6c6f77616e63652062656c6f7760008201527f207a65726f000000000000000000000000000000000000000000000000000000602082015250565b61133a81610fdf565b811461134557600080fd5b50565b6113518161101d565b811461135c57600080fd5b5056fea264697066735822122075f8969728719f64be18ca84a97ea598878b3624dedfdf90c0cebd3972e2276464736f6c63430008040033', signer)
+			const customERC20RightokenContract = await factory.deploy(`${songTitle} : ${artistName} : Rightoken${joinCrescendao ? " : <" : ""}`,"RTKN")
+			const customERC20RightokenAddress = customERC20RightokenContract.address
+			await customERC20RightokenContract.deployed()
+			console.log("Token address:", customERC20RightokenAddress)
+
+			setRightokenERC20Address(customERC20RightokenAddress)
+
+			// wait for contract creation transaction to be mined
+			await customERC20RightokenContract.deployTransaction.wait()
+
+			setSongIsTokenizing(false)
+			setSongIsTokenized(true)
+		}
+		catch {
+			setSongIsTokenizing(false)
+		}
+	}
+
+	const [songIsListing, setSongIsListing] = useState(false)
+	const [customUniswapSwapLink, setCustomUniswapSwapLink] = useState("")
+	async function listRightokenERC20() {
+		setSongIsListing(true)
+
+		const signer = library.getSigner(account)
+
+		const uniswapFactoryABI = [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint24",
+						"name": "fee",
+						"type": "uint24"
+					},
+					{
+						"indexed": true,
+						"internalType": "int24",
+						"name": "tickSpacing",
+						"type": "int24"
+					}
+				],
+				"name": "FeeAmountEnabled",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "oldOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnerChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token0",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token1",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint24",
+						"name": "fee",
+						"type": "uint24"
+					},
+					{
+						"indexed": false,
+						"internalType": "int24",
+						"name": "tickSpacing",
+						"type": "int24"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "pool",
+						"type": "address"
+					}
+				],
+				"name": "PoolCreated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "tokenA",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "tokenB",
+						"type": "address"
+					},
+					{
+						"internalType": "uint24",
+						"name": "fee",
+						"type": "uint24"
+					}
+				],
+				"name": "createPool",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "pool",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint24",
+						"name": "fee",
+						"type": "uint24"
+					},
+					{
+						"internalType": "int24",
+						"name": "tickSpacing",
+						"type": "int24"
+					}
+				],
+				"name": "enableFeeAmount",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{ 
+				"inputs": [
+					{
+						"internalType": "uint24",
+						"name": "",
+						"type": "uint24"
+					}
+				],
+				"name": "feeAmountTickSpacing",
+				"outputs": [
+					{
+						"internalType": "int24",
+						"name": "",
+						"type": "int24"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint24",
+						"name": "",
+						"type": "uint24"
+					}
+				],
+				"name": "getPool",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "parameters",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "factory",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "token0",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "token1",
+						"type": "address"
+					},
+					{
+						"internalType": "uint24",
+						"name": "fee",
+						"type": "uint24"
+					},
+					{
+						"internalType": "int24",
+						"name": "tickSpacing",
+						"type": "int24"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_owner",
+						"type": "address"
+					}
+				],
+				"name": "setOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type":"function"
+			}
+		]
+		try {
+			// create a Uniswap LP
+			const UniswapV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+
+			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+
+			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
+			const arbitrumWETHAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+			const randomRightokenAddress = "0x61b780924a5794a941d4a0be4ab054660b7618a9"
+
+			const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, uniswapFactoryABI, signer)
+
+			// test if pool already exists
+			try {
+				const customRightokenPoolContract = await factoryContract.createPool(daiAddress, randomRightokenAddress, 500)
+			}
+			catch (e) {
+				console.error(e)
+			}
+
+			// const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, uniswapFactoryABI, signer)
+
+			const customRightokenPoolAddress = await factoryContract.getPool(daiAddress, randomRightokenAddress, 500)
+			
+			console.log("Pool address:", customRightokenPoolAddress)
+			console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
+			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=${daiAddress}&outputCurrency=${randomRightokenAddress}`)
+			
+			const poolContract = new ethers.Contract(
+				customRightokenPoolAddress,
+				IUniswapV3PoolABI,
+				signer
+			)
+
+			console.dir(await poolContract)
+
+			async function getPoolImmutables() {
+				const [factory, token0, token1, fee, tickSpacing, maxLiquidityPerTick] =
+					await Promise.all([
+						poolContract.factory(),
+						poolContract.token0(),
+						poolContract.token1(),
+						poolContract.fee(),
+						poolContract.tickSpacing(),
+						poolContract.maxLiquidityPerTick(),
+					])
+
+				const immutables = {
+					factory,
+					token0,
+					token1,
+					fee,
+					tickSpacing,
+					maxLiquidityPerTick,
+				}
+				return immutables
+			}
+
+			async function getPoolState() {
+				const [liquidity, slot] = await Promise.all([
+					poolContract.liquidity(),
+					poolContract.slot0(),
+				])
+
+				const PoolState = {
+					liquidity,
+					sqrtPriceX96: slot[0],
+					tick: slot[1],
+					observationIndex: slot[2],
+					observationCardinality: slot[3],
+					observationCardinalityNext: slot[4],
+					feeProtocol: slot[5],
+					unlocked: slot[6],
+				}
+
+				return PoolState
+			}
+
+			console.dir(await getPoolState())
+			console.dir(await getPoolImmutables())
+
+			async function main() {
+				const [immutables, state] = await Promise.all([
+					getPoolImmutables(),
+					getPoolState(),
+				])
+
+				const TokenA = new Token(chainId, immutables.token1, 18, "RTKN", "Rightoken")
+				const TokenB = new Token(chainId, immutables.token0, 18, "DAI", "Dai Stablecoin")
+
+				const poolExample = new Pool(
+					TokenA,
+					TokenB,
+					immutables.fee,
+					state.sqrtPriceX96.toString(),
+					state.liquidity.toString(),
+					state.tick
+				)
+				console.log(poolExample)
+			}
+
+			main()
+
+			console.log("yup")
+
+			// setSongIsListed(true)
+
+			/*
+				V2 CODE
+
+				V2 Router
+				let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
+				let approveAllowanceContract = new ethers.Contract(customERC20RightokenAddress, approveAllowanceABI, signer)
+				let approvedContract = await approveAllowanceContract.approve("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
+				
+				// wait for approval transaction to be mined
+				await approvedContract.wait()
+
+				const uniswapRouterContract = new ethers.Contract("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", IUniswapV2Router02.abi, signer)
+				const liquidity = await uniswapRouterContract.addLiquidityETH(customERC20RightokenAddress, (saleAmount * 10 ** 18).toString(), (.25 * 10 ** 18).toString(), (.01 * 10 ** 18).toString(), account, (Date.now() + 1000 * 60 * 10).toString(), {from: account, gasPrice: ethers.utils.parseUnits('5', 'gwei'), gasLimit: 3400000, value: ((askingPrice*(saleAmount/100)) * 10 ** 18).toString()})
+				const liquidityReceipt = await liquidity.wait()
+				console.log(liquidityReceipt)
+
+				const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
+			*/
+		}
+		catch (e) {
+			console.error(e, e.stack)
+		}
+
+		setSongIsListing(false)
+	}
+
+	const [runConfetti, setRunConfetti] = useState(false)
+	function finishMintingRightoken() {
+		let postCelebrationLink = "/"
+
+		if (songIsListed) {
+			postCelebrationLink = customUniswapSwapLink
+		}
+
+		const runCelebration = new Promise((resolve, reject) => {
+			window?.scrollTo(0, 0)
+			setRunConfetti(true)
+
+			const audio = new Audio("/celebration.mp3")
+			audio.play()
+
+			setTimeout(() => {
+				resolve("Celebration complete")
+			}, 5000)
+		})
+
+		runCelebration
+		.then(() => { window?.location.href = postCelebrationLink })
+	}
 
 
 	function LinkWalletButton(props) {
@@ -116,7 +571,7 @@ export default function Mint() {
 					}>
 					Connect to Arbitrum
 				</button>
-				<button 
+				<button
 					className="uppercase text-xs font-bold px-3 py-2 text-zinc-600 active:bg-zinc-200 rounded-md"
 					onClick={
 						() => {
@@ -143,6 +598,7 @@ export default function Mint() {
 			return <p className="text-green-600">Your wallet connected to Arbitrum {chainId === 421611 && "testnet"} successfully.</p>
 		}
 	}
+
 
 	const legalAgreementLibrary = {
 		metadata: {
@@ -245,7 +701,7 @@ export default function Mint() {
 			body: <>You're finally ready to tokenize your song.</>,
 			additionalContent: <>
 					{ !songIsTokenized &&
-						<div className="border-2 border-zinc-300 rounded-md py-8 space-y-9">
+						<div className={`border-2 border-zinc-300 rounded-md py-8 space-y-9 ${songIsTokenizing && "animate-pulse"}`}>
 							<div>
 								<p className="tracking-widest text-center font-medium text-xl text-zinc-400 uppercase mb-2">• Presenting •</p>
 								<input className="flex bg-transparent font-medium text-2xl border-b-2 outline-none placeholder:text-zinc-500 text-zinc-700 text-center mx-auto" spellCheck="false" placeholder="Song Title" value={songTitle} onChange={e => setSongTitle(event.target.value)} />
@@ -256,13 +712,13 @@ export default function Mint() {
 							</div>
 						</div>
 					}
-					{ (!songIsTokenized && songTitle !== "" && artistName !== "") && 
+					{ (!songIsTokenized && !songIsTokenizing && songTitle !== "" && artistName !== "") && 
 						<>
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
 									className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
-									onClick={() => setSongIsTokenized(true)}>
+									onClick={() => mintRightokenERC20()}>
 									Tokenize now
 								</button>
 							</div>
@@ -276,24 +732,24 @@ export default function Mint() {
 		},
 		{
 			title: "List your tokens",
-			body: <>Now you have the option to list your tokens. This is how you'll make your tokens available for fans to invest. Set an asking price as well as the total valuation for 100% of ownership.</>,
+			body: <>Now you have the option to list your tokens. This is how you'll make your rightokens available for fans to invest. <br /><br /> Also set an asking price for what you think the song is currently worth in total. This value rises automatically as people invest.</>,
 			additionalContent: <>
 					{ !songIsListed &&
 						<>
-							<div className={`border-2 rounded-md py-8 space-y-9 ${invalidTokenPriceInfo ? "border-red-300" : "border-zinc-300"}`}>
+							<div className={`border-2 rounded-md py-8 space-y-9 ${invalidTokenPriceInfo ? "border-red-300" : "border-zinc-300"} ${songIsListing && "animate-pulse"}`}>
 								<div>
 									<p className="tracking-widest text-center font-medium text-xl text-zinc-400 uppercase mb-2">initially offering</p>
 									<div className="flex flex-row space-x-2 justify-center">
-										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-500 text-zinc-700 text-center w-24" spellCheck="false" type="number" min="0" max="100" step="0.5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
+										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-500 text-zinc-700 text-center w-20" spellCheck="false" type="number" min="0" max="100" step="5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
 										<p className="font-bold text-xl text-zinc-400">%</p>
 									</div>
 								</div>
 								{ Number(percentListed) !== 0 &&
 									<div className="space-y-2">
-										<p className="tracking-wide text-center font-medium text-sm text-zinc-400 uppercase">with a <span className="text-xs text-zinc-300">(very reasonable)</span> valuation of</p>
+										<p className="tracking-wide text-center font-medium text-sm text-zinc-400 uppercase">valued <span className="text-xs text-zinc-300">(very reasonably)</span> at</p>
 										<div className="flex flex-row space-x-1 justify-center">
 											<p className="font-medium text-2xl text-zinc-400">$</p>
-											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-500 text-zinc-700 text-center w-28" spellCheck="false" type="number" min="0" max="1000000" step="50" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
+											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-500 text-zinc-700 text-center w-28" spellCheck="false" type="number" min="5000" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
 											<p className="font-bold text-sm text-zinc-400">USD</p>
 										</div>
 										<p className="text-center font-mono text-xs text-zinc-300">for 100%</p>
@@ -302,13 +758,13 @@ export default function Mint() {
 							</div>
 						</>
 					}
-					{ (!songIsListed && typeof(percentListed) !== 'undefined' && typeof(marketCap) !== 'undefined' && !invalidTokenPriceInfo) && 
+					{ (!songIsListed && !songIsListing && typeof(percentListed) !== 'undefined' && typeof(marketCap) !== 'undefined' && !invalidTokenPriceInfo) && 
 						<>
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
 									className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
-									onClick={() => setSongIsListed(true)}>
+									onClick={() => listRightokenERC20()}>
 									List now
 								</button>
 							</div>
@@ -323,12 +779,13 @@ export default function Mint() {
 		{
 			title: "Share with fans",
 			body: <>
-					Your song is tokenized and ready to share!&nbsp;
+					{songTitle ? songTitle : "Your song"} is tokenized and ready to share! 
 					{ songIsListed &&
 						<>
-							Your link is available here: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{account}</span>
+							<br /><br />
+							Here's your investor link: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{customUniswapSwapLink}</span>
 							<br /><br /> 
-							This is how fans will be able to buy into your work and you'll be able to get capital for it. Make sure to save this link.
+							This is how fans will be able to buy into your work and you'll be able to get capital for it. Screenshot this page for your records.
 						</>
 					}
 				</>,
@@ -338,6 +795,18 @@ export default function Mint() {
 	return (
 		<>
 			<main>
+				{ (typeof(window) !== "undefined" && runConfetti) &&
+					<Confetti
+						className="m-auto"
+						opacity={0.95}
+						width={window.width}
+						height={window.height}
+						run={runConfetti}
+						recycle={false}
+						onConfettiComplete={() => setRunConfetti(false)}
+					/>
+				}
+
 				<Header linkTo="support" />
 
 				<div className="py-12 mx-auto max-w-xs md:max-w-sm">
@@ -358,7 +827,7 @@ export default function Mint() {
 							<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md animate-pulse" onClick={() => setCurrentStep(currentStep+1)}>Next</button>
 						}
 						{ currentStep === mintStepPages.length-1 &&
-							<button className="text-sm font-medium px-3 py-1 active:bg-green-200 rounded-md" onClick={() => alert("Congrats!")}>Finish</button>
+							<button className="text-sm font-medium px-3 py-1 active:bg-green-300 rounded-md" onClick={() => finishMintingRightoken()}>Finish</button>
 						}
 					</div>
 					<p className="text-sm text-zinc-300 font-medium text-center mt-2">{Math.round(currentStep/(mintStepPages.length-1) * 100)}%</p>

@@ -58,7 +58,7 @@ export default function Artist() {
 			flagSetter: setShowPermanence
 		},
 		{
-			question: "Is this some memey NFT project?", 
+			question: "Is this a memey NFT project?", 
 			answer: "No, Rightoken uses blockchain, but NFTs aren't involved.", 
 			flag: showNFT, 
 			flagSetter: setShowNFT
@@ -98,7 +98,7 @@ export default function Artist() {
 					<h2 className="font-bold text-3xl md:text-7xl text-gray-900">Ready to keep ownership of your work, <span className="text-gray-800">reap the benefits,</span> <span className="text-gray-700">and share them with fans?</span></h2>
 					<p className="italic text-lg font-bold md:text-3xl text-gray-600 mt-2">Rightoken is building a market for music so you can cover rent and control your work</p>
 
-					<FunkyButton className="mt-4" link="/mint" text="I'm ready" />
+					<FunkyButton className="mt-4" link="/mint" text="Ready" />
 
 					<br />
 					<br />
@@ -133,7 +133,7 @@ export default function Artist() {
 
 					<br />
 
-					<FunkyButton link="/mint" text="Let's start" />
+					<FunkyButton link="/mint" text="Start" />
 				</div>
 			</main>
 
