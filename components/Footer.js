@@ -6,15 +6,9 @@ export default function Footer(props) {
 	const [sadverb, setSadverb] = useState(sadverbs[Math.floor(Math.random() * sadverbs.length)])
 
 	return (
-		<footer className="flex items-center justify-center w-full h-24 border-t">
-			<a
-				className="flex items-center justify-center"
-				href="/"
-				rel="noopener noreferrer"
-			>
-				<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-6 mr-2" />
-				{' '}Written {sadverb} in NYC
-			</a>
+		<footer className="flex flex-col space-y-2 items-center justify-center w-full h-24 border-t">
+			<p className="text-xs font-medium" suppressHydrationWarning>Written {sadverb} in NYC & Lisbon</p>
+			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5" />
 		</footer>
 	)
 }
