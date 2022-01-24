@@ -41,9 +41,9 @@ export default function Mint() {
 		}
 	}, [chainId])
 
-	const [currentStep, setCurrentStep] = useState(0)
+	const [currentStep, setCurrentStep] = useState(7)
 	// initialize currentStep to most recent step on page reload
-	useEffect(() => {
+	/*useEffect(() => {
 		let currentStepInSessionStorage = 0
 
 		if (typeof(window?.sessionStorage.getItem('currentStep')) === null) {
@@ -53,7 +53,7 @@ export default function Mint() {
 			currentStepInSessionStorage = window?.sessionStorage.getItem('currentStep')
 			setCurrentStep(parseInt(currentStepInSessionStorage))
 		}
-	}, [])
+	}, [])*/
 
 	useEffect(() => {
 		window?.sessionStorage.setItem('currentStep', currentStep)
