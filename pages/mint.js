@@ -4,11 +4,17 @@ import { useWeb3React } from '@web3-react/core'
 import { injected } from '../functions/connectors'
 import { formatEther } from '@ethersproject/units'
 
-import { ethers } from 'ethers'
+import { ethers, BigNumber, BigNumberish } from 'ethers'
+import bn from 'bignumber.js'
 
-import { Pool } from '@uniswap/v3-sdk'
-import { Token } from '@uniswap/sdk-core'
+import { Pool, Position, nearestUsableTick, addCallParameters, NonfungiblePositionManager } from '@uniswap/v3-sdk'
+import { Token, Percent } from '@uniswap/sdk-core'
 import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import { abi as IUniswapV3FactoryABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json'
+import { abi as IUniswapV3PoolDeployerABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3PoolDeployer.sol/IUniswapV3PoolDeployer.json'
+import { abi as INonfungiblePositionManagerABI } from '@uniswap/v3-periphery/artifacts/contracts/interfaces/INonfungiblePositionManager.sol/INonfungiblePositionManager.json'
+// import { getMaxTick, getMinTick } from '@uniswap/v3-periphery/test/shared/ticks.ts'
+// import { FeeAmount, TICK_SPACINGS } from '@uniswap/v3-periphery/test/shared/constants.ts'
 
 import Confetti from 'react-confetti'
 
@@ -41,9 +47,9 @@ export default function Mint() {
 		}
 	}, [chainId])
 
-	const [currentStep, setCurrentStep] = useState(7)
+	const [currentStep, setCurrentStep] = useState(0)
 	// initialize currentStep to most recent step on page reload
-	/*useEffect(() => {
+	useEffect(() => {
 		let currentStepInSessionStorage = 0
 
 		if (typeof(window?.sessionStorage.getItem('currentStep')) === null) {
@@ -53,7 +59,7 @@ export default function Mint() {
 			currentStepInSessionStorage = window?.sessionStorage.getItem('currentStep')
 			setCurrentStep(parseInt(currentStepInSessionStorage))
 		}
-	}, [])*/
+	}, [])
 
 	useEffect(() => {
 		window?.sessionStorage.setItem('currentStep', currentStep)
@@ -131,278 +137,73 @@ export default function Mint() {
 
 		const signer = library.getSigner(account)
 
-		const uniswapFactoryABI = [
-			{
-				"inputs": [],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "uint24",
-						"name": "fee",
-						"type": "uint24"
-					},
-					{
-						"indexed": true,
-						"internalType": "int24",
-						"name": "tickSpacing",
-						"type": "int24"
-					}
-				],
-				"name": "FeeAmountEnabled",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "oldOwner",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "newOwner",
-						"type": "address"
-					}
-				],
-				"name": "OwnerChanged",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token0",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token1",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "uint24",
-						"name": "fee",
-						"type": "uint24"
-					},
-					{
-						"indexed": false,
-						"internalType": "int24",
-						"name": "tickSpacing",
-						"type": "int24"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "pool",
-						"type": "address"
-					}
-				],
-				"name": "PoolCreated",
-				"type": "event"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenA",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "tokenB",
-						"type": "address"
-					},
-					{
-						"internalType": "uint24",
-						"name": "fee",
-						"type": "uint24"
-					}
-				],
-				"name": "createPool",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "pool",
-						"type": "address"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint24",
-						"name": "fee",
-						"type": "uint24"
-					},
-					{
-						"internalType": "int24",
-						"name": "tickSpacing",
-						"type": "int24"
-					}
-				],
-				"name": "enableFeeAmount",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{ 
-				"inputs": [
-					{
-						"internalType": "uint24",
-						"name": "",
-						"type": "uint24"
-					}
-				],
-				"name": "feeAmountTickSpacing",
-				"outputs": [
-					{
-						"internalType": "int24",
-						"name": "",
-						"type": "int24"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "uint24",
-						"name": "",
-						"type": "uint24"
-					}
-				],
-				"name": "getPool",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "owner",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "parameters",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "factory",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "token0",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "token1",
-						"type": "address"
-					},
-					{
-						"internalType": "uint24",
-						"name": "fee",
-						"type": "uint24"
-					},
-					{
-						"internalType": "int24",
-						"name": "tickSpacing",
-						"type": "int24"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_owner",
-						"type": "address"
-					}
-				],
-				"name": "setOwner",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type":"function"
-			}
-		]
 		try {
 			// create a Uniswap LP
 			const UniswapV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
 
 			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
 			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
-
 			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
 			const arbitrumWETHAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
-			const randomRightokenAddress = "0x61b780924a5794a941d4a0be4ab054660b7618a9"
+			const randomRightokenAddress = "0xde275455A3e6c452115D2b950A8dD0432f63de56"
+			const otherRightokenAddress = "0x01b2b31E19DDAcF0CFD7b82A3e72a28609E1fD8d"
+			const randomRightokenAddress2 = "0x8Fb6b102c15281e6ecD98E14D46E9ab3b6c5fc9F"
+			const randomRightokenAddress3 = "0xC5359cd2546d62486964211ad25b155C3Dbc95fd"
 
-			const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, uniswapFactoryABI, signer)
+			const rightokenAddress = otherRightokenAddress
+			const stablecoinAddress = arbitrumRinkebyWETHAddress
+			const stablecoinSymbol = "DAI"
+			const stablecoinName = "Dai Stablecoin"
+			const poolFee = 500
+			const rightokenPrice = 1
 
-			// test if pool already exists
-			try {
-				const customRightokenPoolContract = await factoryContract.createPool(daiAddress, randomRightokenAddress, 500)
-			}
-			catch (e) {
-				console.error(e)
-			}
-
-			// const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, uniswapFactoryABI, signer)
-
-			const customRightokenPoolAddress = await factoryContract.getPool(daiAddress, randomRightokenAddress, 500)
+			// APPROVE TOKENS TO BE USED BY UNISWAP
+			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
-			console.log("Pool address:", customRightokenPoolAddress)
-			console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
-			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=${daiAddress}&outputCurrency=${randomRightokenAddress}`)
+			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
+			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
+			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
+			await approvedContract.wait()
+
+			approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
+			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
+			await approvedContract.wait()
+
+
+			// CREATE AND INITIALIZE A NEW POOL
+			bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
+
+			// returns the sqrt price as a 64x96
+			function encodePriceSqrt(reserve1, reserve0) {
+				return BigNumber.from(
+					new bn(reserve1.toString())
+					.div(reserve0.toString())
+					.sqrt()
+					.multipliedBy(new bn(2).pow(96))
+					.integerValue(3)
+					.toString()
+				)
+			}
+
+			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
+			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(rightokenAddress, stablecoinAddress, poolFee, encodePriceSqrt(1, 1))
+			await initializedPool.wait()
+
+
+			// ADD LIQUIDITY TO POOL AND MINT POSITION
+			const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, IUniswapV3FactoryABI, signer)
+			const rightokenPoolAddress = await factoryContract.getPool(rightokenAddress, stablecoinAddress, poolFee)
 			
+			console.log("Pool address:", rightokenPoolAddress)
+			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=${rightokenAddress}&outputCurrency=${stablecoinAddress}`)
+			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
+
 			const poolContract = new ethers.Contract(
-				customRightokenPoolAddress,
+				rightokenPoolAddress,
 				IUniswapV3PoolABI,
 				signer
 			)
-
-			console.dir(await poolContract)
 
 			async function getPoolImmutables() {
 				const [factory, token0, token1, fee, tickSpacing, maxLiquidityPerTick] =
@@ -446,36 +247,91 @@ export default function Mint() {
 				return PoolState
 			}
 
-			console.dir(await getPoolState())
-			console.dir(await getPoolImmutables())
+			const [immutables, state] = await Promise.all([
+				getPoolImmutables(),
+				getPoolState(),
+			])
 
-			async function main() {
-				const [immutables, state] = await Promise.all([
-					getPoolImmutables(),
-					getPoolState(),
-				])
+			const TokenA = new Token(chainId, immutables.token0, 18, "RTKN", "Rightoken")
+			const TokenB = new Token(chainId, immutables.token1, 18, stablecoinSymbol, stablecoinName)
 
-				const TokenA = new Token(chainId, immutables.token1, 18, "RTKN", "Rightoken")
-				const TokenB = new Token(chainId, immutables.token0, 18, "DAI", "Dai Stablecoin")
+			// two token addresses, the fee tier, the current pool price, the current liquidity, and the current tick
+			const poolInstance = new Pool(
+				TokenA,
+				TokenB,
+				immutables.fee,
+				encodePriceSqrt(1, 1), // state.sqrtPriceX96.toString(), // Math.pow(2,96),
+				10000000000, // state.liquidity.toString(), // 1
+				state.tick
+			)
 
-				const poolExample = new Pool(
-					TokenA,
-					TokenB,
-					immutables.fee,
-					state.sqrtPriceX96.toString(),
-					state.liquidity.toString(),
-					state.tick
-				)
-				console.log(poolExample)
+
+			// MINT THE POSITION
+			const block = await library.getBlock()
+			const deadline = block.timestamp + 200
+
+			const position = new Position({
+				pool: poolInstance,
+				liquidity: 1000000000, // state.liquidity * 0.0002
+				tickLower: nearestUsableTick(state.tick, immutables.tickSpacing) - immutables.tickSpacing * 2,
+				tickUpper: nearestUsableTick(state.tick, immutables.tickSpacing) + immutables.tickSpacing * 2
+			})
+			
+			const { calldata, value } = NonfungiblePositionManager.addCallParameters(position, {
+				slippageTolerance: new Percent(50, 10_000),
+				recipient: account,
+				deadline: deadline
+			})
+			
+			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
+			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
+			
+			const transaction = {
+				data: calldata,
+				to: NonfungibleTokenPositionDescriptorAddress,
+				// value: ethers.utils.parseEther("0"), // BigNumber.from(route.methodParameters.value),
+				from: account, // "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // account,
+				gasLimit: 15000000, // ethers.utils.hexlify(100000), // 100000, // 100000
+  				gasPrice: ethers.utils.parseUnits('100', 'gwei'),
 			}
+			
+			const mintPosition = await signer.sendTransaction(transaction)
 
-			main()
-
-			console.log("success")
+			console.dir(await mintPosition.wait())
+			console.log("Rightoken listed successfully")
 
 			// setSongIsListed(true)
+		
 
 			/*
+				// address token0
+				// address token1
+				// uint24 fee
+				// int24 tickLower
+				// int24 tickUpper
+				// uint256 amount0Desired
+				// uint256 amount1Desired
+				// uint256 amount0Min
+				// uint256 amount1Min
+				// address recipient
+				// uint256 deadline
+
+				const liquidityParams = {
+					token0: rightokenAddress,
+					token1: stablecoinAddress,
+					fee: poolFee,
+					tickLower: getMinTick(10),
+					tickUpper: getMaxTick(10),
+					recipient: account, // wallets[0].address,
+					amount0Desired: ethers.utils.parseEther("1"),
+					amount1Desired: ethers.utils.parseEther("1"),
+					amount0Min: 0,
+					amount1Min: 0,
+					deadline: deadline, // 1,
+				}
+
+				await positionContract.mint(liquidityParams)
+
 				V2 CODE
 
 				V2 Router
@@ -495,7 +351,7 @@ export default function Mint() {
 			*/
 		}
 		catch (e) {
-			console.error(e, e.stack)
+			console.error(e)
 		}
 
 		setSongIsListing(false)
@@ -584,7 +440,7 @@ export default function Mint() {
 										chainId: "0x66eeb", // 421611
 										chainName: "Arbitrum Testnet",
 										rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
-										blockExplorerUrls: ["https://rinkeby-explorer.arbitrum.io/#/"]
+										blockExplorerUrls: ["https://testnet.arbiscan.io/#/"]
 									}
 								]
 							})
@@ -685,7 +541,7 @@ export default function Mint() {
 			successCondition: agreedToTerms
 		},
 		{
-			title: "Invitation to Crescendao",
+			title: "You've been invited",
 			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources traditionally offered by labels. Artists can access these for backing while staying truly independent. <br /><br /> These resources include promotion, like getting onto exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also owns Rightoken, with its worker-owners directing and supporting its maintenance and upgrades. <br /><br /> Joining costs nothing to artists. Membership is funded entirely by investor resales, a 4% fee paid by an investor when purchasing rightokens. This resale fee directly funds the communal Crescendao treasury for the benefit of Crescendao artists.</>,
 			additionalContent: <>
 					<div className="flex justify-center">
