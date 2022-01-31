@@ -92,7 +92,7 @@ export default function Artist() {
 	return (
 		<>
 			<main>
-				<Header linkTo="invest" />
+				<Header /*linkTo="invest"*/ />
 
 				<div className="py-12 mx-auto max-w-xs md:max-w-lg">
 					<h2 className="font-bold text-3xl md:text-7xl text-gray-900">Ready to keep ownership of your work, <span className="text-gray-800">reap the benefits,</span> <span className="text-gray-700">and share them with fans?</span></h2>

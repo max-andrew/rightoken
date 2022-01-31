@@ -137,10 +137,23 @@ export default function Mint() {
 
 		const signer = library.getSigner(account)
 
+		bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
+
+		// returns the sqrt price as a 64x96
+		function encodePriceSqrt(reserve1, reserve0) {
+			return BigNumber.from(
+				new bn(reserve1.toString())
+				.div(reserve0.toString())
+				.sqrt()
+				.multipliedBy(new bn(2).pow(96))
+				.integerValue(3)
+				.toString()
+			)
+		}
+
+		// marketCap, percentListed
 		try {
 			// create a Uniswap LP
-			const UniswapV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
-
 			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
 			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
 			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
@@ -154,12 +167,19 @@ export default function Mint() {
 			const stablecoinAddress = arbitrumRinkebyWETHAddress
 			const stablecoinSymbol = "DAI"
 			const stablecoinName = "Dai Stablecoin"
+
 			const poolFee = 500
-			const rightokenPrice = 1
+
+			const pricePerRightokenToken = marketCap/100
+			const sqrtPriceX96 = encodePriceSqrt(1, 1) // Math.pow(2,96) // encodePriceSqrt(1, pricePerRightokenToken)
+
+			const poolLiquidity = 1 // (sqrt(upper) sqrt(lower)) / (sqrt(upper) - sqrt(lower)) // Math.pow(2,96)
+
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
 			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
+			/*
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
 			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
 			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
@@ -168,35 +188,25 @@ export default function Mint() {
 			approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
 			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
 			await approvedContract.wait()
+			*/
 
 
 			// CREATE AND INITIALIZE A NEW POOL
-			bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
-
-			// returns the sqrt price as a 64x96
-			function encodePriceSqrt(reserve1, reserve0) {
-				return BigNumber.from(
-					new bn(reserve1.toString())
-					.div(reserve0.toString())
-					.sqrt()
-					.multipliedBy(new bn(2).pow(96))
-					.integerValue(3)
-					.toString()
-				)
-			}
-
 			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
 			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(rightokenAddress, stablecoinAddress, poolFee, encodePriceSqrt(1, 1))
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(rightokenAddress, stablecoinAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
+			console.log("Created pool")
 
 
 			// ADD LIQUIDITY TO POOL AND MINT POSITION
+			const UniswapV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+
 			const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, IUniswapV3FactoryABI, signer)
 			const rightokenPoolAddress = await factoryContract.getPool(rightokenAddress, stablecoinAddress, poolFee)
 			
 			console.log("Pool address:", rightokenPoolAddress)
-			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=${rightokenAddress}&outputCurrency=${stablecoinAddress}`)
+			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.5&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
 			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
 
 			const poolContract = new ethers.Contract(
@@ -260,10 +270,11 @@ export default function Mint() {
 				TokenA,
 				TokenB,
 				immutables.fee,
-				encodePriceSqrt(1, 1), // state.sqrtPriceX96.toString(), // Math.pow(2,96),
-				10000000000, // state.liquidity.toString(), // 1
+				state.sqrtPriceX96.toString(), // Math.pow(2,96),
+				poolLiquidity, // state.liquidity.toString(),
 				state.tick
 			)
+			console.log("Instantiated pool")
 
 
 			// MINT THE POSITION
@@ -272,7 +283,7 @@ export default function Mint() {
 
 			const position = new Position({
 				pool: poolInstance,
-				liquidity: 1000000000, // state.liquidity * 0.0002
+				liquidity: poolLiquidity, // state.liquidity * 0.0002
 				tickLower: nearestUsableTick(state.tick, immutables.tickSpacing) - immutables.tickSpacing * 2,
 				tickUpper: nearestUsableTick(state.tick, immutables.tickSpacing) + immutables.tickSpacing * 2
 			})
@@ -289,9 +300,8 @@ export default function Mint() {
 			const transaction = {
 				data: calldata,
 				to: NonfungibleTokenPositionDescriptorAddress,
-				// value: ethers.utils.parseEther("0"), // BigNumber.from(route.methodParameters.value),
-				from: account, // "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // account,
-				gasLimit: 15000000, // ethers.utils.hexlify(100000), // 100000, // 100000
+				from: account,
+				gasLimit: 15000000,
   				gasPrice: ethers.utils.parseUnits('100', 'gwei'),
 			}
 			
@@ -331,7 +341,9 @@ export default function Mint() {
 				}
 
 				await positionContract.mint(liquidityParams)
+			*/
 
+			/*
 				V2 CODE
 
 				V2 Router
@@ -614,14 +626,14 @@ export default function Mint() {
 							</div>
 						</>
 					}
-					{ (!songIsListed && !songIsListing && typeof(percentListed) !== 'undefined' && typeof(marketCap) !== 'undefined' && !invalidTokenPriceInfo) && 
+					{ (!songIsListed && !songIsListing && typeof(percentListed) !== 'undefined' && Number(percentListed) > 0 && typeof(marketCap) !== 'undefined' && !invalidTokenPriceInfo) && 
 						<>
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
 									className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
 									onClick={() => listRightokenERC20()}>
-									List now
+										List now
 								</button>
 							</div>
 						</>
