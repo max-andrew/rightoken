@@ -270,8 +270,8 @@ export default function Mint() {
 				TokenA,
 				TokenB,
 				immutables.fee,
-				state.sqrtPriceX96.toString(), // Math.pow(2,96),
-				poolLiquidity, // state.liquidity.toString(),
+				state.sqrtPriceX96.toString(),
+				state.liquidity.toString(), //poolLiquidity.toString(), 
 				state.tick
 			)
 			console.log("Instantiated pool")
@@ -283,7 +283,7 @@ export default function Mint() {
 
 			const position = new Position({
 				pool: poolInstance,
-				liquidity: poolLiquidity, // state.liquidity * 0.0002
+				liquidity: state.liquidity, // poolLiquidity, // state.liquidity * 0.0002
 				tickLower: nearestUsableTick(state.tick, immutables.tickSpacing) - immutables.tickSpacing * 2,
 				tickUpper: nearestUsableTick(state.tick, immutables.tickSpacing) + immutables.tickSpacing * 2
 			})
