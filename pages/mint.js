@@ -155,6 +155,7 @@ export default function Mint() {
 		try {
 			// create a Uniswap LP
 			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+			const arbitrumRinkebyDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
 			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
 			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
 			const arbitrumWETHAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
@@ -162,9 +163,12 @@ export default function Mint() {
 			const otherRightokenAddress = "0x01b2b31E19DDAcF0CFD7b82A3e72a28609E1fD8d"
 			const randomRightokenAddress2 = "0x8Fb6b102c15281e6ecD98E14D46E9ab3b6c5fc9F"
 			const randomRightokenAddress3 = "0xC5359cd2546d62486964211ad25b155C3Dbc95fd"
+			const randomRightokenAddress4 = "0x15E164cc8488dE9eD74D8aDB429dbB7d132Bf993"
+			const randomRightokenAddress5 = "0xB898a83dDdEE9795B952331B3fBD6F6114fA72e8"
+			const randomRightokenAddress6 = "0xaf6610CB6f73D7907d5bc268eABd9F736d7Bdc07"
 
-			const rightokenAddress = otherRightokenAddress
-			const stablecoinAddress = arbitrumRinkebyWETHAddress
+			const rightokenAddress = randomRightokenAddress6
+			const stablecoinAddress = arbitrumRinkebyDAIAddress
 			const stablecoinSymbol = "DAI"
 			const stablecoinName = "Dai Stablecoin"
 
@@ -173,22 +177,20 @@ export default function Mint() {
 			const pricePerRightokenToken = marketCap/100
 			const sqrtPriceX96 = encodePriceSqrt(1, 1) // Math.pow(2,96) // encodePriceSqrt(1, pricePerRightokenToken)
 
-			const poolLiquidity = 1 // (sqrt(upper) sqrt(lower)) / (sqrt(upper) - sqrt(lower)) // Math.pow(2,96)
+			const poolLiquidity = 1 // (sqrt(upper) sqrt(lower)) / (sqrt(upper) - sqrt(lower))
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
 			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
-			/*
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
 			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
+			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 640000})
 			await approvedContract.wait()
 
 			approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
-			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
+			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 640000})
 			await approvedContract.wait()
-			*/
 
 
 			// CREATE AND INITIALIZE A NEW POOL
@@ -281,9 +283,10 @@ export default function Mint() {
 			const block = await library.getBlock()
 			const deadline = block.timestamp + 200
 
+			/*
 			const position = new Position({
 				pool: poolInstance,
-				liquidity: state.liquidity, // poolLiquidity, // state.liquidity * 0.0002
+				liquidity: poolLiquidity, // add some liquidity // state.liquidity * 0.0002
 				tickLower: nearestUsableTick(state.tick, immutables.tickSpacing) - immutables.tickSpacing * 2,
 				tickUpper: nearestUsableTick(state.tick, immutables.tickSpacing) + immutables.tickSpacing * 2
 			})
@@ -293,9 +296,6 @@ export default function Mint() {
 				recipient: account,
 				deadline: deadline
 			})
-			
-			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
-			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
 			
 			const transaction = {
 				data: calldata,
@@ -308,59 +308,42 @@ export default function Mint() {
 			const mintPosition = await signer.sendTransaction(transaction)
 
 			console.dir(await mintPosition.wait())
+			*/
+
+
+			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
+			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
+			
+			const mintParams = {
+				token0: rightokenAddress,
+				token1: stablecoinAddress,
+				fee: poolFee,
+				tickLower: getMinTick(10),
+				tickUpper: getMaxTick(10),
+				recipient: account,
+				amount0Desired: ethers.utils.parseUnits('10', 'gwei'),
+				amount1Desired: ethers.utils.parseUnits('10', 'gwei'),
+				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
+				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
+				deadline: deadline, 
+			}
+
+			const positionInterface = new ethers.utils.Interface(INonfungiblePositionManagerABI)
+			const calldata = positionInterface.encodeFunctionData("mint", [ mintParams ])
+
+			const transaction = {
+				data: calldata,
+				to: NonfungibleTokenPositionDescriptorAddress,
+				from: account,
+				gasLimit: 15000000,
+  				gasPrice: ethers.utils.parseUnits('100', 'gwei'),
+			}
+			const mintPosition = await signer.sendTransaction(transaction)
+
+			console.dir(await mintPosition.wait())
 			console.log("Rightoken listed successfully")
 
 			// setSongIsListed(true)
-		
-
-			/*
-				// address token0
-				// address token1
-				// uint24 fee
-				// int24 tickLower
-				// int24 tickUpper
-				// uint256 amount0Desired
-				// uint256 amount1Desired
-				// uint256 amount0Min
-				// uint256 amount1Min
-				// address recipient
-				// uint256 deadline
-
-				const liquidityParams = {
-					token0: rightokenAddress,
-					token1: stablecoinAddress,
-					fee: poolFee,
-					tickLower: getMinTick(10),
-					tickUpper: getMaxTick(10),
-					recipient: account, // wallets[0].address,
-					amount0Desired: ethers.utils.parseEther("1"),
-					amount1Desired: ethers.utils.parseEther("1"),
-					amount0Min: 0,
-					amount1Min: 0,
-					deadline: deadline, // 1,
-				}
-
-				await positionContract.mint(liquidityParams)
-			*/
-
-			/*
-				V2 CODE
-
-				V2 Router
-				let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
-				let approveAllowanceContract = new ethers.Contract(customERC20RightokenAddress, approveAllowanceABI, signer)
-				let approvedContract = await approveAllowanceContract.approve("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 1500000})
-				
-				// wait for approval transaction to be mined
-				await approvedContract.wait()
-
-				const uniswapRouterContract = new ethers.Contract("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", IUniswapV2Router02.abi, signer)
-				const liquidity = await uniswapRouterContract.addLiquidityETH(customERC20RightokenAddress, (saleAmount * 10 ** 18).toString(), (.25 * 10 ** 18).toString(), (.01 * 10 ** 18).toString(), account, (Date.now() + 1000 * 60 * 10).toString(), {from: account, gasPrice: ethers.utils.parseUnits('5', 'gwei'), gasLimit: 3400000, value: ((askingPrice*(saleAmount/100)) * 10 ** 18).toString()})
-				const liquidityReceipt = await liquidity.wait()
-				console.log(liquidityReceipt)
-
-				const customUniswapSwapLink = `https://app.uniswap.org/#/swap?exactField=output&exactAmount=.05&inputCurrency=ETH&outputCurrency=${customERC20RightokenAddress}`
-			*/
 		}
 		catch (e) {
 			console.error(e)
