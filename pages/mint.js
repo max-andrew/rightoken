@@ -7,14 +7,7 @@ import { formatEther } from '@ethersproject/units'
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import bn from 'bignumber.js'
 
-import { Pool, Position, nearestUsableTick, addCallParameters, NonfungiblePositionManager } from '@uniswap/v3-sdk'
-import { Token, Percent } from '@uniswap/sdk-core'
-import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
-import { abi as IUniswapV3FactoryABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json'
-import { abi as IUniswapV3PoolDeployerABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3PoolDeployer.sol/IUniswapV3PoolDeployer.json'
 import { abi as INonfungiblePositionManagerABI } from '@uniswap/v3-periphery/artifacts/contracts/interfaces/INonfungiblePositionManager.sol/INonfungiblePositionManager.json'
-// import { getMaxTick, getMinTick } from '@uniswap/v3-periphery/test/shared/ticks.ts'
-// import { FeeAmount, TICK_SPACINGS } from '@uniswap/v3-periphery/test/shared/constants.ts'
 
 import Confetti from 'react-confetti'
 
@@ -155,10 +148,15 @@ export default function Mint() {
 		try {
 			// create a Uniswap LP
 			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+			const rinkebyDAIAddress = "0x6A9865aDE2B6207dAAC49f8bCba9705dEB0B0e6D"
 			const arbitrumRinkebyDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
+
 			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+
 			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
+			const rinkebyWETHAddress = "0xc778417E063141139Fce010982780140Aa0cD5Ab"
 			const arbitrumWETHAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+
 			const randomRightokenAddress = "0xde275455A3e6c452115D2b950A8dD0432f63de56"
 			const otherRightokenAddress = "0x01b2b31E19DDAcF0CFD7b82A3e72a28609E1fD8d"
 			const randomRightokenAddress2 = "0x8Fb6b102c15281e6ecD98E14D46E9ab3b6c5fc9F"
@@ -167,165 +165,81 @@ export default function Mint() {
 			const randomRightokenAddress5 = "0xB898a83dDdEE9795B952331B3fBD6F6114fA72e8"
 			const randomRightokenAddress6 = "0xaf6610CB6f73D7907d5bc268eABd9F736d7Bdc07"
 
-			const rightokenAddress = randomRightokenAddress6
+			const randomRinkebyRightokenAddress = "0x138008a58159F459bcAE931E03B0d1d9fDd25A37"
+
+			const rightokenAddress = randomRightokenAddress5
 			const stablecoinAddress = arbitrumRinkebyDAIAddress
-			const stablecoinSymbol = "DAI"
-			const stablecoinName = "Dai Stablecoin"
 
 			const poolFee = 500
 
-			const pricePerRightokenToken = marketCap/100
-			const sqrtPriceX96 = encodePriceSqrt(1, 1) // Math.pow(2,96) // encodePriceSqrt(1, pricePerRightokenToken)
+			const pricePerRightoken = marketCap/100
 
-			const poolLiquidity = 1 // (sqrt(upper) sqrt(lower)) / (sqrt(upper) - sqrt(lower))
+			// (y, x)
+			const sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
+
+			console.log(ethers.utils.parseUnits('100', 'gwei'))
+			console.log(ethers.utils.parseUnits(percentListed, 18))
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
 			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
+			// potentially not needed
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
-			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 640000})
+			let approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
+			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
 			await approvedContract.wait()
 
-			approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
-			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasPrice: ethers.utils.parseUnits('100', 'gwei'), gasLimit: 640000})
+			approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
+			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
 			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
 			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(rightokenAddress, stablecoinAddress, poolFee, sqrtPriceX96)
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
-			console.log("Created pool")
 
-
-			// ADD LIQUIDITY TO POOL AND MINT POSITION
-			const UniswapV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
-
-			const factoryContract = new ethers.Contract(UniswapV3FactoryAddress, IUniswapV3FactoryABI, signer)
-			const rightokenPoolAddress = await factoryContract.getPool(rightokenAddress, stablecoinAddress, poolFee)
-			
-			console.log("Pool address:", rightokenPoolAddress)
 			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.5&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
 			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
-
-			const poolContract = new ethers.Contract(
-				rightokenPoolAddress,
-				IUniswapV3PoolABI,
-				signer
-			)
-
-			async function getPoolImmutables() {
-				const [factory, token0, token1, fee, tickSpacing, maxLiquidityPerTick] =
-					await Promise.all([
-						poolContract.factory(),
-						poolContract.token0(),
-						poolContract.token1(),
-						poolContract.fee(),
-						poolContract.tickSpacing(),
-						poolContract.maxLiquidityPerTick(),
-					])
-
-				const immutables = {
-					factory,
-					token0,
-					token1,
-					fee,
-					tickSpacing,
-					maxLiquidityPerTick,
-				}
-				return immutables
-			}
-
-			async function getPoolState() {
-				const [liquidity, slot] = await Promise.all([
-					poolContract.liquidity(),
-					poolContract.slot0(),
-				])
-
-				const PoolState = {
-					liquidity,
-					sqrtPriceX96: slot[0],
-					tick: slot[1],
-					observationIndex: slot[2],
-					observationCardinality: slot[3],
-					observationCardinalityNext: slot[4],
-					feeProtocol: slot[5],
-					unlocked: slot[6],
-				}
-
-				return PoolState
-			}
-
-			const [immutables, state] = await Promise.all([
-				getPoolImmutables(),
-				getPoolState(),
-			])
-
-			const TokenA = new Token(chainId, immutables.token0, 18, "RTKN", "Rightoken")
-			const TokenB = new Token(chainId, immutables.token1, 18, stablecoinSymbol, stablecoinName)
-
-			// two token addresses, the fee tier, the current pool price, the current liquidity, and the current tick
-			const poolInstance = new Pool(
-				TokenA,
-				TokenB,
-				immutables.fee,
-				state.sqrtPriceX96.toString(),
-				state.liquidity.toString(), //poolLiquidity.toString(), 
-				state.tick
-			)
-			console.log("Instantiated pool")
 
 
 			// MINT THE POSITION
 			const block = await library.getBlock()
 			const deadline = block.timestamp + 200
 
-			/*
-			const position = new Position({
-				pool: poolInstance,
-				liquidity: poolLiquidity, // add some liquidity // state.liquidity * 0.0002
-				tickLower: nearestUsableTick(state.tick, immutables.tickSpacing) - immutables.tickSpacing * 2,
-				tickUpper: nearestUsableTick(state.tick, immutables.tickSpacing) + immutables.tickSpacing * 2
-			})
-			
-			const { calldata, value } = NonfungiblePositionManager.addCallParameters(position, {
-				slippageTolerance: new Percent(50, 10_000),
-				recipient: account,
-				deadline: deadline
-			})
-			
-			const transaction = {
-				data: calldata,
-				to: NonfungibleTokenPositionDescriptorAddress,
-				from: account,
-				gasLimit: 15000000,
-  				gasPrice: ethers.utils.parseUnits('100', 'gwei'),
-			}
-			
-			const mintPosition = await signer.sendTransaction(transaction)
-
-			console.dir(await mintPosition.wait())
-			*/
-
-
 			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
 			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
+
+			function getBaseLog(x, y) {
+				return Math.log(y) / Math.log(x)
+			}
 			
+			/*
+				A single sided LP can only be setup out of range of the current price. 
+				Above or below the current price, and this only allows one of the tokens to be used on either side.
+
+				there is only one permissible ratio token0/token1 at which you can add liquidity.
+				this ratio will be 0 if the pool price is >= upper end of the range
+				(i.e. all the liquidity position is in token1),
+				and it's infinity (i.e. token1 = 0) if the pool price <= lower end of the range 
+				(i.e. all the liquidity in your position is in token0). 
+				If the pool price is in the range, then 0 < token0/token1 < infinity, but the formula 
+				for the ratio is actually rather complicated
+			*/
 			const mintParams = {
-				token0: rightokenAddress,
-				token1: stablecoinAddress,
+				token0: stablecoinAddress,
+				token1: rightokenAddress,
 				fee: poolFee,
 				tickLower: getMinTick(10),
-				tickUpper: getMaxTick(10),
+				tickUpper: BigNumber.from(new bn(Math.floor(getBaseLog(1.0001, 50 /*pricePerRightoken*/) / 10) * 10).toString()), // getMaxTick(10),
 				recipient: account,
-				amount0Desired: ethers.utils.parseUnits('10', 'gwei'),
-				amount1Desired: ethers.utils.parseUnits('10', 'gwei'),
+				amount0Desired: ethers.utils.parseUnits('0', 'gwei'),
+				amount1Desired: ethers.utils.parseUnits('10', 'gwei'), // ethers.utils.parseUnits(percentListed, 18),
 				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
 				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
-				deadline: deadline, 
+				deadline: deadline,
 			}
 
 			const positionInterface = new ethers.utils.Interface(INonfungiblePositionManagerABI)
@@ -336,7 +250,6 @@ export default function Mint() {
 				to: NonfungibleTokenPositionDescriptorAddress,
 				from: account,
 				gasLimit: 15000000,
-  				gasPrice: ethers.utils.parseUnits('100', 'gwei'),
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
