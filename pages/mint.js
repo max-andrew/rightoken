@@ -164,21 +164,22 @@ export default function Mint() {
 			const randomRightokenAddress4 = "0x15E164cc8488dE9eD74D8aDB429dbB7d132Bf993"
 			const randomRightokenAddress5 = "0xB898a83dDdEE9795B952331B3fBD6F6114fA72e8"
 			const randomRightokenAddress6 = "0xaf6610CB6f73D7907d5bc268eABd9F736d7Bdc07"
+			const randomRightokenAddress7 = "0x8C8dacfe0424626b8aCa7bCf5A4B9064d7A10D41"
+			const randomRightokenAddress8 = "0xE110278646107Aa1CC08AE0CE9971B0642a03cC8"
 
 			const randomRinkebyRightokenAddress = "0x138008a58159F459bcAE931E03B0d1d9fDd25A37"
 
-			const rightokenAddress = randomRightokenAddress5
+			const rightokenAddress = randomRightokenAddress6
 			const stablecoinAddress = arbitrumRinkebyDAIAddress
 
 			const poolFee = 500
 
-			const pricePerRightoken = marketCap/100
+			const pricePerRightoken = marketCap/100 // 10, 50, 60, 90, 100 X110 X150
+
+			console.log(pricePerRightoken)
 
 			// (y, x)
 			const sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
-
-			console.log(ethers.utils.parseUnits('100', 'gwei'))
-			console.log(ethers.utils.parseUnits(percentListed, 18))
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
@@ -201,7 +202,7 @@ export default function Mint() {
 			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
 
-			console.log(`https://app.uniswap.org/#/swap?exactField=output&exactAmount=.5&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
+			console.log(`https://app.uniswap.org/#/swap?exactField=input&exactAmount=500&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
 			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
 
 
@@ -209,12 +210,12 @@ export default function Mint() {
 			const block = await library.getBlock()
 			const deadline = block.timestamp + 200
 
-			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
-			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
+			const tickSpacing = 10
 
-			function getBaseLog(x, y) {
-				return Math.log(y) / Math.log(x)
-			}
+			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
+			// const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
+
+			const getBaseLog = (x, y) => Math.log(y) / Math.log(x)
 			
 			/*
 				A single sided LP can only be setup out of range of the current price. 
@@ -232,11 +233,11 @@ export default function Mint() {
 				token0: stablecoinAddress,
 				token1: rightokenAddress,
 				fee: poolFee,
-				tickLower: getMinTick(10),
-				tickUpper: BigNumber.from(new bn(Math.floor(getBaseLog(1.0001, 50 /*pricePerRightoken*/) / 10) * 10).toString()), // getMaxTick(10),
+				tickLower: getMinTick(tickSpacing),
+				tickUpper: Math.floor(getBaseLog(1.0001, pricePerRightoken) / tickSpacing) * tickSpacing,
 				recipient: account,
 				amount0Desired: ethers.utils.parseUnits('0', 'gwei'),
-				amount1Desired: ethers.utils.parseUnits('10', 'gwei'), // ethers.utils.parseUnits(percentListed, 18),
+				amount1Desired: ethers.utils.parseUnits(percentListed, 18),
 				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
 				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
 				deadline: deadline,
@@ -249,7 +250,7 @@ export default function Mint() {
 				data: calldata,
 				to: NonfungibleTokenPositionDescriptorAddress,
 				from: account,
-				gasLimit: 15000000,
+				// gasLimit: 15000000,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
