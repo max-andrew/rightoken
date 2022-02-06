@@ -124,14 +124,13 @@ export default function Mint() {
 	}
 
 	const [songIsListing, setSongIsListing] = useState(false)
-	const [customUniswapSwapLink, setCustomUniswapSwapLink] = useState("")
+	const [customUniswapPoolLink, setCustomUniswapPoolLink] = useState("")
 	async function listRightokenERC20() {
 		setSongIsListing(true)
 
 		const signer = library.getSigner(account)
 
 		bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
-
 		// returns the sqrt price as a 64x96
 		function encodePriceSqrt(reserve1, reserve0) {
 			return BigNumber.from(
@@ -144,65 +143,37 @@ export default function Mint() {
 			)
 		}
 
-		// marketCap, percentListed
 		try {
 			// create a Uniswap LP
-			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-			const rinkebyDAIAddress = "0x6A9865aDE2B6207dAAC49f8bCba9705dEB0B0e6D"
+			const arbitrumDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
 			const arbitrumRinkebyDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
 
-			const usdcAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+			const rightokenAddress = rightokenERC20Address
+			const stablecoinAddress = chainId === 421611 ? arbitrumRinkebyDAIAddress : arbitrumDAIAddress
 
-			const arbitrumRinkebyWETHAddress = "0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681"
-			const rinkebyWETHAddress = "0xc778417E063141139Fce010982780140Aa0cD5Ab"
-			const arbitrumWETHAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
-
-			const randomRightokenAddress = "0xde275455A3e6c452115D2b950A8dD0432f63de56"
-			const otherRightokenAddress = "0x01b2b31E19DDAcF0CFD7b82A3e72a28609E1fD8d"
-			const randomRightokenAddress2 = "0x8Fb6b102c15281e6ecD98E14D46E9ab3b6c5fc9F"
-			const randomRightokenAddress3 = "0xC5359cd2546d62486964211ad25b155C3Dbc95fd"
-			const randomRightokenAddress4 = "0x15E164cc8488dE9eD74D8aDB429dbB7d132Bf993"
-			const randomRightokenAddress5 = "0xB898a83dDdEE9795B952331B3fBD6F6114fA72e8"
-			const randomRightokenAddress6 = "0xaf6610CB6f73D7907d5bc268eABd9F736d7Bdc07"
-			const randomRightokenAddress7 = "0x8C8dacfe0424626b8aCa7bCf5A4B9064d7A10D41"
-			const randomRightokenAddress8 = "0xE110278646107Aa1CC08AE0CE9971B0642a03cC8"
-
-			const randomRinkebyRightokenAddress = "0x138008a58159F459bcAE931E03B0d1d9fDd25A37"
-
-			const rightokenAddress = randomRightokenAddress6
-			const stablecoinAddress = arbitrumRinkebyDAIAddress
-
-			const poolFee = 500
-
-			const pricePerRightoken = marketCap/100 // 10, 50, 60, 90, 100 X110 X150
-
-			console.log(pricePerRightoken)
-
+			const pricePerRightoken = marketCap/100
 			// (y, x)
 			const sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
+			const poolFee = 500
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
 			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
-			// potentially not needed
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
-			let approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
+			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
 			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
-			await approvedContract.wait()
-
-			approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
 			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
-			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
 			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
 
-			console.log(`https://app.uniswap.org/#/swap?exactField=input&exactAmount=500&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
+			const poolURL = `https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
+			setCustomUniswapPoolLink(poolURL)
+			console.log(poolURL)
 			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
 
 
@@ -213,28 +184,15 @@ export default function Mint() {
 			const tickSpacing = 10
 
 			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
-			// const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
 
 			const getBaseLog = (x, y) => Math.log(y) / Math.log(x)
 			
-			/*
-				A single sided LP can only be setup out of range of the current price. 
-				Above or below the current price, and this only allows one of the tokens to be used on either side.
-
-				there is only one permissible ratio token0/token1 at which you can add liquidity.
-				this ratio will be 0 if the pool price is >= upper end of the range
-				(i.e. all the liquidity position is in token1),
-				and it's infinity (i.e. token1 = 0) if the pool price <= lower end of the range 
-				(i.e. all the liquidity in your position is in token0). 
-				If the pool price is in the range, then 0 < token0/token1 < infinity, but the formula 
-				for the ratio is actually rather complicated
-			*/
 			const mintParams = {
 				token0: stablecoinAddress,
 				token1: rightokenAddress,
 				fee: poolFee,
 				tickLower: getMinTick(tickSpacing),
-				tickUpper: Math.floor(getBaseLog(1.0001, pricePerRightoken) / tickSpacing) * tickSpacing,
+				tickUpper: Math.floor(getBaseLog(1.0001, 1/pricePerRightoken) / tickSpacing) * tickSpacing,
 				recipient: account,
 				amount0Desired: ethers.utils.parseUnits('0', 'gwei'),
 				amount1Desired: ethers.utils.parseUnits(percentListed, 18),
@@ -250,14 +208,12 @@ export default function Mint() {
 				data: calldata,
 				to: NonfungibleTokenPositionDescriptorAddress,
 				from: account,
-				// gasLimit: 15000000,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
-			console.dir(await mintPosition.wait())
 			console.log("Rightoken listed successfully")
 
-			// setSongIsListed(true)
+			setSongIsListed(true)
 		}
 		catch (e) {
 			console.error(e)
@@ -271,7 +227,7 @@ export default function Mint() {
 		let postCelebrationLink = "/"
 
 		if (songIsListed) {
-			postCelebrationLink = customUniswapSwapLink
+			postCelebrationLink = customUniswapPoolLink
 		}
 
 		const runCelebration = new Promise((resolve, reject) => {
@@ -548,7 +504,7 @@ export default function Mint() {
 					{ songIsListed &&
 						<>
 							<br /><br />
-							Here's your investor link: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{customUniswapSwapLink}</span>
+							Here's your investor link: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{customUniswapPoolLink}</span>
 							<br /><br /> 
 							This is how fans will be able to buy into your work and you'll be able to get capital for it. Screenshot this page for your records.
 						</>
