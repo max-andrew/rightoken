@@ -131,6 +131,7 @@ export default function Mint() {
 		const signer = library.getSigner(account)
 
 		bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
+
 		// returns the sqrt price as a 64x96
 		function encodePriceSqrt(reserve1, reserve0) {
 			return BigNumber.from(
@@ -165,36 +166,38 @@ export default function Mint() {
 			const randomRightokenAddress6 = "0xaf6610CB6f73D7907d5bc268eABd9F736d7Bdc07"
 			const randomRightokenAddress7 = "0x8C8dacfe0424626b8aCa7bCf5A4B9064d7A10D41"
 			const randomRightokenAddress8 = "0xE110278646107Aa1CC08AE0CE9971B0642a03cC8"
-			const randomRightokenAddress9 = "0x9c17b81a973fD85542A52920913594ac4C7373Ae"
-			const randomRightokenAddress10 = "0x6C8b8EA54F5cDF5745eDB4843eAd15DcAdE1e159"
 
 			const randomRinkebyRightokenAddress = "0x138008a58159F459bcAE931E03B0d1d9fDd25A37"
 
-			const rightokenAddress = randomRightokenAddress10
+			const rightokenAddress = randomRightokenAddress6
 			const stablecoinAddress = arbitrumRinkebyDAIAddress
 
 			const poolFee = 500
 
-			const pricePerRightoken = 10 // marketCap/100 // 100 // 10, 50, 60, 90, 100 X110 X150
+			const pricePerRightoken = marketCap/100 // 10, 50, 60, 90, 100 X110 X150
 
-			const sqrtPriceX96 = encodePriceSqrt(1, pricePerRightoken)
+			console.log(pricePerRightoken)
+
+			// (y, x)
+			const sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
-			const NonfungiblePositionManagerAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
+			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
+			// potentially not needed
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
-			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			let approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
+			let approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
+			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
 			await approvedContract.wait()
 
-			// approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
-			// approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
-			// await approvedContract.wait()
+			approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
+			approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
+			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
-			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManagerABI, signer)
+			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
 			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
 			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
@@ -213,8 +216,6 @@ export default function Mint() {
 			// const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
 
 			const getBaseLog = (x, y) => Math.log(y) / Math.log(x)
-
-			// console.log(getMaxTick(10), (Math.floor(getBaseLog(1.0001, pricePerRightoken) / tickSpacing) * tickSpacing))
 			
 			/*
 				A single sided LP can only be setup out of range of the current price. 
@@ -235,10 +236,10 @@ export default function Mint() {
 				tickLower: getMinTick(tickSpacing),
 				tickUpper: Math.floor(getBaseLog(1.0001, pricePerRightoken) / tickSpacing) * tickSpacing,
 				recipient: account,
-				amount0Desired: ethers.utils.parseUnits('10', 'gwei'),
-				amount1Desired: ethers.utils.parseUnits('10', 'gwei'),
+				amount0Desired: ethers.utils.parseUnits('0', 'gwei'),
+				amount1Desired: ethers.utils.parseUnits(percentListed, 18),
 				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
-				amount1Min: ethers.utils.parseUnits('0', 18),
+				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
 				deadline: deadline,
 			}
 
@@ -247,9 +248,9 @@ export default function Mint() {
 
 			const transaction = {
 				data: calldata,
-				to: NonfungiblePositionManagerAddress,
+				to: NonfungibleTokenPositionDescriptorAddress,
 				from: account,
-				gasLimit: 15000000,
+				// gasLimit: 15000000,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
