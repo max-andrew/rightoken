@@ -143,6 +143,7 @@ export default function Mint() {
 			)
 		}
 
+		// marketCap, percentListed
 		try {
 			// create a Uniswap LP
 			const daiAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
@@ -166,18 +167,15 @@ export default function Mint() {
 			const randomRightokenAddress8 = "0xE110278646107Aa1CC08AE0CE9971B0642a03cC8"
 			const randomRightokenAddress9 = "0x9c17b81a973fD85542A52920913594ac4C7373Ae"
 			const randomRightokenAddress10 = "0x6C8b8EA54F5cDF5745eDB4843eAd15DcAdE1e159"
-			const randomRightokenAddress11 = "0xAC2F19edCDB4A778fDf7022fb6561b6624B449ce"
-			const randomRightokenAddress12 = "0xae2b6Ff56B36AA05C2aF7eCaC7BEe0e187105e03"
-			const randomRightokenAddress13 = "0x6a515Cd1b7c945E34403f7198834a9eC0c14477B"
 
 			const randomRinkebyRightokenAddress = "0x138008a58159F459bcAE931E03B0d1d9fDd25A37"
 
+			const rightokenAddress = randomRightokenAddress10
 			const stablecoinAddress = arbitrumRinkebyDAIAddress
-			const rightokenAddress = randomRightokenAddress13
 
 			const poolFee = 500
 
-			const pricePerRightoken = marketCap/100
+			const pricePerRightoken = 10 // marketCap/100 // 100 // 10, 50, 60, 90, 100 X110 X150
 
 			const sqrtPriceX96 = encodePriceSqrt(1, pricePerRightoken)
 
@@ -197,10 +195,11 @@ export default function Mint() {
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManagerABI, signer)
+			// address token0, address token1, uint24 fee, uint160 sqrtPriceX96
 			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
 
-			console.log(`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
+			console.log(`https://app.uniswap.org/#/swap?exactField=input&exactAmount=500&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`)
 			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
 
 
@@ -236,15 +235,15 @@ export default function Mint() {
 				tickLower: getMinTick(tickSpacing),
 				tickUpper: Math.floor(getBaseLog(1.0001, pricePerRightoken) / tickSpacing) * tickSpacing,
 				recipient: account,
-				amount0Desired: ethers.utils.parseUnits('1000', 'gwei'), // ethers.utils.parseUnits('1', 18),
-				amount1Desired: ethers.utils.parseUnits('10000', 'gwei'), // ethers.utils.parseUnits('1', 18),
+				amount0Desired: ethers.utils.parseUnits('10', 'gwei'),
+				amount1Desired: ethers.utils.parseUnits('10', 'gwei'),
 				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
-				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
+				amount1Min: ethers.utils.parseUnits('0', 18),
 				deadline: deadline,
 			}
 
 			const positionInterface = new ethers.utils.Interface(INonfungiblePositionManagerABI)
-			const calldata = positionInterface.encodeFunctionData("mint", [mintParams])
+			const calldata = positionInterface.encodeFunctionData("mint", [ mintParams ])
 
 			const transaction = {
 				data: calldata,
@@ -254,6 +253,7 @@ export default function Mint() {
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
+			console.dir(await mintPosition.wait())
 			console.log("Rightoken listed successfully")
 
 			// setSongIsListed(true)
