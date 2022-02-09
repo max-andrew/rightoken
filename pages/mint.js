@@ -24,7 +24,12 @@ export default function Mint() {
 
 	// eagerly connect wallet
 	useEffect(() => {
-		activate(injected)
+		try {
+			activate(injected)
+		}
+		catch (e) {
+			console.error(e)
+		}
 	}, [activate])
 
 	const [ethBalance, setEthBalance] = useState(0.0)
@@ -42,7 +47,7 @@ export default function Mint() {
 
 	const [currentStep, setCurrentStep] = useState(0)
 	// initialize currentStep to most recent step on page reload
-	useEffect(() => {
+	/*useEffect(() => {
 		let currentStepInSessionStorage = 0
 
 		if (typeof(window?.sessionStorage.getItem('currentStep')) === null) {
@@ -52,7 +57,7 @@ export default function Mint() {
 			currentStepInSessionStorage = window?.sessionStorage.getItem('currentStep')
 			setCurrentStep(parseInt(currentStepInSessionStorage))
 		}
-	}, [])
+	}, [])*/
 
 	useEffect(() => {
 		window?.sessionStorage.setItem('currentStep', currentStep)
@@ -109,6 +114,7 @@ export default function Mint() {
 			const customERC20RightokenAddress = customERC20RightokenContract.address
 			await customERC20RightokenContract.deployed()
 			console.log("Token address:", customERC20RightokenAddress)
+			// 0x638E6ccf8bF9089eDBd7F2D5371c2B00e8e356cC
 
 			setRightokenERC20Address(customERC20RightokenAddress)
 
@@ -158,17 +164,17 @@ export default function Mint() {
 
 
 			// APPROVE TOKENS TO BE USED BY UNISWAP
-			const NonfungibleTokenPositionDescriptorAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
+			const NonfungiblePositionManagerAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
 			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			let approvedContract = await approveAllowanceContract.approve(NonfungibleTokenPositionDescriptorAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
+			let approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
 			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
-			const positionContract = new ethers.Contract(NonfungibleTokenPositionDescriptorAddress, INonfungiblePositionManagerABI, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
+			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManagerABI, signer)
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {/*from: account, gasPrice: ethers.utils.parseUnits('500', 'gwei'),*/ gasLimit: 2500000})
 			await initializedPool.wait()
 
 			const poolURL = `https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
@@ -206,8 +212,9 @@ export default function Mint() {
 
 			const transaction = {
 				data: calldata,
-				to: NonfungibleTokenPositionDescriptorAddress,
+				to: NonfungiblePositionManagerAddress,
 				from: account,
+				// gasLimit: 2000000,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
@@ -253,7 +260,7 @@ export default function Mint() {
 		if (typeof(account) === 'undefined') {
 			return <div className="flex flex-col justify-center space-y-3">
 				<button 
-					className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
+					className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 					onClick={() => activate(injected)}
 				>
 					Connect
@@ -272,10 +279,10 @@ export default function Mint() {
 		if (chainId !== 42161 && chainId !== 421611) {
 			return <div className="flex flex-col justify-center space-y-2">
 				<button
-					className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
+					className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 					onClick={
 						() => {
-							window?.ethereum.request({
+							library.provider.request({
 								id: 1,
 								jsonrpc: "2.0",
 								method: "wallet_addEthereumChain",
@@ -296,7 +303,7 @@ export default function Mint() {
 					className="uppercase text-xs font-bold px-3 py-2 text-zinc-600 active:bg-zinc-200 rounded-md"
 					onClick={
 						() => {
-							window?.ethereum.request({
+							library.provider.request({
 								id: 1,
 								jsonrpc: "2.0",
 								method: "wallet_addEthereumChain",
@@ -322,11 +329,6 @@ export default function Mint() {
 
 
 	const legalAgreementLibrary = {
-		metadata: {
-			title: "Metadata",
-			body: "The sound recording title, and associated cover art may be distributed by the tokenholder in relation to the work, but copyright is not conferred for these works.",
-			mutable: false,
-		},
 		credit: {
 			title: "Credit",
 			body: "The tokenholder shall acknowledge the original authorship of the composition appropriately and reasonably in all media and performance formats in writing where possible and vocally otherwise.",
@@ -344,17 +346,27 @@ export default function Mint() {
 		},
 		rightTransfer: {
 			title: "Copyright Transfer",
-			body: "You agree that global, perpetual, and exclusive license to use the sound recording will be transferred to tokenholders, until burned or otherwise determined through a social recovery mechanism, whereby rights are returned to the artist, or to the appropriate owner, respectively.",
+			body: "You agree that global, perpetual, and exclusive license to use the sound recording will be transferred to tokenholders, until delisted or determined to have been wrongfully transferred as a result of a hack or software bug, whereby rights are returned to the artist, or to the appropriate owner(s), respectively.",
+			mutable: false,
+		},
+		metadata: {
+			title: "Metadata",
+			body: "The song title and associated cover art may be distributed by the tokenholder in relation to the work, but copyright is not conferred for these works.",
+			mutable: false,
+		},
+		crescendao: {
+			title: "Crescendao",
+			body: "Crescendao artists may list special Rightokens. These will include a resale royalty, paid by investors, currently set at 4%. This rate is used to support Crescendao, an artist-owned cooperative that maintains Rightoken.",
 			mutable: false,
 		},
 		upgrade: {
-			title: "upgradability",
-			body: "The artist may upgrade the outstanding tokens to enable new features or technical maintenance. These new tokens will be sent directly to each wallet in proportion to the current tokens, rendering the current tokens void and obsolete. The artist must make reasonable efforts to inform tokenholders of the upgrade until a Rightoken tool is available to validate and locate the current version of any current or past Rightoken ERC-20.",
+			title: "Upgradability",
+			body: "A simple majority of tokenholders may vote to upgrade outstanding tokens to enable new features or technical maintenance. These new tokens will be sent directly to each wallet in proportion to the current tokens, rendering the current tokens void and obsolete. The artist must make reasonable efforts to inform tokenholders of the upgrade. A tool may be made available to validate and locate the newest version of any current or past Rightoken ERC-20.",
 			mutable: false,
 		},
 		delist: {
-			title: "delisting",
-			body: "The artist may also delist outstanding Rightoken ERC-20, effectively reversing the process of tokenization, by crediting the addresses of holders with equal value of a reasonably fungible, recognized, and established alternative token.",
+			title: "Delisting",
+			body: "The artist or original rightsholders may delist outstanding Rightoken ERC-20, effectively reversing the process of tokenization. This is done by crediting the addresses of holders with equal value of a reasonably fungible, recognized, and established alternative token.",
 			mutable: false,
 		}
 	}
@@ -368,7 +380,7 @@ export default function Mint() {
 	const mintStepPages = [
 		{
 			title: "Intro",
-			body: <>Here you'll convert your sound recording copyright to tokens and get a link to share with fans to invest. <br /><br /> Rights to the master and associated royalties like those from streaming are conferred proportionately to holders of the new tokens. <br /><br /> You'll be walked through what's happening each step of the way. This should take someone new to crypto 10-20 minutes.</>,
+			body: <>Here you'll convert your sound recording copyright to tokens and get a link to share with fans to invest. <br /><br /> Rights to the master and associated royalties like those from streaming are conferred proportionately to holders of the new tokens. <br /><br /> You'll be walked through what's happening each step of the way. This should take someone new to crypto 10-20 minutes. <br /><br /> Do not refresh this page before you finish.</>,
 		},
 		{
 			title: "Link wallet",
@@ -384,7 +396,7 @@ export default function Mint() {
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH, and to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees. <br /><br /> {(chainId === 42161 || chainId === 421611) ? <span className={ethBalance > 0.005 ? "text-green-600" : undefined}> You have {ethBalance} ETH in your Arbitrum wallet.</span> : "Connect to the Arbitrum network using the previous page to check your balance here."}</>,
+			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees. <br /><br /> {(chainId === 42161 || chainId === 421611) ? <span className={ethBalance > 0.005 ? "text-green-600" : undefined}> You have {ethBalance} ETH in your Arbitrum wallet.</span> : "Connect to the Arbitrum network using the previous page to check your balance here."}</>,
 			successCondition: ethBalance > 0.005
 		},
 		{
@@ -392,7 +404,7 @@ export default function Mint() {
 			body: <>These are the terms of the tokenholder agreement. It outlines what holders of the newly created tokens are entitled to.</>,
 			additionalContent: <>
 					{Object.keys(legalAgreementLibrary).map(sectionKey => <div key={sectionKey}>
-						<p className="font-bold text-sm uppercase tracking-wider text-zinc-700">{legalAgreementLibrary[sectionKey].title}</p>
+						<p className="font-black text-sm uppercase tracking-wider text-zinc-700">{legalAgreementLibrary[sectionKey].title}</p>
 						<p>{legalAgreementLibrary[sectionKey].body}</p>
 						<br />
 					</div>)}
@@ -406,8 +418,8 @@ export default function Mint() {
 			successCondition: agreedToTerms
 		},
 		{
-			title: "You've been invited",
-			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources traditionally offered by labels. Artists can access these for backing while staying truly independent. <br /><br /> These resources include promotion, like getting onto exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also owns Rightoken, with its worker-owners directing and supporting its maintenance and upgrades. <br /><br /> Joining costs nothing to artists. Membership is funded entirely by investor resales, a 4% fee paid by an investor when purchasing rightokens. This resale fee directly funds the communal Crescendao treasury for the benefit of Crescendao artists.</>,
+			title: "Invitation to Crescendao",
+			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources traditionally offered by labels. Artists can access these for backing while staying truly independent. <br /><br /> These resources include promotion, like getting onto exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also supports Rightoken through maintenance and upgrades. <br /><br /> Joining is free for artists. Membership is funded entirely by investor resales, a 4% fee paid by an investor when purchasing rightokens. This resale fee directly funds the communal Crescendao treasury, owned and managed by Crescendao artists, for their benefit.</>,
 			additionalContent: <>
 					<div className="flex justify-center">
 						<div className="inline-flex appearance-none align-baseline space-x-2 px-3 py-1 active:bg-gray-200 rounded-md select-none" onClick={() => setJoinCrescendao(!joinCrescendao)}>
@@ -438,7 +450,7 @@ export default function Mint() {
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
-									className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
+									className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 									onClick={() => mintRightokenERC20()}>
 									Tokenize now
 								</button>
@@ -453,7 +465,7 @@ export default function Mint() {
 		},
 		{
 			title: "List your tokens",
-			body: <>Now you have the option to list your tokens. This is how you'll make your rightokens available for fans to invest. <br /><br /> Also set an asking price for what you think the song is currently worth in total. This value rises automatically as people invest.</>,
+			body: <>Now you have the option to list some of your new tokens. This is how you'll make your rightokens available for fans to invest. <br /><br /> Set an asking price for what you think the song is currently worth in total (even if you aren't listing 100%). This value rises automatically as people invest.</>,
 			additionalContent: <>
 					{ !songIsListed &&
 						<>
@@ -484,7 +496,7 @@ export default function Mint() {
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
-									className="uppercase text-sm font-bold px-4 py-3 bg-zinc-200 active:bg-zinc-300 rounded-md"
+									className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 									onClick={() => listRightokenERC20()}>
 										List now
 								</button>
@@ -500,13 +512,17 @@ export default function Mint() {
 		{
 			title: "Share with fans",
 			body: <>
-					{songTitle ? songTitle : "Your song"} is tokenized and ready to share! 
+					{songTitle ? songTitle : "Your song"} is ready to share! 
 					{ songIsListed &&
 						<>
 							<br /><br />
-							Here's your investor link: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose px-2">{customUniswapPoolLink}</span>
+							Here's your link to the market: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{customUniswapPoolLink}</span>
 							<br /><br /> 
-							This is how fans will be able to buy into your work and you'll be able to get capital for it. Screenshot this page for your records.
+							Share this link with fans so they can invest in your work.
+							<br /><br />
+							This is also how you will receive payment. Money is sent from this page in the form of <span className="italic font-bold">DAI stablecoins</span> to your wallet. The stablecoins in your wallet can be withdrawn to your Crypto.com account and redeemed for $1/DAI.
+							<br /><br />
+							Screenshot this page for your records.
 						</>
 					}
 				</>,
@@ -515,45 +531,48 @@ export default function Mint() {
 
 	return (
 		<>
-			<main>
-				{ (typeof(window) !== "undefined" && runConfetti) &&
-					<Confetti
-						className="m-auto"
-						opacity={0.95}
-						width={window.width}
-						height={window.height}
-						run={runConfetti}
-						recycle={false}
-						onConfettiComplete={() => setRunConfetti(false)}
-					/>
-				}
+			{ (typeof(window) !== "undefined" && runConfetti) &&
+				<Confetti
+					className="m-auto"
+					opacity={0.95}
+					width={window.width}
+					height={window.height}
+					run={runConfetti}
+					recycle={false}
+					onConfettiComplete={() => setRunConfetti(false)}
+				/>
+			}
 
+			<div className="mx-auto max-w-xs md:max-w-lg">
 				<Header linkTo="support" />
-
-				<div className="py-12 mx-auto max-w-xs md:max-w-sm">
-					<p className="text-xs text-zinc-500 font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
-					<p className="font-medium break-words">{ mintStepPages[currentStep].body }</p>
-					{ mintStepPages[currentStep].additionalContent && 
-						<>
-							<br />
-							<>{ mintStepPages[currentStep].additionalContent }</>
-						</>
-					}
-					<p className="font-medium text-center mt-1 select-none">~</p>
-					<div className="flex flex-row space-x-2 justify-center mt-4">
-						{ currentStep > 0 &&
-							<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md" onClick={() => setCurrentStep(currentStep-1)}>Back</button>
-						}
-						{ currentStep < mintStepPages.length-1 && (typeof(mintStepPages[currentStep].successCondition) === 'undefined' ? true : mintStepPages[currentStep].successCondition) &&
-							<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md animate-pulse" onClick={() => setCurrentStep(currentStep+1)}>Next</button>
-						}
-						{ currentStep === mintStepPages.length-1 &&
-							<button className="text-sm font-medium px-3 py-1 active:bg-green-300 rounded-md" onClick={() => finishMintingRightoken()}>Finish</button>
-						}
+				<main>
+					<div className="py-9">
+						<p className="text-xs text-zinc-500 font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
+						<span><p className="font-medium break-words max-w-xs md:max-w-sm mx-auto">{ mintStepPages[currentStep].body }</p></span>
+						<div className="md:max-w-sm mx-auto">
+							{ mintStepPages[currentStep].additionalContent && 
+								<>
+									<br />
+									<>{ mintStepPages[currentStep].additionalContent }</>
+								</>
+							}
+						</div>
+						<p className="font-medium text-center mt-1 select-none">~</p>
+						<div className="flex flex-row space-x-2 justify-center mt-4">
+							{ currentStep > 0 &&
+								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md" onClick={() => setCurrentStep(currentStep-1)}>Back</button>
+							}
+							{ currentStep < mintStepPages.length-1 && (typeof(mintStepPages[currentStep].successCondition) === 'undefined' ? true : mintStepPages[currentStep].successCondition) &&
+								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md animate-pulse" onClick={() => setCurrentStep(currentStep+1)}>Next</button>
+							}
+							{ currentStep === mintStepPages.length-1 &&
+								<button className="text-sm font-medium px-3 py-1 active:bg-green-300 rounded-md" onClick={() => finishMintingRightoken()}>Finish</button>
+							}
+						</div>
+						<p className="text-sm text-zinc-300 font-medium text-center mt-2">{Math.round(currentStep/(mintStepPages.length-1) * 100)}%</p>
 					</div>
-					<p className="text-sm text-zinc-300 font-medium text-center mt-2">{Math.round(currentStep/(mintStepPages.length-1) * 100)}%</p>
-				</div>
-			</main>
+				</main>
+			</div>
 
 			<Footer />
 		</>
