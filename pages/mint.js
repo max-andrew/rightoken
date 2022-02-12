@@ -30,7 +30,8 @@ export default function Mint() {
 		catch (e) {
 			console.error(e)
 		}
-	}, [activate])
+	}, [activate, account, library, chainId])
+	
 
 	const [ethBalance, setEthBalance] = useState(0.0)
 	useEffect(() => {
@@ -46,8 +47,16 @@ export default function Mint() {
 	}, [chainId])
 
 	const [currentStep, setCurrentStep] = useState(0)
+	// return user to switch network page after page refresh
+	useEffect(() => {
+		if (chainId === 42161 || chainId === 421611) {
+			setCurrentStep(2)
+		}
+	}, [account])
+
 	// initialize currentStep to most recent step on page reload
-	/*useEffect(() => {
+	/*
+	useEffect(() => {
 		let currentStepInSessionStorage = 0
 
 		if (typeof(window?.sessionStorage.getItem('currentStep')) === null) {
@@ -57,7 +66,8 @@ export default function Mint() {
 			currentStepInSessionStorage = window?.sessionStorage.getItem('currentStep')
 			setCurrentStep(parseInt(currentStepInSessionStorage))
 		}
-	}, [])*/
+	}, [])
+	*/
 
 	useEffect(() => {
 		window?.sessionStorage.setItem('currentStep', currentStep)
@@ -114,7 +124,6 @@ export default function Mint() {
 			const customERC20RightokenAddress = customERC20RightokenContract.address
 			await customERC20RightokenContract.deployed()
 			console.log("Token address:", customERC20RightokenAddress)
-			// 0x638E6ccf8bF9089eDBd7F2D5371c2B00e8e356cC
 
 			setRightokenERC20Address(customERC20RightokenAddress)
 
@@ -180,7 +189,6 @@ export default function Mint() {
 			const poolURL = `https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
 			setCustomUniswapPoolLink(poolURL)
 			console.log(poolURL)
-			// console.log(`https://info.uniswap.org/home#/arbitrum/pools/${customRightokenPoolAddress}`)
 
 
 			// MINT THE POSITION
@@ -214,7 +222,6 @@ export default function Mint() {
 				data: calldata,
 				to: NonfungiblePositionManagerAddress,
 				from: account,
-				// gasLimit: 2000000,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
 
@@ -260,7 +267,7 @@ export default function Mint() {
 		if (typeof(account) === 'undefined') {
 			return <div className="flex flex-col justify-center space-y-3">
 				<button 
-					className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
+					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 					onClick={() => activate(injected)}
 				>
 					Connect
@@ -269,23 +276,22 @@ export default function Mint() {
 			</div>
 		}
 		else if (typeof(account) !== 'undefined') {
-			return <p className="text-green-600">Your wallet ending in {account.substring(account.length - 4)} is linked.</p>
+			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet ending in {account.substring(account.length - 4)} is linked</p></div>
 		}
 	}
 
 	function SwitchNetworkButton(props) {
 		let chainId = props.chainId
+		const signer = library.getSigner(account)
 
 		if (chainId !== 42161 && chainId !== 421611) {
 			return <div className="flex flex-col justify-center space-y-2">
 				<button
-					className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
+					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 					onClick={
 						() => {
 							library.provider.request({
-								id: 1,
-								jsonrpc: "2.0",
-								method: "wallet_addEthereumChain",
+								method: "wallet_switchEthereumChain",
 								params: [
 									{
 										chainId: "0xa4b1", // 42161
@@ -304,9 +310,7 @@ export default function Mint() {
 					onClick={
 						() => {
 							library.provider.request({
-								id: 1,
-								jsonrpc: "2.0",
-								method: "wallet_addEthereumChain",
+								method: "wallet_switchEthereumChain",
 								params: [
 									{
 										chainId: "0x66eeb", // 421611
@@ -323,7 +327,7 @@ export default function Mint() {
 			</div>
 		}
 		else if (chainId === 42161 || chainId === 421611) {
-			return <p className="text-green-600">Your wallet connected to Arbitrum {chainId === 421611 && "testnet"} successfully.</p>
+			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet connected to Arbitrum</p></div>
 		}
 	}
 
@@ -396,7 +400,13 @@ export default function Mint() {
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees. <br /><br /> {(chainId === 42161 || chainId === 421611) ? <span className={ethBalance > 0.005 ? "text-green-600" : undefined}> You have {ethBalance} ETH in your Arbitrum wallet.</span> : "Connect to the Arbitrum network using the previous page to check your balance here."}</>,
+			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
+			additionalContent: <>
+					{((chainId === 42161 || chainId === 421611) && ethBalance > 0.005) ? 
+						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {ethBalance} ETH </p></div>
+						: <p className="font-medium max-w-xs md:max-w-sm mx-auto">Connect to the Arbitrum network using the previous page to check your balance here.</p>
+					}
+				</>,
 			successCondition: ethBalance > 0.005
 		},
 		{
@@ -450,7 +460,7 @@ export default function Mint() {
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
-									className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
+									className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 									onClick={() => mintRightokenERC20()}>
 									Tokenize now
 								</button>
@@ -458,7 +468,7 @@ export default function Mint() {
 						</>
 					}
 					{ songIsTokenized &&
-						<p className="font-medium text-green-600">{songTitle} was tokenized successfully.</p>
+						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was tokenized successfully.</p></div>
 					}
 				</>,
 			successCondition: songIsTokenized
@@ -496,7 +506,7 @@ export default function Mint() {
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
 								<button
-									className="uppercase text-sm font-bold px-4 py-3 bg-gradient-to-r from-lime-100 via-green-100 to-emerald-100 active:from-lime-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
+									className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
 									onClick={() => listRightokenERC20()}>
 										List now
 								</button>
@@ -504,7 +514,7 @@ export default function Mint() {
 						</>
 					}
 					{ songIsListed &&
-						<p className="font-medium text-green-600">{songTitle} was listed successfully.</p>
+						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was listed successfully.</p></div>
 					}
 				</>,
 			successCondition: (songIsListed || Number(percentListed) === 0)
@@ -557,19 +567,25 @@ export default function Mint() {
 								</>
 							}
 						</div>
-						<p className="font-medium text-center mt-1 select-none">~</p>
-						<div className="flex flex-row space-x-2 justify-center mt-4">
+						<p className="font-medium text-center select-none mt-1">~</p>
+						<div className="flex flex-row space-x-2 justify-center mt-6">
 							{ currentStep > 0 &&
-								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md" onClick={() => setCurrentStep(currentStep-1)}>Back</button>
+								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md text-zinc-400" onClick={() => setCurrentStep(currentStep-1)}>Back</button>
 							}
 							{ currentStep < mintStepPages.length-1 && (typeof(mintStepPages[currentStep].successCondition) === 'undefined' ? true : mintStepPages[currentStep].successCondition) &&
-								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md animate-pulse" onClick={() => setCurrentStep(currentStep+1)}>Next</button>
+								<>
+									{ currentStep > 0 && <div className="border-l border-zinc-200" /> }
+									<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md text-zinc-800 animate-pulse" onClick={() => setCurrentStep(currentStep+1)}>Next</button>
+								</>
 							}
 							{ currentStep === mintStepPages.length-1 &&
-								<button className="text-sm font-medium px-3 py-1 active:bg-green-300 rounded-md" onClick={() => finishMintingRightoken()}>Finish</button>
+								<>
+									{ currentStep > 0 && <div className="border-l border-zinc-200" /> }
+									<button className="text-sm font-medium px-3 py-1 active:bg-green-300 rounded-md text-zinc-800" onClick={() => finishMintingRightoken()}>Finish</button>
+								</>
 							}
 						</div>
-						<p className="text-sm text-zinc-300 font-medium text-center mt-2">{Math.round(currentStep/(mintStepPages.length-1) * 100)}%</p>
+						<p className="text-sm text-zinc-300 font-medium text-center mt-3">{Math.round(currentStep/(mintStepPages.length-1) * 100)}%</p>
 					</div>
 				</main>
 			</div>
