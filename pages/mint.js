@@ -407,7 +407,7 @@ export default function Mint() {
 						: <p className="font-medium max-w-xs md:max-w-sm mx-auto">Connect to the Arbitrum network using the previous page to check your balance here.</p>
 					}
 				</>,
-			successCondition: ethBalance > 0.005
+			successCondition: ((chainId === 42161 && ethBalance > 0.005) || chainId === 421611)
 		},
 		{
 			title: "Tokenholder terms",
