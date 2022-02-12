@@ -468,7 +468,7 @@ export default function Mint() {
 						</>
 					}
 					{ songIsTokenized &&
-						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was tokenized successfully.</p></div>
+						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was tokenized</p></div>
 					}
 				</>,
 			successCondition: songIsTokenized
@@ -514,7 +514,7 @@ export default function Mint() {
 						</>
 					}
 					{ songIsListed &&
-						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was listed successfully.</p></div>
+						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  {songTitle} was listed</p></div>
 					}
 				</>,
 			successCondition: (songIsListed || Number(percentListed) === 0)
