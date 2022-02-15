@@ -297,7 +297,7 @@ export default function Mint() {
 									})
 								}
 								catch (e) {
-									if (e.code === 4902) {
+									// if (e.code === 4902) {
 										await library.provider.request({
 											method: "wallet_addEthereumChain",
 											params: [
@@ -309,7 +309,7 @@ export default function Mint() {
 												}
 											]
 										})
-									}
+									// }
 								}
 								finally {
 									location.reload() // for MetaMask mobile app
@@ -332,7 +332,7 @@ export default function Mint() {
 									})
 								}
 								catch (e) {
-									if (e.code === 4902) {
+									// if (e.code === 4902) {
 										library.provider.request({
 											method: "wallet_addEthereumChain",
 											params: [
@@ -344,7 +344,7 @@ export default function Mint() {
 												}
 											]
 										})
-									}
+									// }
 								}
 								finally {
 									location.reload() // for MetaMask mobile app
