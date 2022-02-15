@@ -31,7 +31,6 @@ export default function Mint() {
 
 	// return user to switch network page after page refresh (for MetaMask mobile app)
 	useEffect(() => {
-
 		try {
 			if (currentStep === 0 && window?.sessionStorage.getItem("hasLinkedWallet")) {
 				if (!window?.sessionStorage.getItem("reloadAttempted")) {
@@ -320,7 +319,7 @@ export default function Mint() {
 									})
 								}
 								finally {
-									// location.reload() // for MetaMask mobile app
+									location.reload() // for MetaMask mobile app
 								}
 							}
 						}
@@ -353,7 +352,7 @@ export default function Mint() {
 									})
 								}
 								finally {
-									// location.reload() // for MetaMask mobile app
+									location.reload() // for MetaMask mobile app
 								}
 							}
 						}
@@ -388,7 +387,7 @@ export default function Mint() {
 		},
 		rightTransfer: {
 			title: "Copyright Transfer",
-			body: "You agree that global, perpetual, and exclusive license to use the sound recording will be transferred to tokenholders, until delisted or determined to have been wrongfully transferred as a result of a hack or software bug, whereby rights are returned to the artist, or to the appropriate owner(s), respectively.",
+			body: "Global, perpetual, and exclusive license to use the sound recording will be transferred to tokenholders, until delisted or legally determined to have been wrongfully transferred as the result of a hack or software bug, whereby rights are returned to the appropriate owner(s).",
 			mutable: false,
 		},
 		metadata: {
@@ -398,12 +397,12 @@ export default function Mint() {
 		},
 		crescendao: {
 			title: "Crescendao",
-			body: "Crescendao artists may list special Rightokens. These will include a resale royalty, paid by investors, currently set at 4%. This rate is used to support Crescendao, an artist-owned cooperative that maintains Rightoken.",
+			body: "Crescendao artists may list rightokens that include a resale royalty, paid by investors, and currently set at 4%. This rate is used to support Crescendao, an artist-owned cooperative that maintains Rightoken.",
 			mutable: false,
 		},
 		upgrade: {
 			title: "Upgradability",
-			body: "A simple majority of tokenholders may vote to upgrade outstanding tokens to enable new features or technical maintenance. These new tokens will be sent directly to each wallet in proportion to the current tokens, rendering the current tokens void and obsolete. The artist must make reasonable efforts to inform tokenholders of the upgrade. A tool may be made available to validate and locate the newest version of any current or past Rightoken ERC-20.",
+			body: "A simple majority of tokenholders may vote to upgrade outstanding tokens to enable new features or technical maintenance. New tokens are either sent directly to the wallets of, or made available to claim by, existing owners in proportion to the current token distribution, rendering the existing tokens void and obsolete. The artist must make reasonable efforts to inform tokenholders of the upgrade.",
 			mutable: false,
 		},
 		delist: {
@@ -438,7 +437,7 @@ export default function Mint() {
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
+			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
 			additionalContent: <>
 					<div className="flex flex-col">
 						<button
