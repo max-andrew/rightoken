@@ -269,7 +269,7 @@ export default function Mint() {
 		let account = props.account
 
 		if (typeof(window.ethereum) === "undefined") {
-			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-red-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-red-600 animate-ping" />  Access this page with your wallet</p></div>
+			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-red-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-red-600 animate-ping" />  Return to this page in your wallet</p></div>
 		}
 		else if (typeof(account) === "undefined") {
 			return <div className="flex flex-col justify-center space-y-3">
@@ -476,7 +476,7 @@ export default function Mint() {
 		},
 		{
 			title: "Invitation to Crescendao",
-			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources traditionally offered by labels. Artists can access these for backing while staying truly independent. <br /><br /> These resources include promotion, like getting onto exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also supports Rightoken through maintenance and upgrades. <br /><br /> Joining is free for artists. Membership is funded entirely by investor resales, a 4% fee paid by an investor when purchasing rightokens. This resale fee directly funds the communal Crescendao treasury, owned and managed by Crescendao artists, for their benefit.</>,
+			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources artists can benefit from while staying independent. <br /><br /> These include promotion, like getting on exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also supports and oversees development of Rightoken for the benefit of all artists. <br /><br /> Membership is funded entirely by investor resales, a 4% fee paid by investors purchasing rightokens. This means joining is free for artists.</>,
 			additionalContent: <>
 					<div className="flex justify-center">
 						<div className="inline-flex appearance-none align-baseline space-x-2 px-3 py-1 active:bg-gray-200 rounded-md select-none" onClick={() => setJoinCrescendao(!joinCrescendao)}>
@@ -522,7 +522,7 @@ export default function Mint() {
 		},
 		{
 			title: "List your tokens",
-			body: <>Now you have the option to list some of your new tokens. This is how you'll make your rightokens available for fans to invest. <br /><br /> Set an asking price for what you think the song is currently worth in total (even if you aren't listing 100%). This value rises automatically as people invest.</>,
+			body: <>You can now list some of your rightokens. This is how they'll be available for fans to invest. <br /><br /> Set an asking price of what you think the song is currently worth in total (even if you aren't listing 100%). The value of all tokens rise automatically as people invest.</>,
 			additionalContent: <>
 					{ !songIsListed &&
 						<>
@@ -569,17 +569,16 @@ export default function Mint() {
 		{
 			title: "Share with fans",
 			body: <>
-					{songTitle ? songTitle : "Your song"} is ready to share! 
+					<p className="tracking-tight text-center font-bold text-lg text-purple-400 uppercase mb-4">{songTitle ? songTitle : "Your song"} is ready ♨</p>
 					{ songIsListed &&
 						<>
-							<br /><br />
 							Here's your link to the market: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{customUniswapPoolLink}</span>
 							<br /><br /> 
 							Share this link with fans so they can invest in your work.
 							<br /><br />
-							This is also how you will receive payment. Money is sent from this page in the form of <span className="italic font-bold">DAI stablecoins</span> to your wallet. The stablecoins in your wallet can be withdrawn to your Crypto.com account and redeemed for $1/DAI.
+							This is also how you will receive payment. Money is sent from this page in the form of <span className="font-bold">DAI stablecoin</span> to your wallet. The stablecoins in your wallet can be withdrawn to your Crypto.com account and redeemed for $1/DAI.
 							<br /><br />
-							Screenshot this page for your records.
+							Screenshot this page.
 						</>
 					}
 				</>,
