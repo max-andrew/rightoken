@@ -19,7 +19,6 @@ export default function Mint() {
 		library,
 		account,
 		activate,
-		deactivate,
 		chainId,
 	} = useWeb3React()
 
@@ -31,10 +30,18 @@ export default function Mint() {
 	}, [currentStep])
 
 	// return user to switch network page after page refresh (for MetaMask mobile app)
-	useEffect(async () => {
+	useEffect(() => {
+
 		try {
 			if (currentStep === 0 && window?.sessionStorage.getItem("hasLinkedWallet")) {
-				await activate(injected)
+				if (!window?.sessionStorage.getItem("reloadAttempted")) {
+					window?.sessionStorage.setItem("reloadAttempted", true)
+					location.reload()
+				}
+
+				window?.sessionStorage.setItem("reloadAttempted", false)
+
+				activate(injected)
 				setCurrentStep(2)
 			}
 		}
@@ -261,7 +268,10 @@ export default function Mint() {
 	function LinkWalletButton(props) {
 		let account = props.account
 
-		if (typeof(account) === 'undefined') {
+		if (typeof(window.ethereum) === "undefined") {
+			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-red-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-red-600 animate-ping" />  Access this page with your wallet</p></div>
+		}
+		else if (typeof(account) === "undefined") {
 			return <div className="flex flex-col justify-center space-y-3">
 				<button 
 					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
@@ -275,7 +285,7 @@ export default function Mint() {
 				<p className="text-xs text-zinc-500 font-mono text-center">Your wallet isn't linked</p>
 			</div>
 		}
-		else if (typeof(account) !== 'undefined') {
+		else if (typeof(account) !== "undefined") {
 			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet ending in {account.substring(account.length - 4)} is linked</p></div>
 		}
 	}
@@ -310,7 +320,7 @@ export default function Mint() {
 									})
 								}
 								finally {
-									location.reload() // for MetaMask mobile app
+									// location.reload() // for MetaMask mobile app
 								}
 							}
 						}
@@ -343,7 +353,7 @@ export default function Mint() {
 									})
 								}
 								finally {
-									location.reload() // for MetaMask mobile app
+									// location.reload() // for MetaMask mobile app
 								}
 							}
 						}
