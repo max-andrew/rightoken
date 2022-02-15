@@ -295,8 +295,6 @@ export default function Mint() {
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0xa4b1" }]
 									})
-
-									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
 									await library.provider.request({
@@ -310,7 +308,8 @@ export default function Mint() {
 											}
 										]
 									})
-
+								}
+								finally {
 									location.reload() // for MetaMask mobile app
 								}
 							}
@@ -329,8 +328,6 @@ export default function Mint() {
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0x66eeb" }]
 									})
-
-									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
 									await library.provider.request({
@@ -344,7 +341,8 @@ export default function Mint() {
 											}
 										]
 									})
-
+								}
+								finally {
 									location.reload() // for MetaMask mobile app
 								}
 							}
