@@ -19,26 +19,29 @@ export default function Mint() {
 		library,
 		account,
 		activate,
+		deactivate,
 		chainId,
 	} = useWeb3React()
 
-	// eagerly connect wallet
+	const [currentStep, setCurrentStep] = useState(0)
+
+	// scroll to top on step change
 	useEffect(() => {
+		window?.scrollTo(0, 0)
+	}, [currentStep])
+
+	// return user to switch network page after page refresh (for MetaMask mobile app)
+	useEffect(async () => {
 		try {
-			activate(injected)
+			if (currentStep === 0 && window?.sessionStorage.getItem("hasLinkedWallet")) {
+				await activate(injected)
+				setCurrentStep(2)
+			}
 		}
 		catch (e) {
 			console.error(e)
 		}
-	}, [account])
-
-	const [currentStep, setCurrentStep] = useState(0)
-	// return user to switch network page after page refresh
-	useEffect(() => {
-		if ((chainId === 42161 || chainId === 421611) && currentStep < 2) {
-			setCurrentStep(2)
-		}
-	}, [account])
+	}, [])
 
 	const [ethBalance, setEthBalance] = useState(0.0)
 	useEffect(() => {
@@ -167,13 +170,13 @@ export default function Mint() {
 			
 			let approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
 			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
-			let approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString(), {from: account, gasLimit: 640000})
+			let approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString())
 			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManagerABI, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {/*from: account, gasPrice: ethers.utils.parseUnits('500', 'gwei'),*/ gasLimit: 2500000})
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 2500000})
 			await initializedPool.wait()
 
 			const poolURL = `https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
@@ -258,11 +261,14 @@ export default function Mint() {
 			return <div className="flex flex-col justify-center space-y-3">
 				<button 
 					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
-					onClick={() => activate(injected)}
+					onClick={() => {
+						window?.sessionStorage.setItem("hasLinkedWallet", true)
+						activate(injected)
+					}}
 				>
 					Connect
 				</button>
-				<p className="text-xs text-zinc-500 font-mono">Your wallet isn't linked</p>
+				<p className="text-xs text-zinc-500 font-mono text-center">Your wallet isn't linked</p>
 			</div>
 		}
 		else if (typeof(account) !== 'undefined') {
@@ -273,73 +279,82 @@ export default function Mint() {
 	function SwitchNetworkButton(props) {
 		let chainId = props.chainId
 
-		if (chainId !== 42161 && chainId !== 421611) {
-			return <div className="flex flex-col justify-center space-y-2">
-				<button
-					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
-					onClick={
-						async () => {
-							try {
-								await library.provider.request({
-									method: "wallet_switchEthereumChain",
-									params: [{ chainId: "0xa4b1" }]
-								})
-							}
-							catch (e) {
-								if (e.code === 4902) {
+		return <>
+			<div className="flex flex-col justify-center space-y-2">
+				{ chainId !== 42161 &&
+					<button
+						className={`uppercase text-sm font-bold px-4 py-3 mix-blend-multiply ${chainId === 421611 ? "bg-zinc-200" : "bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100"} text-zinc-700 active:text-zinc-500 rounded-md`}
+						onClick={
+							async () => {
+								try {
 									await library.provider.request({
-										method: "wallet_addEthereumChain",
-										params: [
-											{
-												chainId: "0xa4b1", // 42161
-												chainName: "Arbitrum One",
-												rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-												blockExplorerUrls: ["https://arbiscan.io/"]
-											}
-										]
+										method: "wallet_switchEthereumChain",
+										params: [{ chainId: "0xa4b1" }]
 									})
 								}
+								catch (e) {
+									if (e.code === 4902) {
+										await library.provider.request({
+											method: "wallet_addEthereumChain",
+											params: [
+												{
+													chainId: "0xa4b1", // 42161
+													chainName: "Arbitrum One",
+													rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+													blockExplorerUrls: ["https://arbiscan.io/"]
+												}
+											]
+										})
+									}
+								}
+
+								location.reload() // for MetaMask mobile app
 							}
 						}
-					}
-				>
-					Connect to Arbitrum
-				</button>
-				<button
-					className="uppercase text-xs font-bold px-3 py-2 text-zinc-600 active:bg-zinc-200 rounded-md"
-					onClick={
-						() => {
-							try {
-								library.provider.request({
-									method: "wallet_switchEthereumChain",
-									params: [{ chainId: "0x66eeb" }]
-								})
-							}
-							catch (e) {
-								if (e.code === 4902) {
+					>
+						Connect to Arbitrum
+					</button>
+				}
+				{ chainId !== 421611 &&
+					<button
+						className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
+						onClick={
+							() => {
+								try {
 									library.provider.request({
-										method: "wallet_addEthereumChain",
-										params: [
-											{
-												chainId: "0x66eeb", // 421611
-												chainName: "Arbitrum Testnet",
-												rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
-												blockExplorerUrls: ["https://testnet.arbiscan.io/#/"]
-											}
-										]
+										method: "wallet_switchEthereumChain",
+										params: [{ chainId: "0x66eeb" }]
 									})
 								}
+								catch (e) {
+									if (e.code === 4902) {
+										library.provider.request({
+											method: "wallet_addEthereumChain",
+											params: [
+												{
+													chainId: "0x66eeb", // 421611
+													chainName: "Arbitrum Testnet",
+													rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
+													blockExplorerUrls: ["https://testnet.arbiscan.io/#/"]
+												}
+											]
+										})
+									}
+								}
+
+								location.reload() // for MetaMask mobile app
 							}
 						}
-					}
-				>
-					Use in test mode
-				</button>
+					>
+						Use in test mode
+					</button>
+				}
 			</div>
-		}
-		else if (chainId === 42161 || chainId === 421611) {
-			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet connected to Arbitrum</p></div>
-		}
+			<br />
+			{ (chainId === 42161 || chainId === 421611) && 
+				<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet connected to {chainId === 421611 && "test"} Arbitrum</p></div>
+			}
+		</>
 	}
 
 
@@ -395,11 +410,11 @@ export default function Mint() {
 	const mintStepPages = [
 		{
 			title: "Intro",
-			body: <>Here you'll convert your sound recording copyright to tokens and get a link to share with fans to invest. <br /><br /> Rights to the master and associated royalties like those from streaming are conferred proportionately to holders of the new tokens. <br /><br /> You'll be walked through what's happening each step of the way. This should take someone new to crypto 10-20 minutes. <br /><br /> Do not refresh this page before you finish.</>,
+			body: <>Rightoken converts sound recording copyright to tokens and gives you a link to share with fans to invest. <br /><br /> We'll explain what's happening at each step. This takes someone new to crypto ~15 minutes. <br /><br /> Please do not refresh the page.</>,
 		},
 		{
 			title: "Link wallet",
-			body: <>You need a crypto wallet to create, hold, and sell your tokens. <a className="underline" href="https://www.coinbase.com/learn/crypto-basics/what-is-a-crypto-wallet" target="_blank" rel="noreferrer">Learn more about crypto wallets here.</a> <br /><br /> Rightoken is optimized for the Coinbase Wallet app on <a href="https://apps.apple.com/us/app/coinbase-wallet/id1278383455" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=org.toshi&hl=en_US&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a>. It's different from the standalone Coinbase app. <br /><br /> Download the app, create your wallet, and return to this page in the in-app browser.</>,
+			body: <>You need a crypto wallet to create, hold, and sell your tokens. This wallet app is where you interact with Rightoken. <br /><br /> Rightoken is optimized for the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>. <br /><br /> Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</>,
 			additionalContent: <LinkWalletButton account={account} />,
 			successCondition: typeof(account) !== 'undefined',
 		},
@@ -411,7 +426,7 @@ export default function Mint() {
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
+			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
 			additionalContent: <>
 					{((chainId === 42161 && ethBalance > 0.005) || chainId === 421611) ? 
 						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {ethBalance} ETH</p></div>
@@ -569,7 +584,7 @@ export default function Mint() {
 				<main>
 					<div className="py-9">
 						<p className="text-xs text-zinc-500 font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
-						<span><p className="font-medium break-words max-w-xs md:max-w-sm mx-auto">{ mintStepPages[currentStep].body }</p></span>
+						<span><p className="font-medium break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p></span>
 						<div className="md:max-w-sm mx-auto">
 							{ mintStepPages[currentStep].additionalContent && 
 								<>
@@ -578,7 +593,7 @@ export default function Mint() {
 								</>
 							}
 						</div>
-						<p className="font-medium text-center select-none mt-1">~</p>
+						<p className="text-xl font-medium text-center select-none mt-1 text-stone-600/30">~</p>
 						<div className="flex flex-row space-x-2 justify-center mt-6">
 							{ currentStep > 0 &&
 								<button className="text-sm font-medium px-3 py-1 active:bg-gray-200 rounded-md text-zinc-400" onClick={() => setCurrentStep(currentStep-1)}>Back</button>
