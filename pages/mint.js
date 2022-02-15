@@ -529,7 +529,7 @@ export default function Mint() {
 								<div>
 									<p className="tracking-widest text-center font-medium text-xl text-zinc-400 uppercase mb-2">initially offering</p>
 									<div className="flex flex-row space-x-2 justify-center">
-										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-20 rounded-none" spellCheck="false" type="number" min="0" max="100" step="5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
+										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-20 rounded-none" spellCheck="false" type="number" inputmode="decimal" min="0" max="100" step="5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
 										<p className="font-bold text-xl text-zinc-400">%</p>
 									</div>
 								</div>
@@ -538,7 +538,7 @@ export default function Mint() {
 										<p className="tracking-wide text-center font-medium text-sm text-zinc-400 uppercase">valued <span className="text-xs text-zinc-300">(very reasonably)</span> at</p>
 										<div className="flex flex-row space-x-1 justify-center">
 											<p className="font-medium text-2xl text-zinc-400">$</p>
-											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28 rounded-none" spellCheck="false" type="number" min="5000" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
+											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28 rounded-none" spellCheck="false" type="number" inputmode="decimal" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
 											<p className="font-bold text-sm text-zinc-400">USD</p>
 										</div>
 										<p className="text-center font-mono text-xs text-zinc-300">for 100%</p>
@@ -547,7 +547,7 @@ export default function Mint() {
 							</div>
 						</>
 					}
-					{ (!songIsListed && !songIsListing && typeof(percentListed) !== 'undefined' && Number(percentListed) > 0 && typeof(marketCap) !== 'undefined' && !invalidTokenPriceInfo) && 
+					{ (!songIsListed && !songIsListing && typeof(percentListed) !== 'undefined' && Number(percentListed) > 0 && typeof(marketCap) !== 'undefined' && Number(marketCap) >= 100 && !invalidTokenPriceInfo) && 
 						<>
 							<br />
 							<div className="flex flex-col justify-center space-y-4">
