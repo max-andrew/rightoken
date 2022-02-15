@@ -311,8 +311,9 @@ export default function Mint() {
 										})
 									}
 								}
-
-								location.reload() // for MetaMask mobile app
+								finally {
+									location.reload() // for MetaMask mobile app
+								}
 							}
 						}
 					>
@@ -345,8 +346,9 @@ export default function Mint() {
 										})
 									}
 								}
-
-								location.reload() // for MetaMask mobile app
+								finally {
+									location.reload() // for MetaMask mobile app
+								}
 							}
 						}
 					>
