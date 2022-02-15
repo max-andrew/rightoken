@@ -45,15 +45,7 @@ export default function Mint() {
 
 	const [ethBalance, setEthBalance] = useState(0.0)
 	useEffect(() => {
-		if (library && account) {
-			console.log('Getting Eth balance...')
-			library
-				.getBalance(account)
-				.then(balance => {
-					console.log('Balance:', parseFloat(formatEther(balance)).toPrecision(4))
-					setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
-				})
-		}
+		updateEthBalance()
 	}, [chainId])
 
 	const [percentListed, setPercentListed] = useState()
@@ -73,6 +65,18 @@ export default function Mint() {
 		}
 	}, [percentListed, marketCap])
 
+
+	function updateEthBalance() {
+		if (library && account) {
+			console.log('Getting Eth balance...')
+			library
+				.getBalance(account)
+				.then(balance => {
+					console.log('Balance:', parseFloat(formatEther(balance)).toPrecision(4))
+					setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
+				})
+		}
+	}
 
 	const [songIsTokenizing, setSongIsTokenizing] = useState(false)
 	const [rightokenERC20Address, setRightokenERC20Address] = useState("")
@@ -428,6 +432,15 @@ export default function Mint() {
 			title: "Fund wallet",
 			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees for creating your tokens. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and, to avoid extra fees, be sure to withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
 			additionalContent: <>
+					<div className="flex flex-col">
+						<button
+							className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
+							onClick={() => updateEthBalance()}
+						>
+							Get Current Balance
+						</button>
+					</div>
+					<br />
 					{((chainId === 42161 && ethBalance > 0.005) || chainId === 421611) ? 
 						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {ethBalance} ETH</p></div>
 						: <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-zinc-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-zinc-600 animate-ping" />  You have {ethBalance} ETH</p></div>
@@ -467,7 +480,7 @@ export default function Mint() {
 		},
 		{
 			title: "Tokenize song",
-			body: <>You're finally ready to tokenize your song.</>,
+			body: <>You're ready to tokenize your song.</>,
 			additionalContent: <>
 					{ !songIsTokenized &&
 						<div className={`border-2 border-zinc-300 rounded-md py-8 space-y-9 ${songIsTokenizing && "animate-pulse"}`}>
@@ -509,7 +522,7 @@ export default function Mint() {
 								<div>
 									<p className="tracking-widest text-center font-medium text-xl text-zinc-400 uppercase mb-2">initially offering</p>
 									<div className="flex flex-row space-x-2 justify-center">
-										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-20" spellCheck="false" type="number" min="0" max="100" step="5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
+										<input className="flex bg-transparent font-medium text-3xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-20 rounded-none" spellCheck="false" type="number" min="0" max="100" step="5" placeholder="20" value={percentListed} onChange={e => setPercentListed(event.target.value)} />
 										<p className="font-bold text-xl text-zinc-400">%</p>
 									</div>
 								</div>
@@ -518,7 +531,7 @@ export default function Mint() {
 										<p className="tracking-wide text-center font-medium text-sm text-zinc-400 uppercase">valued <span className="text-xs text-zinc-300">(very reasonably)</span> at</p>
 										<div className="flex flex-row space-x-1 justify-center">
 											<p className="font-medium text-2xl text-zinc-400">$</p>
-											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28" spellCheck="false" type="number" min="5000" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
+											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28 rounded-none" spellCheck="false" type="number" min="5000" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
 											<p className="font-bold text-sm text-zinc-400">USD</p>
 										</div>
 										<p className="text-center font-mono text-xs text-zinc-300">for 100%</p>
@@ -584,7 +597,7 @@ export default function Mint() {
 				<main>
 					<div className="py-9">
 						<p className="text-xs text-zinc-500 font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
-						<span><p className="font-medium break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p></span>
+						<span><p className="font-medium text-zinc-800 break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p></span>
 						<div className="md:max-w-sm mx-auto">
 							{ mintStepPages[currentStep].additionalContent && 
 								<>

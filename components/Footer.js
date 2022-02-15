@@ -7,8 +7,8 @@ export default function Footer(props) {
 
 	return (
 		<footer className="flex flex-col space-y-2 items-center justify-center w-full h-24 border-t">
-			<p className="text-xs font-medium" suppressHydrationWarning>Written {sadverb} in NYC & Lisbon</p>
-			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5" />
+			<p className="text-xs font-medium text-zinc-600" suppressHydrationWarning>Written {sadverb} in NYC & Lisbon</p>
+			<img src="/rightoken-wordmark.svg" alt="Rightoken Wordmark" className="h-5 opacity-80" />
 		</footer>
 	)
 }
