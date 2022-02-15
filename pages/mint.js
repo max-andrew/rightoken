@@ -295,24 +295,21 @@ export default function Mint() {
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0xa4b1" }]
 									})
+
+									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
-									// if (e.code === 4902) {
-										await library.provider.request({
-											method: "wallet_addEthereumChain",
-											params: [
-												{
-													chainId: "0xa4b1", // 42161
-													chainName: "Arbitrum One",
-													rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-													blockExplorerUrls: ["https://arbiscan.io/"]
-												}
-											]
-										})
-									// }
-								}
-								finally {
-									location.reload() // for MetaMask mobile app
+									await library.provider.request({
+										method: "wallet_addEthereumChain",
+										params: [
+											{
+												chainId: "0xa4b1", // 42161
+												chainName: "Arbitrum One",
+												rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+												blockExplorerUrls: ["https://arbiscan.io/"]
+											}
+										]
+									})
 								}
 							}
 						}
@@ -324,30 +321,27 @@ export default function Mint() {
 					<button
 						className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
 						onClick={
-							() => {
+							async () => {
 								try {
-									library.provider.request({
+									await library.provider.request({
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0x66eeb" }]
 									})
+									
+									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
-									// if (e.code === 4902) {
-										library.provider.request({
-											method: "wallet_addEthereumChain",
-											params: [
-												{
-													chainId: "0x66eeb", // 421611
-													chainName: "Arbitrum Testnet",
-													rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
-													blockExplorerUrls: ["https://testnet.arbiscan.io/#/"]
-												}
-											]
-										})
-									// }
-								}
-								finally {
-									location.reload() // for MetaMask mobile app
+									library.provider.request({
+										method: "wallet_addEthereumChain",
+										params: [
+											{
+												chainId: "0x66eeb", // 421611
+												chainName: "Arbitrum Testnet",
+												rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
+												blockExplorerUrls: ["https://testnet.arbiscan.io/#/"]
+											}
+										]
+									})
 								}
 							}
 						}
