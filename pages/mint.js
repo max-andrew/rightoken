@@ -295,6 +295,8 @@ export default function Mint() {
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0xa4b1" }]
 									})
+
+									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
 									await library.provider.request({
@@ -308,8 +310,7 @@ export default function Mint() {
 											}
 										]
 									})
-								}
-								finally {
+
 									location.reload() // for MetaMask mobile app
 								}
 							}
@@ -328,6 +329,8 @@ export default function Mint() {
 										method: "wallet_switchEthereumChain",
 										params: [{ chainId: "0x66eeb" }]
 									})
+
+									location.reload() // for MetaMask mobile app
 								}
 								catch (e) {
 									await library.provider.request({
@@ -341,8 +344,7 @@ export default function Mint() {
 											}
 										]
 									})
-								}
-								finally {
+
 									location.reload() // for MetaMask mobile app
 								}
 							}
@@ -439,7 +441,7 @@ export default function Mint() {
 						</button>
 					</div>
 					<br />
-					{((chainId === 42161 && ethBalance > 0.005) || chainId === 421611) ? 
+					{((chainId === 42161 || chainId === 421611) && ethBalance > 0.005) ? 
 						<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {ethBalance} ETH</p></div>
 						: <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-zinc-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-zinc-600 animate-ping" />  You have {ethBalance} ETH</p></div>
 					}
