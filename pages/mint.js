@@ -227,6 +227,7 @@ export default function Mint() {
 				from: account,
 			}
 			const mintPosition = await signer.sendTransaction(transaction)
+			await mintPosition.wait()
 
 			console.log("Rightoken listed successfully")
 
@@ -421,23 +422,23 @@ export default function Mint() {
 	const mintStepPages = [
 		{
 			title: "Intro",
-			body: <>Rightoken converts sound recording copyright to tokens and gives you a link to share with fans to invest. <br /><br /> We'll explain what's happening at each step. This takes someone new to crypto ~15 minutes. <br /><br /> Please do not refresh the page.</>,
+			body: <><span className="font-medium">Rightoken converts sound recording copyright to tokens and gives you a link to share with fans to invest.</span> <br /><br /> We'll explain what's happening at each step. This takes someone new to crypto ~15 minutes. <br /><br /> Please do not refresh the page.</>,
 		},
 		{
 			title: "Link wallet",
-			body: <>You need a crypto wallet to create, hold, and sell your tokens. This wallet app is where you interact with Rightoken. <br /><br /> Rightoken is optimized for the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>. <br /><br /> Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</>,
+			body: <>You need a crypto wallet to create, hold, and sell your tokens. Rightoken is optimized for the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>. <br /><br /> <span className="font-medium">Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</span></>,
 			additionalContent: <LinkWalletButton account={account} />,
 			successCondition: typeof(account) !== 'undefined',
 		},
 		{
 			title: "Configure wallet",
-			body: <>Rightoken is built on Arbitrum, a network that makes Ethereum much cheaper to use. <br /><br /> We'll connect your wallet to it now.</>,
+			body: <><span className="font-medium">Rightoken is built on Arbitrum, a network that makes Ethereum much cheaper to use.</span></>,
 			additionalContent: <SwitchNetworkButton chainId={chainId} />,
 			successCondition: (chainId === 42161 || chainId === 421611),
 		},
 		{
 			title: "Fund wallet",
-			body: <>You need Ethereum in your Arbitrum wallet to pay blockchain gas fees. The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH and withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your new wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
+			body: <><span className="font-medium">You need Ethereum in your Arbitrum wallet to pay blockchain gas fees.</span> The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH, and withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.</>,
 			additionalContent: <>
 					<div className="flex flex-col">
 						<button
@@ -457,11 +458,11 @@ export default function Mint() {
 		},
 		{
 			title: "Tokenholder terms",
-			body: <>These are the terms of the tokenholder agreement. It outlines what holders of the newly created tokens are entitled to.</>,
+			body: <><span className="font-medium">This tokenholder agreement outlines what holders of the newly created rightokens are entitled to.</span></>,
 			additionalContent: <>
 					{Object.keys(legalAgreementLibrary).map(sectionKey => <div key={sectionKey}>
 						<p className="font-black text-sm uppercase tracking-wider text-zinc-700">{legalAgreementLibrary[sectionKey].title}</p>
-						<p>{legalAgreementLibrary[sectionKey].body}</p>
+						<p className="text-zinc-600">{legalAgreementLibrary[sectionKey].body}</p>
 						<br />
 					</div>)}
 					<div className="flex justify-center">
@@ -475,7 +476,7 @@ export default function Mint() {
 		},
 		{
 			title: "Invitation to Crescendao",
-			body: <>Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources artists can benefit from while staying independent. <br /><br /> These include promotion, like getting on exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also supports and oversees development of Rightoken for the benefit of all artists. <br /><br /> Membership is funded entirely by investor resales, a 4% fee paid by investors purchasing rightokens. This means joining is free for artists.</>,
+			body: <><span className="font-medium">Crescendao is a cooperative owned by select Rightoken artists. It manages a pool of resources artists can benefit from while staying independent.</span> <br /><br /> These include promotion, like getting on exclusive Spotify playlists, copyright enforcement, production help, and cash loans or advances. <br /><br /> Crescendao also supports and oversees development of Rightoken for the benefit of all artists. <br /><br /> Membership is funded entirely by investor resales, a 4% fee paid by investors purchasing rightokens. This means joining is free for artists.</>,
 			additionalContent: <>
 					<div className="flex justify-center">
 						<div className="inline-flex appearance-none align-baseline space-x-2 px-3 py-1 active:bg-gray-200 rounded-md select-none" onClick={() => setJoinCrescendao(!joinCrescendao)}>
@@ -487,7 +488,7 @@ export default function Mint() {
 		},
 		{
 			title: "Tokenize song",
-			body: <>You're ready to tokenize your song.</>,
+			body: <><span className="font-medium">You're ready to tokenize your song.</span></>,
 			additionalContent: <>
 					{ !songIsTokenized &&
 						<div className={`border-2 border-zinc-300 rounded-md py-8 space-y-9 ${songIsTokenizing && "animate-pulse"}`}>
@@ -521,7 +522,7 @@ export default function Mint() {
 		},
 		{
 			title: "List your tokens",
-			body: <>You can now list some of your rightokens. This is how they'll be available for fans to invest. <br /><br /> Set an asking price of what you think the song is currently worth in total (even if you aren't listing 100%). The value of all tokens rise automatically as people invest.</>,
+			body: <>You can now list some of your rightokens. <span className="font-medium">This is how they'll be available for fans to invest.</span> <br /><br /> Set an asking price of what you think the song is currently worth in total (even if you aren't listing 100%). The value of all tokens rise automatically as people invest.</>,
 			additionalContent: <>
 					{ !songIsListed &&
 						<>
@@ -602,8 +603,8 @@ export default function Mint() {
 				<Header linkTo="support" />
 				<main>
 					<div className="py-9">
-						<p className="text-xs text-zinc-500 font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
-						<span><p className="font-medium text-zinc-800 break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p></span>
+						<p className="text-xs font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
+						<p className="text-zinc-600 break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p>
 						<div className="md:max-w-sm mx-auto">
 							{ mintStepPages[currentStep].additionalContent && 
 								<>
