@@ -60,7 +60,7 @@ export default function Mint() {
 	// validate forms
 	useEffect(() => {
 		// percentListed exists and is within range, and marketCap exists and is within range
-		if (((percentListed !== "" && typeof(percentListed) !== 'undefined') && (percentListed < 0 || percentListed > 100)) || ((marketCap !== "" && typeof(marketCap) !== 'undefined') && (marketCap < 0 || marketCap > 1000000))) {
+		if (((percentListed !== "" && typeof(percentListed) !== 'undefined') && (percentListed < 0 || percentListed > 100)) || ((marketCap !== "" && typeof(marketCap) !== 'undefined') && (marketCap < 100 || marketCap > 1000000))) {
 			setInvalidTokenPriceInfo(true)
 		}
 		else if ((percentListed === "" && marketCap === "") && (typeof(percentListed) === 'undefined' && typeof(marketCap) === 'undefined')) {
@@ -539,7 +539,7 @@ export default function Mint() {
 										<p className="tracking-wide text-center font-medium text-sm text-zinc-400 uppercase">valued <span className="text-xs text-zinc-300">(very reasonably)</span> at</p>
 										<div className="flex flex-row space-x-1 justify-center">
 											<p className="font-medium text-2xl text-zinc-400">$</p>
-											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28 rounded-none" spellCheck="false" type="number" inputmode="decimal" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
+											<input className="flex bg-transparent font-medium text-xl border-b-2 outline-none placeholder:text-zinc-300 text-zinc-700 text-center w-28 rounded-none" spellCheck="false" type="number" inputmode="decimal" min="0" max="1000000" step="5000" placeholder="80000" value={marketCap} onChange={e => setMarketCap(event.target.value)} />
 											<p className="font-bold text-sm text-zinc-400">USD</p>
 										</div>
 										<p className="text-center font-mono text-xs text-zinc-300">for 100%</p>
