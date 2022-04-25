@@ -11,9 +11,8 @@ export default function Header(props) {
 
 	return (
 		<>
-			<br />
 			<div className="flex flex-row justify-between mx-auto">
-				<a href="/">
+				<a className="mt-4" href="/">
 					<img
 						className="h-8 w-auto opacity-80"
 						src="rightoken-logo.png"
@@ -22,7 +21,7 @@ export default function Header(props) {
 				</a>
 				{ linkTo && linkTo !== "support" &&
 					<form action={"/"+linkTo}>
-						<button className="uppercase font-medium md:text-lg border-r-2 border-b-2 border-l-2 border-gray-700 rounded-b-md px-4 py-2">{buttonText}</button>
+						<button className="uppercase text-xs md:text-sm text-zinc-400 font-bold border-r-2 border-b-2 border-l-2 border-zinc-400 rounded-b-md px-4 py-2 active:text-zinc-300 active:border-zinc-300">{buttonText}</button>
 					</form>
 				}
 				{ linkTo === "support" &&

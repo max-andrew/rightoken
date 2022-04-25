@@ -2,17 +2,21 @@ import { Fragment, useState, useEffect } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
 import { injected } from '../functions/connectors'
-import { formatEther } from '@ethersproject/units'
 
 import { ethers, BigNumber, BigNumberish } from 'ethers'
+import { formatEther } from '@ethersproject/units'
 import bn from 'bignumber.js'
 
 import { abi as INonfungiblePositionManagerABI } from '@uniswap/v3-periphery/artifacts/contracts/interfaces/INonfungiblePositionManager.sol/INonfungiblePositionManager.json'
+
+import Head from 'next/head'
 
 import Confetti from 'react-confetti'
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+
+import LinkWalletButton from '../components/LinkWalletButton'
 
 export default function Mint() {
 	const { 
@@ -75,12 +79,11 @@ export default function Mint() {
 	function updateEthBalance() {
 		if (library && account) {
 			console.log('Getting Eth balance...')
-			library
-				.getBalance(account)
-				.then(balance => {
-					console.log('Balance:', parseFloat(formatEther(balance)).toPrecision(4))
-					setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
-				})
+			library.getBalance(account)
+			.then(balance => {
+				console.log('Balance:', parseFloat(formatEther(balance)).toPrecision(4))
+				setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
+			})
 		}
 	}
 
@@ -136,6 +139,7 @@ export default function Mint() {
 
 	const [songIsListing, setSongIsListing] = useState(false)
 	const [customUniswapPoolLink, setCustomUniswapPoolLink] = useState("")
+	const [customFanInvestLink, setCustomFanInvestLink] = useState("")
 	async function listRightokenERC20() {
 		setSongIsListing(true)
 
@@ -189,9 +193,13 @@ export default function Mint() {
 			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 2500000})
 			await initializedPool.wait()
 
-			const poolURL = `https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
+			const poolURL = `app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
 			setCustomUniswapPoolLink(poolURL)
 			console.log(poolURL)
+
+			const fanInvestURL = `rightoken.org/invest?tokenAddress=${rightokenAddress}`
+			setCustomFanInvestLink(fanInvestURL)
+			console.log(fanInvestURL)
 
 
 			// MINT THE POSITION
@@ -265,35 +273,13 @@ export default function Mint() {
 	}
 
 
-	function LinkWalletButton(props) {
-		let account = props.account
-
-		if (typeof(window.ethereum) === "undefined") {
-			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-red-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-red-600 animate-ping" />  Return to this page in your wallet</p></div>
-		}
-		else if (typeof(account) === "undefined") {
-			return <div className="flex flex-col justify-center space-y-3">
-				<button 
-					className="uppercase text-sm font-bold px-4 py-3 mix-blend-multiply bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100 text-zinc-700 active:text-zinc-500 rounded-md"
-					onClick={() => {
-						window?.sessionStorage.setItem("hasLinkedWallet", true)
-						activate(injected)
-					}}
-				>
-					Connect
-				</button>
-				<p className="text-xs text-zinc-500 font-mono text-center">Your wallet isn't linked</p>
-			</div>
-		}
-		else if (typeof(account) !== "undefined") {
-			return <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet ending in {account.substring(account.length - 4)} is linked</p></div>
-		}
-	}
-
 	function SwitchNetworkButton(props) {
 		let chainId = props.chainId
 
 		return <>
+			<Head>
+				<title>Mint Your Rightoken</title>
+			</Head>
 			<div className="flex flex-col justify-center space-y-2">
 				{ chainId !== 42161 &&
 					<button
@@ -427,7 +413,7 @@ export default function Mint() {
 		{
 			title: "Link wallet",
 			body: <>You need a crypto wallet to create, hold, and sell your tokens. Rightoken is optimized for the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>. <br /><br /> <span className="font-medium">Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</span></>,
-			additionalContent: <LinkWalletButton account={account} />,
+			additionalContent: <LinkWalletButton account={account} activate={activate} injected={injected} />,
 			successCondition: typeof(account) !== 'undefined',
 		},
 		{
@@ -572,9 +558,11 @@ export default function Mint() {
 					<p className="tracking-tight text-center font-bold text-lg text-purple-400 uppercase mb-4">{songTitle ? songTitle : "Your song"} is ready ♨</p>
 					{ songIsListed &&
 						<>
+							Here's the link to share with fans: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{customFanInvestLink}</span>
+							<br /><br />
+							This is how fans can get instructions on how to invest in your work.
+							<br /><br />
 							Here's your link to the market: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{customUniswapPoolLink}</span>
-							<br /><br /> 
-							Share this link with fans so they can invest in your work.
 							<br /><br />
 							This is also how you will receive payment. Money is sent from this page in the form of <span className="font-bold">DAI stablecoin</span> to your wallet. The stablecoins in your wallet can be withdrawn to your Crypto.com account and redeemed for $1/DAI.
 							<br /><br />
@@ -604,7 +592,7 @@ export default function Mint() {
 				<main>
 					<div className="py-9">
 						<p className="text-xs font-bold text-center uppercase mb-3">{ mintStepPages[currentStep].title }</p>
-						<p className="text-zinc-600 break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-600/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p>
+						<p className="text-zinc-600 break-words max-w-xs md:max-w-sm mx-auto py-1 px-5 border-x-8 border-double border-stone-400/20 mix-blend-multiply rounded-sm">{ mintStepPages[currentStep].body }</p>
 						<div className="md:max-w-sm mx-auto">
 							{ mintStepPages[currentStep].additionalContent && 
 								<>

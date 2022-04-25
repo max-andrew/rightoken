@@ -1,6 +1,6 @@
-import Head from 'next/head'
-
 import { Fragment, useState } from 'react'
+
+import Head from 'next/head'
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -71,7 +71,7 @@ export default function Artist() {
 		},
 		{
 			question: "What does this cost?", 
-			answer: <>&nbsp;&nbsp;Every blockchain charges network fees. Network fees, or gas, are charged to create new tokens and list them on an exchange for fans to buy into. These fees do not go to Rightoken. <br /> &nbsp;&nbsp; Gas prices are lower during off-peak hours like nights and weekends where a total cost per song should be under $20.</>, 
+			answer: <>Every blockchain charges network fees. Network fees, or gas, are charged to create new tokens and list them on an exchange for fans to buy into. These fees do not go to Rightoken. <br /> Gas prices are lower during off-peak hours like nights and weekends where a total cost per song should be under $20.</>, 
 			flag: showUseCost, 
 			flagSetter: setShowUseCost
 		},
@@ -85,13 +85,16 @@ export default function Artist() {
 
 	return (
 		<>
+			<Head>
+				<title>Support from Fans</title>
+			</Head>
 			<div className="mx-auto max-w-xs md:max-w-lg">
-				<Header /*linkTo="invest"*/ />
+				<Header linkTo="invest" />
 				<main>
 					<div className="absolute right-0 top-20 bg-gradient-to-r from-inherit via-red-50 to-purple-100 h-20 w-10/12 md:w-4/12" />
 					<div className="py-9 relative z-10">
 						<h2 className="font-bold text-3xl md:text-4xl text-gray-900 max-w-xs md:max-w-md">Ready to keep ownership of your work, <span className="text-gray-800">reap the benefits,</span> <span className="text-gray-700">and share them with fans?</span></h2>
-						<p className="text-lg font-bold md:text-2xl text-gray-600 max-w-xs md:max-w-md mt-2 md:mt-8">Rightoken is building a stock market for songs so you can cover rent and control your work</p>
+						<p className="font-bold text-lg md:text-2xl text-gray-600 max-w-xs md:max-w-md mt-2">Rightoken is building a stock market for songs so you can cover rent and control your work</p>
 
 						<FunkyButton className="mt-4" link="/mint" text="Ready" />
 
