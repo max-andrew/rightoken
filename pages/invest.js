@@ -13,6 +13,12 @@ import Footer from '../components/Footer'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
 
+import { SwapWidget } from '@uniswap/widgets'
+import '@uniswap/widgets/fonts.css'
+
+import { web3 } from '../functions/walletlink'
+import { Web3Client } from 'web3'
+
 export default function Invest() {
 	const { 
 		library,
@@ -20,6 +26,31 @@ export default function Invest() {
 		activate,
 		chainId,
 	} = useWeb3React()
+
+	const infuraApiKey = process.env.INFURA_KEY
+	const UNISWAP_TOKEN_LIST = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
+	const defaultInputDAIAmount = 50
+
+	const arbitrumDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+	const arbitrumRinkebyDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
+
+	let stablecoinAddress = arbitrumDAIAddress
+
+	if (chainId === 421611) {
+		stablecoinAddress = arbitrumRinkebyDAIAddress
+	}
+
+	let minABI = [
+	  {
+	    "constant":true,
+	    "inputs":[{"name":"_owner","type":"address"}],
+	    "name":"balanceOf",
+	    "outputs":[{"name":"balance","type":"uint256"}],
+	    "type":"function"
+	  },
+	];
+
+	let contract = new web3.eth.Contract(minABI, stablecoinAddress);
 
 	const [showFAQs, setShowFAQs] = useState(true)
 	const [showWhatIs, setShowWhatIs] = useState(false)
@@ -35,8 +66,11 @@ export default function Invest() {
 	const [showMeTheMoney, setShowMeTheMoney] = useState(false)
 
 	const [ethBalance, setEthBalance] = useState(0.0)
+	const [daiBalance, setDaiBalance] = useState(0.0)
+
 	useEffect(() => {
 		updateEthBalance()
+		updateDAIBalance()
 	}, [chainId])
 
 	const faqs = [
@@ -125,6 +159,16 @@ export default function Invest() {
 		}
 	}
 
+	async function updateDAIBalance() {
+		if (library && account) {
+			console.log('Getting DAI balance...')
+			// const balance = await contract.methods.balanceOf(account).call()
+			// const value = Web3Client.utils.fromWei(balance)
+			// setDaiBalance(value)
+			setDaiBalance(50)
+		}
+	}
+
 	return (
 		<>
 			<Head>
@@ -201,30 +245,136 @@ export default function Invest() {
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">2.</h3>
-										<span className="font-medium">You need Ethereum in your Arbitrum wallet to pay blockchain gas fees.</span> The fees don't go to Rightoken. <br /><br /> Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase at least 0.006 ETH, and withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.
+
+										<span className="font-medium">You need DAI in your Arbitrum wallet to pay.</span>
 										<br />
 										<br />
-										{((chainId === 42161 || chainId === 421611) && ethBalance > 0.005) ? 
-											<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {ethBalance} ETH</p></div>
-											: <div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-zinc-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-zinc-600 animate-ping" />  You have {ethBalance} ETH</p></div>
-										}
-										<div className="flex flex-col">
-											<button
-												className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
-												onClick={() => updateEthBalance()}
-											>
-												Get Current Balance
-											</button>
+										<p>(1) purchase some eth and bridge to arbitrum</p>
+										<br />
+										Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase some ETH, and withdraw to Arbitrum using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on Arbitrum, you can send it to your wallet and <a href="https://bridge.arbitrum.io/" className="underline" target="_blank" rel="noreferrer">bridge to Arbitrum</a>, but it'll cost more in gas fees.
+										<br />
+										<br />
+										<p>(2) swap eth to DAI on arbitrum using Uniswap</p>
+										<br />
+										<div>
+											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=100&outputCurrency=${stablecoinAddress}`} height={500} width={500}/>
 										</div>
+										<br />
+										<br />
+										<span className="font-medium">What is DAI?</span>
+										<p>DAI is a price-stable currency which is softly-pegged to one USD.</p>
+										<p>We use DAI as the liquidity pair for RighToken so that the token price is clear and easy for everyone to understand.</p>
+										<br />
+										<span className="font-medium">What is Uniswap?</span>
+										<p>Uniswap is the largest decentralized exchange based on ethereum.</p>
+										<p>It allows artists and investors to exchange token without intermediary.</p>
+										<br />
+
+										<div className="flex flex-col justify-center space-y-2">
+											{ (chainId !== 42161 && chainId !== 421611) &&
+												<button
+													className={`uppercase text-sm font-bold px-4 py-3 mix-blend-multiply ${chainId === 421611 ? "bg-zinc-200" : "bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100"} text-zinc-700 active:text-zinc-500 rounded-md`}
+													onClick={
+														async () => {
+															try {
+																await library.provider.request({
+																	method: "wallet_switchEthereumChain",
+																	params: [{ chainId: "0xa4b1" }]
+																})
+															}
+															catch (e) {
+																await library.provider.request({
+																	method: "wallet_addEthereumChain",
+																	params: [
+																		{
+																			chainId: "0xa4b1", // 42161
+																			chainName: "Arbitrum One",
+																			rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+																			blockExplorerUrls: ["https://arbiscan.io/"]
+																		}
+																	]
+																})
+															}
+															finally {
+																location.reload() // for MetaMask mobile app
+															}
+														}
+													}
+												>
+													Connect to Arbitrum
+												</button>
+											}
+										</div>
+										{((chainId === 42161 || chainId === 421611) && ethBalance > 0.005) &&
+										<div>
+											<div className="flex flex-col">
+												<button
+													className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
+													onClick={() => updateDAIBalance()}
+												>
+													Get DAI Current Balance
+												</button>
+											</div>
+											<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  You have {daiBalance} DAI</p></div>
+										</div>
+										}
 										<br />
 									</>
 								}
 
-								{typeof(account) !== 'undefined' && ((chainId === 42161 && ethBalance > 0.001) || chainId === 421611) &&
+								{typeof(account) !== 'undefined' && daiBalance > 0 && ((chainId === 42161 && ethBalance > 0.001) || chainId === 421611 || chainId === 1) &&
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>
-										<p>Here's your link to the market:</p>
+										<p>Now you're ready to buy his/her RighToken!</p>
+										<br />
+										<br />
+
+										<div>
+											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${tokenAddress}`} height={500} width={500}/>
+										</div>
+
+										<br />
+										<br />
+										<br />
+										<br />
+										<span>Widget Test</span>
+										<br />
+										<br />
+										<br />
+										{ chainId === 1 &&
+											<div className="flex flex-col mx-auto">
+											<SwapWidget
+												provider={library}
+												jsonRpcEndpoint={`https://mainnet.infura.io/v3/${infuraApiKey}`}
+												defaultInputTokenAddress={`0x6B175474E89094C44Da98b954EedeAC495271d0F`}
+												defaultInputAmount={defaultInputDAIAmount}
+												defaultOutputTokenAddress={tokenAddress}
+											/>
+											</div>
+										}
+										{ chainId === 42161 &&
+											<div className="flex flex-col mx-auto">
+											<SwapWidget
+												provider={library}
+												jsonRpcEndpoint={`https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`}
+												defaultInputTokenAddress={stablecoinAddress}
+												defaultInputAmount={defaultInputDAIAmount}
+												defaultOutputTokenAddress={tokenAddress}
+											/>
+											</div>
+										}
+										{ chainId === 421611 &&
+											<div className="flex flex-col mx-auto">
+											<SwapWidget
+												provider={library}
+												jsonRpcEndpoint={`https://rinkeby.arbitrum.io/rpc`}
+												defaultInputTokenAddress={stablecoinAddress}
+												defaultInputAmount={defaultInputDAIAmount}
+												defaultOutputTokenAddress={tokenAddress}
+											/>
+											</div>
+										}
 										<span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c&outputCurrency={tokenAddress}</span>
 									</>
 								}
