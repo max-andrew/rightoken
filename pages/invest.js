@@ -5,6 +5,8 @@ import { injected } from '../functions/connectors'
 
 import { formatEther } from '@ethersproject/units'
 
+import { ethers } from 'ethers'
+
 import Head from 'next/head'
 
 import Header from '../components/Header'
@@ -13,12 +15,6 @@ import Footer from '../components/Footer'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
 
-import { SwapWidget } from '@uniswap/widgets'
-import '@uniswap/widgets/fonts.css'
-
-import { web3 } from '../functions/walletlink'
-import { Web3Client } from 'web3'
-
 export default function Invest() {
 	const { 
 		library,
@@ -26,10 +22,6 @@ export default function Invest() {
 		activate,
 		chainId,
 	} = useWeb3React()
-
-	const infuraApiKey = process.env.INFURA_KEY
-	const UNISWAP_TOKEN_LIST = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
-	const defaultInputDAIAmount = 50
 
 	const arbitrumDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
 	const arbitrumRinkebyDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
@@ -49,8 +41,6 @@ export default function Invest() {
 	    "type":"function"
 	  },
 	];
-
-	let contract = new web3.eth.Contract(minABI, stablecoinAddress);
 
 	const [showFAQs, setShowFAQs] = useState(true)
 	const [showWhatIs, setShowWhatIs] = useState(false)
@@ -162,10 +152,14 @@ export default function Invest() {
 	async function updateDAIBalance() {
 		if (library && account) {
 			console.log('Getting DAI balance...')
-			// const balance = await contract.methods.balanceOf(account).call()
-			// const value = Web3Client.utils.fromWei(balance)
-			// setDaiBalance(value)
-			setDaiBalance(50)
+
+			const signer = library.getSigner(account)
+			let contract = new ethers.Contract(stablecoinAddress, minABI, signer);
+
+			const balance = await contract.balanceOf(account)
+			const formattedBalance = parseFloat(formatEther(balance)).toPrecision(4)
+			console.log(`DAI Balance : ${formattedBalance}`)
+			setDaiBalance(formattedBalance)
 		}
 	}
 
@@ -305,7 +299,7 @@ export default function Invest() {
 												</button>
 											}
 										</div>
-										{((chainId === 42161 || chainId === 421611) && ethBalance > 0.005) &&
+										{((chainId === 42161 || chainId === 421611)) &&
 										<div>
 											<div className="flex flex-col">
 												<button
@@ -322,7 +316,7 @@ export default function Invest() {
 									</>
 								}
 
-								{typeof(account) !== 'undefined' && daiBalance > 0 && ((chainId === 42161 && ethBalance > 0.001) || chainId === 421611 || chainId === 1) &&
+								{typeof(account) !== 'undefined' && ((chainId === 42161 && daiBalance > 0) || chainId === 421611) &&
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>
@@ -333,49 +327,6 @@ export default function Invest() {
 										<div>
 											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${tokenAddress}`} height={500} width={500}/>
 										</div>
-
-										<br />
-										<br />
-										<br />
-										<br />
-										<span>Widget Test</span>
-										<br />
-										<br />
-										<br />
-										{ chainId === 1 &&
-											<div className="flex flex-col mx-auto">
-											<SwapWidget
-												provider={library}
-												jsonRpcEndpoint={`https://mainnet.infura.io/v3/${infuraApiKey}`}
-												defaultInputTokenAddress={`0x6B175474E89094C44Da98b954EedeAC495271d0F`}
-												defaultInputAmount={defaultInputDAIAmount}
-												defaultOutputTokenAddress={tokenAddress}
-											/>
-											</div>
-										}
-										{ chainId === 42161 &&
-											<div className="flex flex-col mx-auto">
-											<SwapWidget
-												provider={library}
-												jsonRpcEndpoint={`https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`}
-												defaultInputTokenAddress={stablecoinAddress}
-												defaultInputAmount={defaultInputDAIAmount}
-												defaultOutputTokenAddress={tokenAddress}
-											/>
-											</div>
-										}
-										{ chainId === 421611 &&
-											<div className="flex flex-col mx-auto">
-											<SwapWidget
-												provider={library}
-												jsonRpcEndpoint={`https://rinkeby.arbitrum.io/rpc`}
-												defaultInputTokenAddress={stablecoinAddress}
-												defaultInputAmount={defaultInputDAIAmount}
-												defaultOutputTokenAddress={tokenAddress}
-											/>
-											</div>
-										}
-										<span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c&outputCurrency={tokenAddress}</span>
 									</>
 								}
 							</>
