@@ -8,7 +8,7 @@ const RPC_URLS = {
 	1: `https://mainnet.infura.io/v3/${infuraApiKey}`,
 	4: `https://rinkeby.infura.io/v3/${infuraApiKey}`,
 	10: `https://mainnet.optimism.infura.io/v3/${infuraApiKey}`,
-	69: "https://kovan.optimism.io/rpc"
+	69: "https://kovan.optimism.io"
 }
 
 export const injected = new InjectedConnector({ supportedChainIds: [1, 4, 10, 69] })
