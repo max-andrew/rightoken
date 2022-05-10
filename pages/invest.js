@@ -14,6 +14,7 @@ import Footer from '../components/Footer'
 
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
+import SwitchNetworkButton from '../components/SwitchNetworkButton'
 
 export default function Invest() {
 	const { 
@@ -227,6 +228,16 @@ export default function Invest() {
 										</p>
 										<br />
 										<LinkWalletButton account={account} activate={activate} injected={injected} />
+										<br />
+										<br />
+										<p>
+											Rightoken is built on Arbitrum, a network that makes Ethereum much cheaper to use.
+											<br />
+										</p>
+										<br />
+										{typeof(account) !== 'undefined' &&
+											<SwitchNetworkButton chainId={chainId} library={library} />
+										}
 									</>
 									: <>
 										<br />
@@ -320,13 +331,21 @@ export default function Invest() {
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>
-										<p>Now you're ready to buy his/her RighToken!</p>
+										<p>Now you're ready to buy RighToken!</p>
+										<p>You can swap your DAI into Rightoken using Uniswap below.</p>
 										<br />
 										<br />
 
 										<div>
 											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${tokenAddress}`} height={500} width={500}/>
 										</div>
+
+										<br />
+										<br />
+										<span className="font-medium">Expert Mode</span>
+										<p>If you can't swap due to the alert message, please switch to the expert mode following below instruction.</p>
+										<p>The alert shows because you're a very early investor to the token!</p>
+										<br />
 									</>
 								}
 							</>
