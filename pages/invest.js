@@ -14,6 +14,7 @@ import Footer from '../components/Footer'
 
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
+import SwitchNetworkButton from '../components/SwitchNetworkButton'
 
 export default function Invest() {
 	const { 
@@ -227,6 +228,16 @@ export default function Invest() {
 										</p>
 										<br />
 										<LinkWalletButton account={account} activate={activate} injected={injected} />
+										<br />
+										<br />
+										<p>
+											Rightoken is built on Arbitrum, a network that makes Ethereum much cheaper to use.
+											<br />
+										</p>
+										<br />
+										{typeof(account) !== 'undefined' &&
+											<SwitchNetworkButton chainId={chainId} library={library} />
+										}
 									</>
 									: <>
 										<br />
