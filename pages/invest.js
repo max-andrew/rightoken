@@ -27,7 +27,7 @@ export default function Invest() {
 	const OPTIMISM_KOVAN_CHAIN_ID = 69
 
 	const optimismDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-	const optimisticKovanDAIAddress = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
+	const optimisticKovanDAIAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1"
 
 	let stablecoinAddress = optimismDAIAddress
 

@@ -163,13 +163,13 @@ export default function Mint() {
 
 		try {
 			// create a Uniswap LP
-			const optimismDAIAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1"
-			const optimisticKovanDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+			const optimismDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+			const optimisticKovanDAIAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1"
 
 			const rightokenAddress = rightokenERC20Address
 			let stablecoinAddress = optimismDAIAddress
 
-			if (chainId === OPTIMISM_CHAIN_ID) {
+			if (chainId === OPTIMISM_KOVAN_CHAIN_ID) {
 				stablecoinAddress = optimisticKovanDAIAddress
 			}
 			else if (chainId !== OPTIMISM_CHAIN_ID && chainId !== OPTIMISM_KOVAN_CHAIN_ID) {
