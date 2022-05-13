@@ -17,30 +17,38 @@ module.exports = {
 			url: `https://mainnet.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 			companionNetworks: {
-				l2: "arbitrum",
+				l2: "optimism",
 			},
 		},
-		arbitrum: {
-			url: `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`,
+		// arbitrum: {
+		// 	url: `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`,
+		// 	accounts: { mnemonic: mnemonic },
+		// 	companionNetworks: {
+		// 		l1: "mainnet",
+		// 	},
+		// },
+		optimism: {
+			url: `https://mainnet.optimism.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
-			companionNetworks: {
-				l1: "mainnet",
-			},
-		},
+	  },
 		rinkeby: {
 			url: `https://rinkeby.infura.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
 			companionNetworks: {
-				l2: "arbitrumRinkeby",
+				l2: "optimisticKovan",
 			},
 		},
-		arbitrumRinkeby: {
-			url: `https://arbitrum-rinkeby.infura.io/v3/${infuraApiKey}`,
+		optimisticKovan: {
+			url: `kovan.optimism.io/v3/${infuraApiKey}`,
 			accounts: { mnemonic: mnemonic },
-			companionNetworks: {
-				l1: "rinkeby",
-			},
-		},
+	  },
+		// arbitrumRinkeby: {
+		// 	url: `https://arbitrum-rinkeby.infura.io/v3/${infuraApiKey}`,
+		// 	accounts: { mnemonic: mnemonic },
+		// 	companionNetworks: {
+		// 		l1: "rinkeby",
+		// 	},
+		// },
 	},
 };
 
