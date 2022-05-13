@@ -28,7 +28,7 @@ export default function Learn() {
 							gas
 								timing (off peak hours)
 							tokens
-							arbitrum
+							optimism
 								roll ups
 						*/
 					}
