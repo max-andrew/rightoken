@@ -7,8 +7,8 @@ const POLLING_INTERVAL = 6000
 const RPC_URLS = {
 	1: `https://mainnet.infura.io/v3/${infuraApiKey}`,
 	4: `https://rinkeby.infura.io/v3/${infuraApiKey}`,
-	10: `https://mainnet.optimism.infura.io/v3/${infuraApiKey}`,
-	69: "https://kovan.optimism.io"
+	10: `https://optimism-mainnet.infura.io/v3/${infuraApiKey}`,
+	69: `https://optimism-kovan.infura.io/v3/${infuraApiKey}`
 }
 
 export const injected = new InjectedConnector({ supportedChainIds: [1, 4, 10, 69] })
