@@ -195,7 +195,7 @@ export default function Mint() {
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManager.abi, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96)
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 5000000})
 			await initializedPool.wait()
 
 			const poolURL = `app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`

@@ -14,6 +14,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
+import CommunityWidget from '../components/CommunityWidget'
 
 export default function Invest() {
 	const { 
@@ -213,10 +214,6 @@ export default function Invest() {
 										</div>
 									</fieldset>
 								</div>
-
-								<br />
-
-								<FunkyButton onClick={() => setShowFAQs(false)} text="Start" />
 							</>
 							: <>
 								{(typeof(tokenAddress) !== 'undefined' && tokenAddress !== "" && tokenAddress !== null) ?
@@ -336,6 +333,10 @@ export default function Invest() {
 								}
 							</>
 						}
+
+						<br />
+
+						<CommunityWidget />
 					</div>
 				</main>
 			</div>

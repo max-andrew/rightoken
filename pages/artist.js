@@ -7,6 +7,8 @@ import Footer from '../components/Footer'
 
 import FunkyButton from '../components/FunkyButton'
 
+import CommunityWidget from '../components/CommunityWidget'
+
 export default function Artist() {
 	const [showWhatIs, setShowWhatIs] = useState(false)
 	const [showSoundRecording, setShowSoundRecording] = useState(false)
@@ -127,7 +129,7 @@ export default function Artist() {
 
 						<br />
 
-						<FunkyButton link="/mint" text="Start" />
+						<CommunityWidget />
 					</div>
 				</main>
 			</div>
