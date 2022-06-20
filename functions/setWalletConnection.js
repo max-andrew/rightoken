@@ -1,6 +1,5 @@
 import {
-	walletconnect, 
-	walletlink,
+	walletconnect,
 	injected
 } from './connectors'
 

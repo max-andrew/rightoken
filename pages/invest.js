@@ -8,9 +8,6 @@ import { formatEther } from '@ethersproject/units'
 
 import Head from 'next/head'
 
-import { SwapWidget } from '@uniswap/widgets'
-import '@uniswap/widgets/fonts.css'
-
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import FunkyButton from '../components/FunkyButton'
@@ -122,7 +119,7 @@ export default function Invest() {
 		},
 		{
 			question: "What does this cost?", 
-			answer: <>&nbsp;&nbsp;Every blockchain charges network fees. Network fees, or gas, are charged to create new tokens and list them on an exchange for fans to buy into. These fees do not go to Rightoken. <br /> &nbsp;&nbsp; Gas prices are lower during off-peak hours like nights and weekends where a total cost per song should be under $20.</>, 
+			answer: <>Every blockchain charges network fees. Network fees, or gas, are charged to create new tokens and list them on an exchange for fans to buy into. These fees do not go to Rightoken. <br /> Gas prices are lower during off-peak hours like nights and weekends where a total cost per song should be under $20.</>, 
 			flag: showUseCost, 
 			flagSetter: setShowUseCost
 		},
@@ -162,7 +159,7 @@ export default function Invest() {
 			console.log('Getting DAI balance...')
 
 			const signer = library.getSigner(account)
-			let contract = new ethers.Contract(stablecoinAddress, minABI, signer);
+			let contract = new ethers.Contract(stablecoinAddress, minABI, signer)
 
 			const balance = await contract.balanceOf(account)
 			const formattedBalance = parseFloat(formatEther(balance)).toPrecision(4)
@@ -332,17 +329,7 @@ export default function Invest() {
 										<br />
 										<br />
 
-										{ chainId === 421611 &&
-											<div className="flex flex-col mx-auto">
-												<SwapWidget
-													provider={library}
-													jsonRpcEndpoint={`https://rinkeby.arbitrum.io/rpc`}
-													defaultInputTokenAddress={stablecoinAddress}
-													defaultInputAmount={defaultInputDAIAmount}
-													defaultOutputTokenAddress={tokenAddress}
-												/>
-											</div>
-										}
+							
 
 										<div>
 											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${tokenAddress}`} height={500} width={500}/>
