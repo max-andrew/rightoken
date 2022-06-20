@@ -11,27 +11,35 @@ const ARBITRUM_DAI_ADDRESS = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
 const ARBITRUM_RINKEBY_DAI_ADDRESS = "0x2f3C1B6A51A469051A22986aA0dDF98466cc8D3c"
 
 export const optimismNetworkBundle = {
-	mainnet_name: "Optimism",
-	testnet_name: "Optimistic Kovan",
-	mainnet_id: OPTIMISM_CHAIN_ID,
-	testnet_id: OPTIMISM_KOVAN_CHAIN_ID,
-	stablecoin_mainnet_address: OPTIMISM_DAI_ADDRESS,
-	stablecoin_testnet_address: OPTIMISM_KOVAN_DAI_ADDRESS,
-	mainnet_rpc_url: ["https://mainnet.optimism.io"],
-	testnet_rpc_url: ["https://kovan.optimism.io"],
-	mainnet_block_explorer_url: ["https://optimistic.etherscan.io"],
-	testnet_block_explorer_url: ["https://kovan-optimistic.etherscan.io"]
+	mainnet: {
+		name: "Optimism",
+		id: OPTIMISM_CHAIN_ID,
+		stablecoin_address: OPTIMISM_DAI_ADDRESS,
+		rpc_url: ["https://mainnet.optimism.io"],
+		block_explorer_url: ["https://optimistic.etherscan.io"],
+	},
+	testnet: {
+		name: "Optimistic Kovan",
+		id: OPTIMISM_KOVAN_CHAIN_ID,
+		stablecoin_address: OPTIMISM_KOVAN_DAI_ADDRESS,
+		rpc_url: ["https://kovan.optimism.io"],
+		block_explorer_url: ["https://kovan-optimistic.etherscan.io"]
+	}
 }
 
 export const arbitrumNetworkBundle = {
-	mainnet_name: "Arbitrum",
-	testnet_name: "Arbitrum Rinkeby",
-	mainnet_id: ARBITRUM_CHAIN_ID,
-	testnet_id: ARBITRUM_RINKEBY_CHAIN_ID,
-	stablecoin_mainnet_address: ARBITRUM_DAI_ADDRESS,
-	stablecoin_testnet_address: ARBITRUM_RINKEBY_DAI_ADDRESS,
-	mainnet_rpc_url: ["https://arb1.arbitrum.io/rpc"],
-	testnet_rpc_url: ["https://rinkeby.arbitrum.io/rpc"],
-	mainnet_block_explorer_url: ["https://arbiscan.io"],
-	testnet_block_explorer_url: ["https://testnet.arbiscan.io/#/"]
+	mainnet: {
+		name: "Arbitrum",
+		id: ARBITRUM_CHAIN_ID,
+		stablecoin_address: ARBITRUM_DAI_ADDRESS,
+		rpc_url: ["https://arb1.arbitrum.io/rpc"],
+		block_explorer_url: ["https://arbiscan.io"],
+	},
+	testnet: {
+		name: "Arbitrum Rinkeby",
+		id: ARBITRUM_RINKEBY_CHAIN_ID,
+		stablecoin_address: ARBITRUM_RINKEBY_DAI_ADDRESS,
+		rpc_url: ["https://rinkeby.arbitrum.io/rpc"],
+		block_explorer_url: ["https://testnet.arbiscan.io/#/"]
+	}
 }

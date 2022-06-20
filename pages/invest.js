@@ -6,6 +6,8 @@ import { injected } from '../functions/connectors'
 import { ethers } from 'ethers'
 import { formatEther } from '@ethersproject/units'
 
+import { optimismNetworkBundle, arbitrumNetworkBundle } from '../data/networkData'
+
 import Head from 'next/head'
 
 import Header from '../components/Header'
@@ -21,20 +23,16 @@ export default function Invest() {
 		chainId,
 	} = useWeb3React()
 
+	const networkDefaults = arbitrumNetworkBundle
+
 	const infuraApiKey = process.env.INFURA_KEY
 	const UNISWAP_TOKEN_LIST = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 	const defaultInputDAIAmount = 50
 
-	const OPTIMISM_CHAIN_ID = 10
-	const OPTIMISM_KOVAN_CHAIN_ID = 69
+	let stablecoinAddress = networkDefaults.mainnet.stablecoin_address
 
-	const optimismDAIAddress = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-	const optimisticKovanDAIAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1"
-
-	let stablecoinAddress = optimismDAIAddress
-
-	if (chainId === OPTIMISM_KOVAN_CHAIN_ID) {
-		stablecoinAddress = optimisticKovanDAIAddress
+	if (chainId === networkDefaults.testnet.id) {
+		stablecoinAddress = networkDefaults.testnet.stablecoin_address
 	}
 
 	let minABI = [
@@ -245,15 +243,15 @@ export default function Invest() {
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">2.</h3>
 
-										<span className="font-medium">You need DAI in your optimism wallet to pay.</span>
+										<span className="font-medium">You need DAI in your {networkDefaults.mainnet.name} wallet to pay.</span>
 										<br />
 										<br />
-										<p>(1) purchase some eth and bridge to optimism</p>
+										<p>(1) purchase some eth and bridge to {networkDefaults.mainnet.name}</p>
 										<br />
-										Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase some ETH, and withdraw to optimism using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on optimism, you can send it to your wallet and <a href="https://app.hop.exchange/" className="underline" target="_blank" rel="noreferrer">bridge to optimism</a>, but it'll cost more in gas fees.
+										Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase some ETH, and withdraw to {networkDefaults.mainnet.name} using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on {networkDefaults.mainnet.name}, you can send it to your wallet and <a href="https://app.hop.exchange/" className="underline" target="_blank" rel="noreferrer">bridge to {networkDefaults.mainnet.name}</a>, but it'll cost more in gas fees.
 										<br />
 										<br />
-										<p>(2) swap eth to DAI on optimism using Uniswap</p>
+										<p>(2) swap eth to DAI on {networkDefaults.mainnet.name} using Uniswap</p>
 										<br />
 										<div>
 											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=100&outputCurrency=${stablecoinAddress}`} height={500} width={500}/>
@@ -262,23 +260,23 @@ export default function Invest() {
 										<br />
 										<span className="font-medium">What is DAI?</span>
 										<p>DAI is a price-stable currency which is softly-pegged to one USD.</p>
-										<p>We use DAI as the liquidity pair for RighToken so that the token price is clear and easy for everyone to understand.</p>
+										<p>We use DAI as the liquidity pair for Rightoken so that the token price is clear and easy for everyone to understand.</p>
 										<br />
 										<span className="font-medium">What is Uniswap?</span>
-										<p>Uniswap is the largest decentralized exchange based on ethereum.</p>
+										<p>Uniswap is the largest decentralized exchange based on Ethereum.</p>
 										<p>It allows artists and investors to exchange token without intermediary.</p>
 										<br />
 
 										<div className="flex flex-col justify-center space-y-2">
-											{ (chainId !== OPTIMISM_CHAIN_ID && chainId !== OPTIMISM_KOVAN_CHAIN_ID) &&
+											{ (chainId !== networkDefaults.testnet.id && chainId !== networkDefaults.testnet.id) &&
 												<button
-													className={`uppercase text-sm font-bold px-4 py-3 mix-blend-multiply ${chainId === OPTIMISM_KOVAN_CHAIN_ID ? "bg-zinc-200" : "bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100"} text-zinc-700 active:text-zinc-500 rounded-md`}
+													className={`uppercase text-sm font-bold px-4 py-3 mix-blend-multiply ${chainId === networkDefaults.testnet.id ? "bg-zinc-200" : "bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100"} text-zinc-700 active:text-zinc-500 rounded-md`}
 													onClick={
 														async () => {
 															try {
 																await library.provider.request({
 																	method: "wallet_switchEthereumChain",
-																	params: [{ chainId: `0x${OPTIMISM_CHAIN_ID.toString(16)}` }]
+																	params: [{ chainId: `0x${networkDefaults.mainnet.id.toString(16)}` }]
 																})
 															}
 															catch (e) {
@@ -286,10 +284,10 @@ export default function Invest() {
 																	method: "wallet_addEthereumChain",
 																	params: [
 																		{
-																			chainId: `0x${OPTIMISM_CHAIN_ID.toString(16)}`, // OPTIMISM_CHAIN_ID
-																			chainName: "optimism One",
-																			rpcUrls: ["https://mainnet.optimism.io"],
-																			blockExplorerUrls: ["https://optimistic.etherscan.io"]
+																			chainId: `0x${networkDefaults.mainnet.id.toString(16)}`, // OPTIMISM_CHAIN_ID
+																			chainName: networkDefaults.mainnet.name,
+																			rpcUrls: [networkDefaults.mainnet.rpc_url],
+																			blockExplorerUrls: [networkDefaults.mainnet.block_explorer_url]
 																		}
 																	]
 																})
@@ -300,11 +298,11 @@ export default function Invest() {
 														}
 													}
 												>
-													Connect to optimism
+													Connect to {networkDefaults.mainnet.name}
 												</button>
 											}
 										</div>
-										{((chainId === OPTIMISM_CHAIN_ID || chainId === OPTIMISM_KOVAN_CHAIN_ID)) &&
+										{((chainId === networkDefaults.mainnet.id || chainId === networkDefaults.testnet.id)) &&
 										<div>
 											<div className="flex flex-col">
 												<button
@@ -321,7 +319,7 @@ export default function Invest() {
 									</>
 								}
 
-								{typeof(account) !== 'undefined' && ((chainId === OPTIMISM_CHAIN_ID && daiBalance > 0) || chainId === OPTIMISM_KOVAN_CHAIN_ID) &&
+								{typeof(account) !== 'undefined' && ((chainId === networkDefaults.mainnet.id && daiBalance > 0) || chainId === networkDefaults.testnet.id) &&
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>

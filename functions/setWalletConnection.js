@@ -12,9 +12,6 @@ export const connectWallet = (error, walletAppSelected, setActivatingConnector, 
 	if (walletAppSelected == "metamask") {
 		walletConnector = walletconnect
 	}
-	else if (walletAppSelected == "coinbase") {
-		walletConnector = walletlink
-	}
 	else {
 		walletConnector = injected
 	}
@@ -42,9 +39,6 @@ export const getConnectedWalletApp = () => {
 	if (typeof(window) !== "undefined") {
 		if (!!window.localStorage.walletconnect) {
 			return "metamask"
-		}
-		else if (!!window.localStorage["-walletlink:https://www.walletlink.org:Addresses"]) {
-			return "coinbase"
 		}
 		else if (!!window.ethereum) {
 			return "injected"
