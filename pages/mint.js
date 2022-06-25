@@ -167,7 +167,7 @@ export default function Mint() {
 			const rightokenAddress = rightokenERC20Address
 			let stablecoinAddress = networkDefaults.mainnet.stablecoin_address
 
-			if (chainId === networkDefaults.mainnet.id) {
+			if (chainId === networkDefaults.testnet.id) {
 				stablecoinAddress = networkDefaults.testnet.stablecoin_address
 			}
 			else if (chainId !== networkDefaults.mainnet.id && chainId !== networkDefaults.testnet.id) {
@@ -195,7 +195,7 @@ export default function Mint() {
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManager.abi, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 5000000})
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 2500000})
 			await initializedPool.wait()
 
 			const poolURL = `app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
