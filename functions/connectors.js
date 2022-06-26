@@ -3,7 +3,7 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 const infuraApiKey = process.env.INFURA_KEY
 
 const POLLING_INTERVAL = 6000
-const RPC_URLS = {
+export const RPC_URLS = {
 	1: `https://mainnet.infura.io/v3/${infuraApiKey}`,
 	4: `https://rinkeby.infura.io/v3/${infuraApiKey}`,
 	10: `https://optimism-mainnet.infura.io/v3/${infuraApiKey}`,

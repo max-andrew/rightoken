@@ -7,7 +7,7 @@ import { ethers, BigNumber, BigNumberish } from 'ethers'
 import { formatEther } from '@ethersproject/units'
 import bn from 'bignumber.js'
 
-import { optimismNetworkBundle, arbitrumNetworkBundle } from '../data/networkData'
+import { optimismNetworkBundle } from '../data/networkData'
 
 import INonfungiblePositionManager from '@uniswap/v3-periphery/artifacts/contracts/interfaces/INonfungiblePositionManager.sol/INonfungiblePositionManager.json'
 

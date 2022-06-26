@@ -1,12 +1,12 @@
 import { Fragment, useState, useEffect } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
-import { injected } from '../functions/connectors'
+import { RPC_URLS, injected, walletconnect } from '../functions/connectors'
 
 import { ethers } from 'ethers'
 import { formatEther } from '@ethersproject/units'
 
-import { optimismNetworkBundle, arbitrumNetworkBundle } from '../data/networkData'
+import { optimismNetworkBundle } from '../data/networkData'
 
 import Head from 'next/head'
 
@@ -15,6 +15,7 @@ import Footer from '../components/Footer'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
 import CommunityWidget from '../components/CommunityWidget'
+import { SwapWidget } from '@uniswap/widgets'
 
 export default function Invest() {
 	const { 
@@ -24,7 +25,7 @@ export default function Invest() {
 		chainId,
 	} = useWeb3React()
 
-	const networkDefaults = arbitrumNetworkBundle
+	const networkDefaults = optimismNetworkBundle
 
 	const infuraApiKey = process.env.INFURA_KEY
 	const UNISWAP_TOKEN_LIST = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
@@ -35,6 +36,36 @@ export default function Invest() {
 	if (chainId === networkDefaults.testnet.id) {
 		stablecoinAddress = networkDefaults.testnet.stablecoin_address
 	}
+
+	const [tokenAddress, setTokenAddress] = useState("")
+	useEffect(() => {
+		if (typeof(window) !== "undefined") {
+			const url = new URL(window.location.href)
+			const searchParams = new URLSearchParams(url.search)
+			const tokenAddress = searchParams.get("tokenAddress")
+			if (tokenAddress !== null)
+				setTokenAddress(searchParams.get("tokenAddress"))
+		}
+	})
+
+	const RIGHTOKEN_TOKEN_LIST = [
+		{
+			"name": "Rightoken",
+			"address": tokenAddress,
+			"symbol": "RTKN",
+			"decimals": 18,
+			"chainId": chainId,
+			"logoURI": "https://github.com/max-andrew/rightoken/blob/main/public/512x512_App_Icon.png"
+		},
+		{
+			"name": "Dai Stablecoin",
+			"address": stablecoinAddress,
+			"symbol": "DAI",
+			"decimals": 18,
+			"chainId": chainId,
+			"logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+		},
+	]
 
 	let minABI = [
 		{
@@ -130,24 +161,13 @@ export default function Invest() {
 		},
 	]
 
-	const [tokenAddress, setTokenAddress] = useState("")
-	useEffect(() => {
-		if (typeof(window) !== "undefined") {
-			const url = new URL(window.location.href)
-			const searchParams = new URLSearchParams(url.search)
-			const tokenAddress = searchParams.get("tokenAddress")
-			if (tokenAddress !== null)
-				setTokenAddress(searchParams.get("tokenAddress"))
-		}
-	})
-
 
 	function updateEthBalance() {
 		if (library && account) {
 			console.log('Getting Eth balance...')
 			library.getBalance(account)
 			.then(balance => {
-				console.log('Balance:', parseFloat(formatEther(balance)).toPrecision(4))
+				console.log('ETH balance:', parseFloat(formatEther(balance)).toPrecision(4))
 				setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
 			})
 		}
@@ -160,9 +180,11 @@ export default function Invest() {
 			const signer = library.getSigner(account)
 			let contract = new ethers.Contract(stablecoinAddress, minABI, signer)
 
+			console.dir(signer.provider)
+
 			const balance = await contract.balanceOf(account)
 			const formattedBalance = parseFloat(formatEther(balance)).toPrecision(4)
-			console.log(`DAI Balance : ${formattedBalance}`)
+			console.log(`DAI balance: ${formattedBalance}`)
 			setDaiBalance(formattedBalance)
 		}
 	}
@@ -226,7 +248,7 @@ export default function Invest() {
 											<span className="font-medium">Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</span>
 										</p>
 										<br />
-										<LinkWalletButton account={account} activate={activate} injected={injected} />
+										<LinkWalletButton account={account} activate={activate} injected={injected} walletconnect={walletconnect} />
 									</>
 									: <>
 										<br />
@@ -243,16 +265,20 @@ export default function Invest() {
 										<span className="font-medium">You need DAI in your {networkDefaults.mainnet.name} wallet to pay.</span>
 										<br />
 										<br />
-										<p>(1) purchase some eth and bridge to {networkDefaults.mainnet.name}</p>
+										<p>Purchase some Eth and bridge to {networkDefaults.mainnet.name}.</p>
 										<br />
 										Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase some ETH, and withdraw to {networkDefaults.mainnet.name} using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on {networkDefaults.mainnet.name}, you can send it to your wallet and <a href="https://app.hop.exchange/" className="underline" target="_blank" rel="noreferrer">bridge to {networkDefaults.mainnet.name}</a>, but it'll cost more in gas fees.
 										<br />
 										<br />
-										<p>(2) swap eth to DAI on {networkDefaults.mainnet.name} using Uniswap</p>
+										<p>Swap Eth to DAI on {networkDefaults.mainnet.name} using Uniswap.</p>
 										<br />
-										<div>
-											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=100&outputCurrency=${stablecoinAddress}`} height={500} width={500}/>
-										</div>
+										<SwapWidget
+											provider={library.getSigner(account).provider}
+											jsonRpcEndpoint={RPC_URLS[chainId]}
+											width="100%"
+											tokenList={"https://static.optimism.io/optimism.tokenlist.json"}
+											defaultOutputTokenAddress={stablecoinAddress}
+										/>
 										<br />
 										<br />
 										<span className="font-medium">What is DAI?</span>
@@ -320,15 +346,16 @@ export default function Invest() {
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>
-										<p>Now you're ready to buy the rightoken!</p>
+										<p>You're ready to buy some rightokens!</p>
 										<br />
-										<br />
-
-							
-
-										<div>
-											<iframe src={`https://app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${tokenAddress}`} height={500} width={500}/>
-										</div>
+										<SwapWidget
+											provider={library.getSigner(account).provider}
+											jsonRpcEndpoint={RPC_URLS[chainId]}
+											width="100%"
+											tokenList={RIGHTOKEN_TOKEN_LIST}
+											defaultInputTokenAddress={stablecoinAddress}
+											defaultOutputTokenAddress={tokenAddress}
+										/>
 									</>
 								}
 							</>
