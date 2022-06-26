@@ -28,7 +28,7 @@ export default function Mint() {
 		chainId,
 	} = useWeb3React()
 
-	const networkDefaults = arbitrumNetworkBundle
+	const networkDefaults = optimismNetworkBundle
 
 	const [currentStep, setCurrentStep] = useState(0)
 
@@ -149,34 +149,54 @@ export default function Mint() {
 
 		const signer = library.getSigner(account)
 
-		bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
-		// returns the sqrt price as a 64x96
-		function encodePriceSqrt(reserve1, reserve0) {
-			return BigNumber.from(
-				new bn(reserve1.toString())
-				.div(reserve0.toString())
-				.sqrt()
-				.multipliedBy(new bn(2).pow(96))
-				.integerValue(3)
-				.toString()
-			)
+		const rightokenAddress = rightokenERC20Address
+		let stablecoinAddress = networkDefaults.mainnet.stablecoin_address
+
+		if (chainId === networkDefaults.testnet.id) {
+			stablecoinAddress = networkDefaults.testnet.stablecoin_address
+		}
+		else if (chainId !== networkDefaults.mainnet.id && chainId !== networkDefaults.testnet.id) {
+			throw `Please connect to an ${networkDefaults.mainnet.name} network`
 		}
 
 		try {
 			// create a Uniswap LP
-			const rightokenAddress = rightokenERC20Address
-			let stablecoinAddress = networkDefaults.mainnet.stablecoin_address
-
-			if (chainId === networkDefaults.testnet.id) {
-				stablecoinAddress = networkDefaults.testnet.stablecoin_address
+			// order token0 and token1 to Uniswap standard
+			let token0Address
+			let token1Address
+			if (parseInt(stablecoinAddress, 16) < parseInt(rightokenAddress,16)) {
+				token0Address = stablecoinAddress
+				token1Address = rightokenAddress
 			}
-			else if (chainId !== networkDefaults.mainnet.id && chainId !== networkDefaults.testnet.id) {
-				throw `Please connect to an ${networkDefaults.mainnet.name} network`
+			else {
+				token0Address = rightokenAddress
+				token1Address = stablecoinAddress
 			}
 
 			const pricePerRightoken = marketCap/100
+
+			bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
+			// returns the sqrt price as a 64x96
+			function encodePriceSqrt(reserve1, reserve0) {
+				return BigNumber.from(
+					new bn(reserve1.toString())
+					.div(reserve0.toString())
+					.sqrt()
+					.multipliedBy(new bn(2).pow(96))
+					.integerValue(3)
+					.toString()
+				)
+			}
+
 			// (y, x)
-			const sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
+			let sqrtPriceX96
+			if (token0Address === stablecoinAddress) {
+				sqrtPriceX96 = encodePriceSqrt(pricePerRightoken, 1)
+			}
+			else {
+				sqrtPriceX96 = encodePriceSqrt(1, pricePerRightoken)
+			}
+			
 			const poolFee = 500
 
 
@@ -184,18 +204,18 @@ export default function Mint() {
 			const NonfungiblePositionManagerAddress = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 			
 			const approveAllowanceABI = ["function approve(address _spender, uint256 _value) public returns (bool success)"]
-			let approveAllowanceContract = new ethers.Contract(rightokenAddress, approveAllowanceABI, signer)
+			let approveAllowanceContract = new ethers.Contract(token0Address, approveAllowanceABI, signer)
 			let approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString())
 			await approvedContract.wait()
 
-			approveAllowanceContract = new ethers.Contract(stablecoinAddress, approveAllowanceABI, signer)
+			approveAllowanceContract = new ethers.Contract(token1Address, approveAllowanceABI, signer)
 			approvedContract = await approveAllowanceContract.approve(NonfungiblePositionManagerAddress, (100 * 10 ** 18).toString())
 			await approvedContract.wait()
 
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManager.abi, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(stablecoinAddress, rightokenAddress, poolFee, sqrtPriceX96, {gasLimit: 2500000})
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(token0Address, token1Address, poolFee, sqrtPriceX96)
 			await initializedPool.wait()
 
 			const poolURL = `app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
@@ -214,18 +234,41 @@ export default function Mint() {
 			const tickSpacing = 10
 
 			const getMinTick = (tickSpacing) => Math.ceil(-887272 / tickSpacing) * tickSpacing
+			const getMaxTick = (tickSpacing) => Math.floor(887272 / tickSpacing) * tickSpacing
 
 			const getBaseLog = (x, y) => Math.log(y) / Math.log(x)
+
+			let tickLower
+			let tickUpper
+			if (token0Address === stablecoinAddress) {
+				tickLower = getMinTick(tickSpacing)
+				tickUpper = Math.floor(getBaseLog(1.0001, 1/pricePerRightoken) / tickSpacing) * tickSpacing
+			}
+			else {
+				tickLower = (Math.floor(getBaseLog(1.0001, 1/pricePerRightoken) / tickSpacing) * tickSpacing)*-1
+				tickUpper = getMaxTick(tickSpacing)
+			}
+
+			let amount0Desired
+			let amount1Desired
+			if (token0Address === stablecoinAddress) {
+				amount0Desired = ethers.utils.parseUnits('0', 'gwei')
+				amount1Desired = ethers.utils.parseUnits(percentListed, 18)
+			}
+			else {
+				amount0Desired = ethers.utils.parseUnits(percentListed, 18)
+				amount1Desired = ethers.utils.parseUnits('0', 'gwei')
+			}
 			
 			const mintParams = {
-				token0: stablecoinAddress,
-				token1: rightokenAddress,
+				token0: token0Address,
+				token1: token1Address,
 				fee: poolFee,
-				tickLower: getMinTick(tickSpacing),
-				tickUpper: Math.floor(getBaseLog(1.0001, 1/pricePerRightoken) / tickSpacing) * tickSpacing,
+				tickLower: tickLower,
+				tickUpper: tickUpper,
 				recipient: account,
-				amount0Desired: ethers.utils.parseUnits('0', 'gwei'),
-				amount1Desired: ethers.utils.parseUnits(percentListed, 18),
+				amount0Desired: amount0Desired,
+				amount1Desired: amount1Desired,
 				amount0Min: ethers.utils.parseUnits('0', 'gwei'),
 				amount1Min: ethers.utils.parseUnits('0', 'gwei'),
 				deadline: deadline,
@@ -274,7 +317,7 @@ export default function Mint() {
 		})
 
 		runCelebration
-		.then(() => { window?.location.replace(postCelebrationLink) })
+		.then(() => { window?.location.replace("https://"+postCelebrationLink) })
 	}
 
 
