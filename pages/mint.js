@@ -215,7 +215,7 @@ export default function Mint() {
 
 			// CREATE AND INITIALIZE A NEW POOL
 			const positionContract = new ethers.Contract(NonfungiblePositionManagerAddress, INonfungiblePositionManager.abi, signer)
-			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(token0Address, token1Address, poolFee, sqrtPriceX96, {gasLimit: 1000000})
+			const initializedPool = await positionContract.createAndInitializePoolIfNecessary(token0Address, token1Address, poolFee, sqrtPriceX96, {gasLimit: 9900000})
 			await initializedPool.wait()
 
 			const poolURL = `app.uniswap.org/#/swap?exactField=input&exactAmount=250&inputCurrency=${stablecoinAddress}&outputCurrency=${rightokenAddress}`
@@ -282,7 +282,7 @@ export default function Mint() {
 				to: NonfungiblePositionManagerAddress,
 				from: account,
 			}
-			const mintPosition = await signer.sendTransaction(transaction)
+			const mintPosition = await signer.sendTransaction(transaction, {gasLimit: 9900000})
 			await mintPosition.wait()
 
 			console.log("Rightoken listed successfully")
