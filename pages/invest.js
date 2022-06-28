@@ -91,7 +91,7 @@ export default function Invest() {
 	const [showMeTheMoney, setShowMeTheMoney] = useState(false)
 
 	const [ethBalance, setEthBalance] = useState(0.0)
-	const [daiBalance, setDaiBalance] = useState(0.0)
+	const [daiBalance, setDAIBalance] = useState(0.0)
 
 	useEffect(() => {
 		updateEthBalance()
@@ -178,6 +178,12 @@ export default function Invest() {
 			console.log('Getting DAI balance...')
 
 			const signer = library.getSigner(account)
+			let contract = new ethers.Contract(stablecoinAddress, minABI, signer)
+
+			const balance = await contract.balanceOf(account)
+			const formattedBalance = parseFloat(formatEther(balance)).toPrecision(4)
+			console.log(`DAI balance: ${formattedBalance}`)
+			setDAIBalance(formattedBalance)
 		}
 	}
 
