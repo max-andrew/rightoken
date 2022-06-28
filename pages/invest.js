@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react'
 
 import { useWeb3React } from '@web3-react/core'
-import { RPC_URLS, injected, walletconnect } from '../functions/connectors'
+import { PUBLIC_RPC_URLS, injected } from '../functions/connectors'
 
 import { ethers } from 'ethers'
 import { formatEther } from '@ethersproject/units'
@@ -18,7 +18,7 @@ import CommunityWidget from '../components/CommunityWidget'
 import { SwapWidget } from '@uniswap/widgets'
 
 export default function Invest() {
-	const { 
+	const {
 		library,
 		account,
 		activate,
@@ -167,7 +167,7 @@ export default function Invest() {
 			console.log('Getting Eth balance...')
 			library.getBalance(account)
 			.then(balance => {
-				console.log('ETH balance:', parseFloat(formatEther(balance)).toPrecision(4))
+				console.log('Eth balance:', parseFloat(formatEther(balance)).toPrecision(4))
 				setEthBalance(parseFloat(formatEther(balance)).toPrecision(4))
 			})
 		}
@@ -178,14 +178,6 @@ export default function Invest() {
 			console.log('Getting DAI balance...')
 
 			const signer = library.getSigner(account)
-			let contract = new ethers.Contract(stablecoinAddress, minABI, signer)
-
-			console.dir(signer.provider)
-
-			const balance = await contract.balanceOf(account)
-			const formattedBalance = parseFloat(formatEther(balance)).toPrecision(4)
-			console.log(`DAI balance: ${formattedBalance}`)
-			setDaiBalance(formattedBalance)
 		}
 	}
 
@@ -248,7 +240,7 @@ export default function Invest() {
 											<span className="font-medium">Download the app, create your wallet, find the browser in the wallet app, and return to this page there.</span>
 										</p>
 										<br />
-										<LinkWalletButton account={account} activate={activate} injected={injected} walletconnect={walletconnect} />
+										<LinkWalletButton account={account} activate={activate} injected={injected} />
 									</>
 									: <>
 										<br />
@@ -274,7 +266,7 @@ export default function Invest() {
 										<br />
 										<SwapWidget
 											provider={library.getSigner(account).provider}
-											jsonRpcEndpoint={RPC_URLS[chainId]}
+											jsonRpcEndpoint={PUBLIC_RPC_URLS[chainId]}
 											width="100%"
 											tokenList={"https://static.optimism.io/optimism.tokenlist.json"}
 											defaultOutputTokenAddress={stablecoinAddress}
@@ -287,7 +279,7 @@ export default function Invest() {
 										<br />
 										<span className="font-medium">What is Uniswap?</span>
 										<p>Uniswap is the largest decentralized exchange based on Ethereum.</p>
-										<p>It allows artists and investors to exchange token without intermediary.</p>
+										<p>It allows artists and investors to exchange tokens without intermediary.</p>
 										<br />
 
 										<div className="flex flex-col justify-center space-y-2">
@@ -350,7 +342,7 @@ export default function Invest() {
 										<br />
 										<SwapWidget
 											provider={library.getSigner(account).provider}
-											jsonRpcEndpoint={RPC_URLS[chainId]}
+											jsonRpcEndpoint={PUBLIC_RPC_URLS[chainId]}
 											width="100%"
 											tokenList={RIGHTOKEN_TOKEN_LIST}
 											defaultInputTokenAddress={stablecoinAddress}
