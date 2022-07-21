@@ -11,7 +11,7 @@ export default function Header(props) {
 
 	return (
 		<>
-			<div className="flex flex-row justify-between mx-auto">
+			<div className="flex flex-row justify-between mx-auto z-40">
 				<a className="mt-4" href="/">
 					<img
 						className="h-8 w-auto opacity-80"

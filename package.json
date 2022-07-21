@@ -33,6 +33,7 @@
     "nft.storage": "^3.3.0",
     "react": "^18.2.0",
     "react-confetti": "^6.0.1",
+    "react-countdown": "^2.3.2",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.2",
     "urql": "^2.0.4",

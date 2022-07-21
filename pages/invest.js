@@ -12,10 +12,14 @@ import Head from 'next/head'
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+
+import Countdown from 'react-countdown'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
 import CommunityWidget from '../components/CommunityWidget'
 import { SwapWidget } from '@uniswap/widgets'
+
+import Image from 'next/image'
 
 export default function Invest() {
 	const {
@@ -77,6 +81,7 @@ export default function Invest() {
 		},
 	]
 
+	const [openFAQs, setOpenFAQs] = useState(false)
 	const [showFAQs, setShowFAQs] = useState(true)
 	const [showWhatIs, setShowWhatIs] = useState(false)
 	const [showSoundRecording, setShowSoundRecording] = useState(false)
@@ -162,6 +167,16 @@ export default function Invest() {
 	]
 
 
+	// Countdown renderer
+	const renderer = ({ days, hours, minutes, seconds, completed }) => {
+		if (completed) {
+			return <p>Rightoken's first mint, "Obsessed!" is now available to everyone!</p>
+		} 
+		else {
+			return <span>Rightoken's first mint, "Obsessed!" is now in presale! Public launch in: {days}:{hours}:{minutes}:{seconds}</span>
+		}
+	}
+
 	function updateEthBalance() {
 		if (library && account) {
 			console.log('Getting Eth balance...')
@@ -192,47 +207,79 @@ export default function Invest() {
 			<Head>
 				<title>Invest in Artists</title>
 			</Head>
+			<div className="grid place-items-center font-mono text-xs text-cyan-500 bg-gradient-to-r from-red-50 via-blue-50 py-4 to-green-100 text-center">
+				<span className="max-w-sm sm:max-w-none">
+					<Countdown
+						/* suppressHydrationWarning */
+						date={1658418825363 + (7 * 24 * 60 * 60 * 1000)}
+						renderer={renderer}
+						/>
+				</span>
+			</div>
 			<div className="mx-auto max-w-xs md:max-w-lg">
 				<Header linkTo="artist" />
 				<main>
-					<div className="absolute right-0 top-20 bg-gradient-to-r from-inherit via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
-					<div className="py-9 relative z-10">
-						{ showFAQs &&
-							<>
-								<h2 className="font-bold text-3xl md:text-4xl text-gray-900 max-w-xs md:max-w-md">Support your favorite independent artists <span className="text-gray-800">and share the profits and royalties</span></h2>
-								<p className="font-bold text-lg md:text-2xl text-gray-600 max-w-xs md:max-w-md mt-2">Rightoken is how you can support artists by holding tokens that make you a true co-owner of songs</p>
-							</>
-						}
+					<div className="absolute right-0 top-00 z-0 bg-gradient-to-r from-inherit via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
+					<div className="absolute right-0 md:left-40 top-44 md:top-72 z-10">
+						<Image
+							src="/static/obsessed.jpg"
+							alt="Obsessed! cover art"
+							width={250}
+							height={250}
+							className="rounded-lg opacity-20 scale-50 md:scale-100"
+							/>
+					</div>
+					<div className="py-9 relative z-20">
+						<div>
+							{ showFAQs &&
+								<div className="border-2 border-purple rounded bg-gradient-to-r from-red-50/50 via-green-50/50 to-blue-100/50 px-8 py-4">
+									<h2 className="font-bold text-4xl md:text-5xl text-gray-900 max-w-xs md:max-w-md">Co-own your favorite songs</h2>
+									<p className="font-bold text-md md:text-xl text-gray-600 max-w-xs md:max-w-md mt-3">Rightoken lets artists tokenize their song rights so fans can support independent artists and share the profits and royalties</p>
+								</div>
+							}
 
-						<FunkyButton className="mt-4" onClick={() => setShowFAQs(!showFAQs)} text={showFAQs ? "Ready" : "FAQs"} grayOut={!showFAQs} />
+							<br />
 
-						<br />
+							<FunkyButton className="mt-4" onClick={() => setShowFAQs(!showFAQs)} text={showFAQs ? "Enter App ↝" : "↜ Back"} grayOut={!showFAQs} />
+						</div>
+
 						<br />
 
 						{ showFAQs ?
-							<>
-								<div id="faq">
-									<fieldset className="border-2 rounded border-gray-700 p-8">
-										<legend className="font-mono md:text-lg">FAQs</legend>
-										<div className="md:text-lg">
-											{
-												faqs.map((question, i) =>
-													<>
-														<p className="underline font-medium inline cursor-pointer" onClick={() => question.flagSetter(!question.flag)}>{question.question}</p>
-														{ question.flag &&
-															<p className="inline-block text-sm font-medium md:text-base">{question.answer}</p>
-														}
-														{ i + 1 !== faqs.length &&
-															<>
-																<br />
-																<br />
-															</>
-														}
-													</>
-												)
-											}
+							openFAQs ?
+								<>
+									<br />
+									<div id="faq">
+										<fieldset className="border-2 rounded border-gray-700 p-8">
+											<legend className="font-mono md:text-lg">FAQs</legend>
+											<div className="md:text-lg">
+												{
+													faqs.map((question, i) =>
+														<>
+															<p className="underline font-medium inline cursor-pointer" onClick={() => question.flagSetter(!question.flag)}>{question.question}</p>
+															{ question.flag &&
+																<p className="inline-block text-sm font-medium md:text-base">{question.answer}</p>
+															}
+															{ i + 1 !== faqs.length &&
+																<>
+																	<br />
+																	<br />
+																</>
+															}
+														</>
+													)
+												}
+											</div>
+										</fieldset>
+										<br />
+										<div className="text-center">
+											<button className="text-sm font-medium px-3 py-1 bg-gray-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setOpenFAQs(!openFAQs)}>Close FAQs ↾</button>
 										</div>
-									</fieldset>
+									</div>
+								</>
+							: <>
+								<div className="text-center">
+									<button className="text-sm font-medium px-3 py-1 bg-gray-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setOpenFAQs(!openFAQs)}>Open FAQs ⇂</button>
 								</div>
 							</>
 							: <>
@@ -250,7 +297,12 @@ export default function Invest() {
 									</>
 									: <>
 										<br />
-										<p>You currently need a link from an artist to get started. <a href="https://discord.gg/QCmetTcbPj" className="underline" target="_blank" rel="noreferrer"><span className="font-medium">Join the community to find artists you can invest in.</span></a></p>
+										<div className="border-2 border-purple rounded bg-gradient-to-r from-red-50/50 via-green-50/50 to-blue-100/50 px-8 py-4 text-center">
+											<a href="https://discord.gg/QCmetTcbPj" className="underline text-green-900/75" target="_blank" rel="noreferrer">
+												<p className="font-medium text-lg">Get a link to invest in Sam Setton's new song, "Obsessed!"</p>
+											</a>
+											<p className="mt-4 text-xs text-red-400/75">You currently need a link from an artist to get started.</p>
+										</div>
 									</>
 								}
 								<br />
