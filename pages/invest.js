@@ -16,8 +16,9 @@ import Footer from '../components/Footer'
 import Countdown from 'react-countdown'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
-import CommunityWidget from '../components/CommunityWidget'
+import SwitchNetworkButton from '../components/SwitchNetworkButton'
 import { SwapWidget } from '@uniswap/widgets'
+import CommunityWidget from '../components/CommunityWidget'
 
 import Image from 'next/image'
 
@@ -202,52 +203,6 @@ export default function Invest() {
 		}
 	}
 
-	function SwitchNetworkButton(props) {
-		let chainId = props.chainId
-
-		return <>
-			<div className="flex flex-col justify-center space-y-2">
-				{ chainId !== networkDefaults.mainnet.id &&
-					<button
-						className={`uppercase font-bold mix-blend-multiply ${chainId === networkDefaults.testnet.id ? "text-xs text-zinc-700 px-3 py-2 text-zinc-400 active:bg-zinc-200" : "text-sm px-4 py-3 bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-100 active:from-emerald-50 active:via-green-50 active:to-emerald-100"} active:text-zinc-500 rounded-md`}
-						onClick={
-							async () => {
-								try {
-									await library.provider.request({
-										method: "wallet_switchEthereumChain",
-										params: [{ chainId: `0x${networkDefaults.mainnet.id.toString(16)}` }]
-									})
-								}
-								catch (e) {
-									await library.provider.request({
-										method: "wallet_addEthereumChain",
-										params: [
-											{
-												chainId: `0x${networkDefaults.mainnet.id.toString(16)}`, // 10
-												chainName: networkDefaults.mainnet.name,
-												rpcUrls: [networkDefaults.mainnet.rpc_url],
-												blockExplorerUrls: [networkDefaults.mainnet.block_explorer_url]
-											}
-										]
-									})
-								}
-								finally {
-									location.reload() // for MetaMask mobile app
-								}
-							}
-						}
-					>
-						Connect to {networkDefaults.mainnet.name}
-					</button>
-				}
-			</div>
-			<br />
-			{ (chainId === networkDefaults.mainnet.id || chainId === networkDefaults.testnet.id) && 
-				<div className="rounded-sm bg-zinc-50 mix-blend-multiply py-2 text-center"><p className="text-green-600 font-mono text-xs"><span className="align-middle inline-block w-1 h-1 rounded-full bg-green-600 animate-ping" />  Your wallet connected to {chainId === networkDefaults.testnet.id && "test"} {networkDefaults.mainnet.name} </p></div>
-			}
-		</>
-	}
-
 	return (
 		<>
 			<Head>
@@ -360,7 +315,8 @@ export default function Invest() {
 
 										<p className="font-medium">You need ETH in your {networkDefaults.mainnet.name} wallet to pay.</p>
 										<br />
-										<p>First, connect to the Optimism network. Then, purchase some ETH and bridge to {networkDefaults.mainnet.name}.</p>
+										<p>First, connect to the Optimism network.</p>
+										<p>Then, purchase some ETH and bridge to {networkDefaults.mainnet.name}.</p>
 										<br />
 										Download the Crypto.com <a href="https://apps.apple.com/us/app/crypto-com-buy-btc-eth-shib/id1262148500" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=co.mona.android&hl=en&gl=US" className="underline" target="_blank" rel="noreferrer">Android</a> app, purchase some ETH, and withdraw to {networkDefaults.mainnet.name} using your wallet address: <span className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</span> <br /><br /> If you have Ethereum not on {networkDefaults.mainnet.name}, you can send it to your wallet and <a href="https://app.hop.exchange/" className="underline" target="_blank" rel="noreferrer">bridge to {networkDefaults.mainnet.name}</a>, but it'll cost more in gas fees.
 										<br />
@@ -368,7 +324,7 @@ export default function Invest() {
 									</>
 								}
 
-								{typeof(account) !== 'undefined' && ((chainId === networkDefaults.mainnet.id && daiBalance > 0) || chainId === networkDefaults.testnet.id) &&
+								{typeof(account) !== 'undefined' && ((chainId === networkDefaults.mainnet.id) || chainId === networkDefaults.testnet.id) &&
 									<>
 										<br />
 										<h3 className="font-bold text-4xl text-center mb-4 text-zinc-600">3.</h3>
