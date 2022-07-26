@@ -16,7 +16,6 @@ import Footer from '../components/Footer'
 import Countdown from 'react-countdown'
 import FunkyButton from '../components/FunkyButton'
 import LinkWalletButton from '../components/LinkWalletButton'
-import SwitchNetworkButton from '../components/SwitchNetworkButton'
 import { SwapWidget } from '@uniswap/widgets'
 import CommunityWidget from '../components/CommunityWidget'
 
