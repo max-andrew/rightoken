@@ -1,4 +1,9 @@
 export default function SwitchNetworkButton(props) {
+	const chainId = props.chainId
+	const networkDefaults = props.networkDefaults
+	const library = props.library
+	const enableTesting = props.enableTesting
+
 	return <>
 		<div className="flex flex-col justify-center space-y-2">
 			{ chainId !== networkDefaults.mainnet.id &&
@@ -34,7 +39,7 @@ export default function SwitchNetworkButton(props) {
 					Connect to {networkDefaults.mainnet.name}
 				</button>
 			}
-			{ chainId !== networkDefaults.testnet.id &&
+			{ (chainId !== networkDefaults.testnet.id && enableTesting) &&
 				<button
 					className="uppercase text-xs font-bold px-3 py-2 text-zinc-400 mix-blend-multiply active:bg-zinc-200 rounded-md"
 					onClick={
