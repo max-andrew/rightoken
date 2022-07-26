@@ -95,9 +95,11 @@ export default function Invest() {
 	const [showCrashCourse, setShowCrashCourse] = useState(false)
 	const [showUseCost, setShowUseCost] = useState(false)
 	const [showMeTheMoney, setShowMeTheMoney] = useState(false)
+	const [showWalletInfo, setShowWalletInfo] = useState(false)
+	const [showNetworkInfo, setShowNetworkInfo] = useState(false)
+	const [showUniswapInfo, setShowUniswapInfo] = useState(false)
 
 	const [ethBalance, setEthBalance] = useState(0.0)
-	const [daiBalance, setDAIBalance] = useState(0.0)
 
 	useEffect(() => {
 		updateEthBalance()
@@ -205,7 +207,7 @@ export default function Invest() {
 			<div className="mx-auto max-w-xs md:max-w-lg">
 				<Header linkTo="artist" />
 				<main>
-					<div className="absolute right-0 top-00 z-0 bg-gradient-to-r from-inherit via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
+					<div className="absolute right-0 top-00 z-0 bg-gradient-to-r from-inherit sm:from-yellow-50 via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
 					<div className="absolute right-0 md:left-40 top-44 md:top-72 z-10">
 						<Image
 							src="/static/obsessed.jpg"
@@ -275,13 +277,27 @@ export default function Invest() {
 										<h3 className="font-bold text-4xl text-center mb-1 text-zinc-500">1.</h3>
 										<p className="font-medium text-lg text-center text-zinc-400">Connect your wallet</p>
 										<br />
-										<p className="font-medium"> ⓘ What is MetaMask?</p>
-										<p>MetaMask is an Ethereum wallet.</p>
-										<p>Fans use it to buy, hold, and sell their tokens.</p>
-										<br />
 										<p>
-											Download the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> and <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>, create your wallet, find the browser in the wallet app, and return to this page there.
+											Connect your wallet to Rightoken. If you don't have one you can download the MetaMask app on <a href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" className="underline" target="_blank" rel="noreferrer">iOS</a> or <a href="https://play.google.com/store/apps/details?id=io.metamask" className="underline" target="_blank" rel="noreferrer">Android</a>. Create your wallet, find the browser in the wallet app, and return to this page there.
 										</p>
+										<br />
+										<>
+											<div className="text-center">
+												<button className="text-sm font-medium px-3 py-1 bg-zinc-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setShowWalletInfo(!showWalletInfo)}>
+													<p className="font-medium"> ⓘ What is MetaMask? {showWalletInfo ? "↾" : "⇂"}</p>
+												</button>
+											</div>
+											{ showWalletInfo &&
+												<>
+													<br />
+													<div className="font-mono text-xs text-zinc-600 text-center tracking-tighter">
+														<p className="font-bold mb-1">MetaMask is an Ethereum wallet</p>
+														<p>Fans use it to buy, hold, and trade their tokens</p>
+													</div>
+													<br />
+												</>
+											}
+										</>
 										<br />
 										<LinkWalletButton account={account} activate={activate} injected={injected} />
 									</>
@@ -304,16 +320,30 @@ export default function Invest() {
 										<h3 className="font-bold text-4xl text-center mb-1 text-zinc-500">2.</h3>
 										<p className="font-medium text-lg text-center text-zinc-400">Upgrade to {networkDefaults.mainnet.name}</p>
 										<br />
-										<p className="font-medium"> ⓘ What is Optimism?</p>
-										<p>Optimism is a network built on Ethereum.</p>
-										<p>It allows artists and fans to pay much less in transaction fees.</p>
-										<br />
 										<p>
 											You need ETH on {networkDefaults.mainnet.name}. If you have ETH that's not on {networkDefaults.mainnet.name}, you can send it to your wallet address <div className="inline-block text-xs font-mono bg-zinc-200 rounded-sm leading-loose break-all select-all px-2 py-1">{account}</div> and <a href="https://app.hop.exchange/#/send?token=ETH&sourceNetwork=ethereum&destNetwork=optimism" className="underline" target="_blank" rel="noreferrer">bridge it there</a>.
 										</p>
 										<br />
+										<>
+											<div className="text-center">
+												<button className="text-sm font-medium px-3 py-1 bg-zinc-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setShowNetworkInfo(!showNetworkInfo)}>
+													<p className="font-medium"> ⓘ What is {networkDefaults.mainnet.name}? {showNetworkInfo ? "↾" : "⇂"}</p>
+												</button>
+											</div>
+											{ showNetworkInfo &&
+												<>
+													<br />
+													<div className="font-mono text-xs text-zinc-600 text-center tracking-tighter">
+														<p className="font-bold mb-1">{networkDefaults.mainnet.name} is a network built on Ethereum</p>
+														<p>It saves fans a lot in transaction fees</p>
+													</div>
+													<br />
+												</>
+											}
+										</>
+										<br />
 										<p>
-											If you don't have any ETH yet, you can purchase some on a crypto exchange like <a href="https://coinbase.com" className="underline" target="_blank" rel="noreferrer">Coinbase</a> or <a href="https://crypto.com" className="underline" target="_blank" rel="noreferrer">Crypto.com</a> and follow the above steps to withdraw and bridge. Crypto.com will save you a bit on transaction fees as you can withdraw to your wallet address on {networkDefaults.mainnet.name} directly and skip the bridge step.
+											If you don't have any ETH yet, you can purchase some on a crypto exchange like <a href="https://coinbase.com" className="underline" target="_blank" rel="noreferrer">Coinbase</a> or <a href="https://crypto.com" className="underline" target="_blank" rel="noreferrer">Crypto.com</a>. Follow the above steps to withdraw and bridge. Crypto.com will save you a bit on transaction fees as you can withdraw to your wallet address on {networkDefaults.mainnet.name} directly and skip the bridge step.
 										</p>
 										<br />
 										<p>Finally, switch your network to Optimism in your wallet.</p>
@@ -332,9 +362,23 @@ export default function Invest() {
 										<h3 className="font-bold text-4xl text-center mb-1 text-zinc-500">3.</h3>
 										<p className="font-medium text-lg text-center text-zinc-400">Democratize music</p>
 										<br />
-										<p className="font-medium"> ⓘ What is Uniswap?</p>
-										<p>Uniswap is the largest decentralized exchange based on Ethereum.</p>
-										<p>It allows artists and fans to exchange tokens without an intermediary.</p>
+										<>
+											<div className="text-center">
+												<button className="text-sm font-medium px-3 py-1 bg-zinc-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setShowUniswapInfo(!showUniswapInfo)}>
+													<p className="font-medium"> ⓘ What is Uniswap? {showUniswapInfo ? "↾" : "⇂"}</p>
+												</button>
+											</div>
+											{ showUniswapInfo &&
+												<>
+													<br />
+													<div className="font-mono text-xs text-zinc-600 text-center tracking-tighter">
+														<p className="font-bold mb-1">Uniswap is the largest decentralized exchange based on Ethereum</p>
+														<p>It allows artists and fans to exchange tokens without an intermediary</p>
+													</div>
+													<br />
+												</>
+											}
+										</>
 										<br />
 										<p className="font-medium">You're ready to buy!</p>
 										<br />
