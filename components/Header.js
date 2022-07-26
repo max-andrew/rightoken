@@ -6,7 +6,7 @@ export default function Header(props) {
 	// default to linkTo = "invest"
 	let buttonText = "Invest in songs"
 	if (linkTo === "artist") {
-		buttonText = "Mint a song"
+		buttonText = "Mint your song"
 	}
 
 	return (

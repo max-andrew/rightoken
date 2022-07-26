@@ -325,9 +325,6 @@ export default function Mint() {
 		let chainId = props.chainId
 
 		return <>
-			<Head>
-				<title>Mint Your Rightoken</title>
-			</Head>
 			<div className="flex flex-col justify-center space-y-2">
 				{ chainId !== networkDefaults.mainnet.id &&
 					<button
