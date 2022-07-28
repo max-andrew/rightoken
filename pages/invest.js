@@ -207,7 +207,7 @@ export default function Invest() {
 			<div className="mx-auto max-w-xs md:max-w-lg">
 				<Header linkTo="artist" />
 				<main>
-					<div className="absolute right-0 top-00 z-0 bg-gradient-to-r from-inherit sm:from-yellow-50 via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
+					<div className="absolute right-0 top-30 z-0 bg-gradient-to-r from-inherit sm:from-yellow-50 via-red-50 to-green-100 h-20 w-10/12 md:w-4/12" />
 					<div className="absolute right-0 md:left-40 top-44 md:top-72 z-10">
 						<Image
 							src="/static/obsessed.jpg"
@@ -228,7 +228,13 @@ export default function Invest() {
 
 							<br />
 
-							<FunkyButton className="mt-4" onClick={() => setShowFAQs(!showFAQs)} text={showFAQs ? "Enter App ↝" : "↜ Back"} grayOut={!showFAQs} />
+							{
+								showFAQs ?
+								<FunkyButton className="mt-4" onClick={() => setShowFAQs(!showFAQs)} text="Enter App ↝" /> :
+								<button className="text-sm font-medium px-3 py-1 bg-zinc-100 active:bg-gray-200 rounded-md text-zinc-800" onClick={() => setShowFAQs(!showFAQs)}>
+									<p className="font-medium">↜ Back</p>
+								</button>
+							}
 						</div>
 
 						<br />
@@ -372,7 +378,7 @@ export default function Invest() {
 												<>
 													<br />
 													<div className="font-mono text-xs text-zinc-600 text-center tracking-tighter">
-														<p className="font-bold mb-1">Uniswap is the largest decentralized exchange based on Ethereum</p>
+														<p className="font-bold mb-1">Uniswap is the largest decentralized exchange on Ethereum</p>
 														<p>It allows artists and fans to exchange tokens without an intermediary</p>
 													</div>
 													<br />
@@ -394,6 +400,9 @@ export default function Invest() {
 							</>
 						}
 
+						<br />
+						<br />
+						<br />
 						<br />
 
 						<CommunityWidget />
