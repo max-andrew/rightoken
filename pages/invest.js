@@ -42,7 +42,7 @@ export default function Invest() {
 		stablecoinAddress = networkDefaults.testnet.stablecoin_address
 	}
 
-	const [tokenAddress, setTokenAddress] = useState("")
+	const [tokenAddress, setTokenAddress] = useState("0x61F257dF223e992300A3B0589E4a94b8BF6309D6")
 	useEffect(() => {
 		if (typeof(window) !== "undefined") {
 			const url = new URL(window.location.href)
@@ -386,7 +386,7 @@ export default function Invest() {
 											}
 										</>
 										<br />
-										<p className="font-medium">You're ready to buy!</p>
+										<p className="font-medium">You're ready to {tokenAddress !== "0x61F257dF223e992300A3B0589E4a94b8BF6309D6" ? "buy!" : "invest in Obsessed!"}</p>
 										<br />
 										<SwapWidget
 											provider={library.getSigner(account).provider}
